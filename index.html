@@ -24,25 +24,31 @@
     </p>
     <div class="bg-white p-4 rounded-xl border border-emerald-300 text-left text-xs text-slate-800 space-y-2.5 mt-2">
       <div class="font-bold text-slate-900 text-sm">💳 ÖDEME BİLGİSİ (IBAN)</div>
-      <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
-        <div><strong>Alıcı:</strong> <span class="select-all font-bold text-slate-900">MÜJDAT TELLİ</span></div>
-        <button type="button" onclick="copyAccountName()" class="bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+      <div class="flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-400 transition cursor-pointer" onclick="copyAccountName()">
+        <div><strong>Alıcı:</strong> <span class="select-all font-bold text-slate-900 ml-1">MÜJDAT TELLİ</span></div>
+        <button type="button" onclick="event.stopPropagation(); copyAccountName();" class="bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1 active:scale-95">
           <span>👤</span>
           <span>Adı Kopyala</span>
         </button>
       </div>
-      <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
-        <div><strong>IBAN:</strong> <span class="font-mono font-bold select-all text-emerald-700">TR83 0001 2009 8620 0001 0211 45</span></div>
-        <button type="button" onclick="copyIBAN()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+      <div class="flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-400 transition cursor-pointer" onclick="copyIBAN()">
+        <div><strong>IBAN:</strong> <span class="font-mono font-bold select-all text-emerald-700 ml-1">TR83 0001 2009 8620 0001 0211 45</span></div>
+        <button type="button" onclick="event.stopPropagation(); copyIBAN();" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1 active:scale-95">
           <span>📋</span>
           <span>IBAN Kopyala</span>
         </button>
       </div>
       <div class="text-[11px] text-slate-500">📝 Açıklama kısmına: <strong>"Adınız Soyadınız - Çay Parası"</strong> yazınız.</div>
     </div>
-    <button onclick="window.location.href='index.html'" class="mt-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2.5 rounded-lg transition">
-      Forma Geri Dön
-    </button>
+    <div class="flex flex-wrap items-center justify-center gap-2 mt-4">
+      <button onclick="window.location.href='index.html'" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition">
+        Forma Geri Dön
+      </button>
+      <button type="button" onclick="toggleAdminView()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
+        <span>📊</span>
+        <span>Müjdat Hoca Takip Paneli</span>
+      </button>
+    </div>
   </div>
 
   <!-- ================= ÖĞRETMEN FORM EKRANI ================= -->
@@ -107,24 +113,24 @@
       </div>
 
       <!-- Kopyalanabilir 1: Alıcı Adı -->
-      <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-xl border border-emerald-300 shadow-xs">
+      <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-xl border border-emerald-300 shadow-xs hover:border-emerald-500 transition cursor-pointer" onclick="copyAccountName()">
         <div class="text-xs">
           <span class="text-slate-500 text-[10px] block font-semibold uppercase">Alıcı Adı Soyadı:</span>
           <span class="font-extrabold text-slate-900 text-sm tracking-wide select-all">MÜJDAT TELLİ</span>
         </div>
-        <button type="button" onclick="copyAccountName()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 active:scale-95">
+        <button type="button" onclick="event.stopPropagation(); copyAccountName();" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 active:scale-95">
           <span>👤</span>
           <span>Adı Kopyala</span>
         </button>
       </div>
 
       <!-- Kopyalanabilir 2: IBAN Numarası -->
-      <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-xl border border-emerald-300 shadow-xs">
+      <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-xl border border-emerald-300 shadow-xs hover:border-emerald-500 transition cursor-pointer" onclick="copyIBAN()">
         <div class="text-xs">
           <span class="text-slate-500 text-[10px] block font-semibold uppercase">IBAN Numarası:</span>
           <span class="font-mono font-extrabold text-slate-900 text-sm tracking-wider select-all">TR83 0001 2009 8620 0001 0211 45</span>
         </div>
-        <button type="button" onclick="copyIBAN()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 active:scale-95">
+        <button type="button" onclick="event.stopPropagation(); copyIBAN();" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 active:scale-95">
           <span>📋</span>
           <span>IBAN Kopyala</span>
         </button>
@@ -218,54 +224,122 @@
   <!-- ================= YÖNETİM PANELİ MODU (GİZLENEBİLİR) ================= -->
   <div id="adminSection" class="hidden">
     <!-- Üst Bar -->
-    <header class="bg-slate-900 text-white p-4 shadow flex justify-between items-center">
+    <header class="bg-slate-900 text-white p-4 shadow flex flex-wrap justify-between items-center gap-3">
       <div class="flex items-center space-x-2">
         <span class="text-xl">📊</span>
-        <span class="font-bold text-sm">Müjdat Hoca Yönetim & Takip Paneli</span>
+        <div>
+          <span class="font-bold text-sm block">Müjdat Hoca Yönetim & Takip Paneli</span>
+          <span class="text-[11px] text-slate-400">2026-2027 Öğretmenler Odası Çay Ocağı</span>
+        </div>
       </div>
-      <button onclick="toggleAdminView()" class="text-xs bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded-lg">
-        &larr; Öğretmen Formuna Dön
-      </button>
+      <div class="flex items-center gap-2">
+        <button onclick="copyWhatsAppAnnouncement()" class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition active:scale-95">
+          <span>📲</span>
+          <span>WhatsApp Duyurusunu Kopyala</span>
+        </button>
+        <button onclick="toggleAdminView()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold px-3 py-1.5 rounded-lg transition">
+          &larr; Öğretmen Formuna Dön
+        </button>
+      </div>
     </header>
     
-    <!-- Daha önce hazırlanan tam kontrol paneli burada kalır -->
     <div class="p-4 max-w-7xl mx-auto space-y-4">
-      <div class="bg-white p-4 rounded-xl border flex justify-between items-center">
-        <div>
-          <h2 class="font-bold text-slate-800 text-base">Taksit ve Kasa Yönetimi</h2>
-          <p class="text-xs text-slate-500">Panoya asmak veya taksitleri işaretlemek için aşağıdaki butonları kullanabilirsiniz.</p>
+      <!-- İstatistik Kartları -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Katılım Durumu</div>
+          <div class="text-xl font-extrabold text-emerald-600 mt-1"><span id="statKatilanSayisi">0</span> <span class="text-xs text-slate-400 font-normal">/ <span id="statToplamKisi">56</span></span></div>
+          <div class="text-[10px] text-slate-500 mt-1"><span id="statKatilmayanSayisi" class="text-red-500 font-bold">0</span> Red, <span id="statBekleyenSayisi" class="text-amber-500 font-bold">56</span> Bekliyor</div>
         </div>
-        <div class="flex gap-2">
-          <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-lg">
-            🖨️ Panoya Yazdır (A4)
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-blue-500 shadow-xs">
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">1. Dönem (T1+T2)</div>
+          <div id="statDonem1Toplanan" class="text-xl font-extrabold text-blue-700 mt-1">0 ₺</div>
+          <div class="text-[10px] text-slate-500 mt-1">Hedef: <span id="statDonem1Hedef" class="font-medium">0 ₺</span></div>
+        </div>
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-xs">
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">2. Dönem (T3+T4)</div>
+          <div id="statDonem2Toplanan" class="text-xl font-extrabold text-amber-700 mt-1">0 ₺</div>
+          <div class="text-[10px] text-slate-500 mt-1">Hedef: <span id="statDonem2Hedef" class="font-medium">0 ₺</span></div>
+        </div>
+        <div class="bg-white p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 shadow-xs">
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Kasa & Bakiye</div>
+          <div id="statNetKasa" class="text-xl font-extrabold text-emerald-600 mt-1">680 ₺</div>
+          <div class="text-[10px] text-slate-500 mt-1">Devreden: <span id="statDevreden" class="font-medium">680 ₺</span></div>
+        </div>
+      </div>
+
+      <!-- Filtre ve Aksiyon Çubuğu -->
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-wrap gap-3 justify-between items-center">
+        <div class="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
+          <input type="text" id="searchInput" placeholder="Öğretmen ara..." class="px-3 py-2 text-xs border border-slate-300 rounded-lg flex-1 min-w-[160px] focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <select id="filterStatusSelect" class="px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <option value="all">Tüm Öğretmenler (56)</option>
+            <option value="katiliyor">☕ Sadece Katılanlar</option>
+            <option value="katilmiyor">❌ Sadece Katılmayanlar</option>
+            <option value="bekliyor">⏳ Yanıt Bekleyenler</option>
+            <option value="borclu">⚠️ Taksit Borcu Olanlar</option>
+          </select>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1">
+            <span>🖨️</span>
+            <span>Panoya Yazdır (A4)</span>
           </button>
-          <button onclick="exportToCSV()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-lg">
-            📊 Excel İndir
+          <button onclick="exportToCSV()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1">
+            <span>📊</span>
+            <span>Excel İndir</span>
+          </button>
+          <button onclick="resetToDefaults()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold px-3 py-2 rounded-lg transition" title="Varsayılan 56 öğretmeni geri yükler">
+            🔄 Listeyi Yenile
           </button>
         </div>
       </div>
 
       <!-- Tablo -->
-      <div class="bg-white rounded-xl border overflow-x-auto">
+      <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto shadow-xs">
         <table class="w-full text-left text-xs">
-          <thead class="bg-slate-100 text-slate-600 border-b">
+          <thead class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
             <tr>
               <th class="p-3">No</th>
               <th class="p-3">Ad Soyad</th>
               <th class="p-3">Branş</th>
-              <th class="p-3 text-center">Katılım</th>
-              <th class="p-3 text-center bg-blue-50">1. Dönem (T1-T2)</th>
-              <th class="p-3 text-center bg-amber-50">2. Dönem (T3-T4)</th>
+              <th class="p-3 text-center">Katılım Durumu</th>
+              <th class="p-3 text-center bg-blue-50/60">1. Dönem (T1-T2)</th>
+              <th class="p-3 text-center bg-amber-50/60">2. Dönem (T3-T4)</th>
               <th class="p-3 text-right">Ödenen</th>
+              <th class="p-3 text-center no-print">İşlem</th>
             </tr>
           </thead>
-          <tbody id="teacherTableBody" class="divide-y"></tbody>
+          <tbody id="teacherTableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+
+      <!-- Yazdırma Şablonu (Sadece Baskıda Çıkar) -->
+      <div class="hidden print-only">
+        <div class="text-center mb-4">
+          <h2 class="text-xl font-bold">2026-2027 EĞİTİM-ÖĞRETİM YILI ÇAY OCAĞI KATILIM VE TAKSİT TAKİP ÇİZELGESİ</h2>
+          <p class="text-xs text-gray-600">Sorumlu: Müjdat TELLİ | Toplam: 1.200 TL (4 x 300 TL)</p>
+        </div>
+        <table class="w-full text-xs">
+          <thead>
+            <tr>
+              <th style="width:30px;">No</th>
+              <th>Ad Soyad</th>
+              <th>Branş</th>
+              <th style="width:70px;text-align:center;">1. Taksit</th>
+              <th style="width:70px;text-align:center;">2. Taksit</th>
+              <th style="width:70px;text-align:center;">3. Taksit</th>
+              <th style="width:70px;text-align:center;">4. Taksit</th>
+              <th style="width:80px;text-align:right;">Toplam</th>
+            </tr>
+          </thead>
+          <tbody id="printTableBody"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260908_6"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -338,14 +412,16 @@
           alert("❌ Hatalı şifre! Bu takip paneli yalnızca çay ocağı sorumlusuna (Müjdat TELLİ) özeldir.");
           return;
         }
+        a.classList.remove('hidden');
+        if (f) f.classList.add('hidden');
+        if (s) s.classList.add('hidden');
+        loadState();
+        updateDashboard();
+      } else {
+        a.classList.add('hidden');
+        if (f) f.classList.remove('hidden');
+        if (s) s.classList.add('hidden');
       }
-
-      f.classList.toggle('hidden');
-      a.classList.toggle('hidden');
-      if (s) s.classList.add('hidden');
-
-      loadState();
-      updateDashboard();
     }
 
     // Form gönderildiğinde anlık olarak cihaz hafızasına da kaydet

@@ -75,18 +75,57 @@ function loadState() {
   if (saved) {
     try {
       state = JSON.parse(saved);
-      // Ensure Müjdat Telli is marked katiliyor if not set
-      const mujdat = state.teachers.find(t => t.id === 39 || t.name.includes("MÜJDAT"));
-      if (mujdat && mujdat.status === 'bekliyor') {
-        mujdat.status = 'katiliyor';
-      }
     } catch (e) {
-      state.teachers = JSON.parse(JSON.stringify(DEFAULT_TEACHERS));
+      state = null;
     }
+  }
+
+  // Eğer state boşsa, bozuksa veya teachers dizisi yok/boşsa:
+  if (!state || !state.teachers || !Array.isArray(state.teachers) || state.teachers.length === 0) {
+    state = {
+      teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
+      expenses: (state && state.expenses) || [],
+      devredenBakiye: (state && state.devredenBakiye !== undefined) ? state.devredenBakiye : 680,
+      filterStatus: 'all',
+      searchQuery: ''
+    };
   } else {
+    // Mevcut listede eksik olan varsayılan öğretmenler varsa ekle
+    DEFAULT_TEACHERS.forEach(dt => {
+      const exists = state.teachers.some(t => t.id === dt.id || t.name.toUpperCase('tr') === dt.name.toUpperCase('tr'));
+      if (!exists) {
+        state.teachers.push(JSON.parse(JSON.stringify(dt)));
+      }
+    });
+  }
+
+  // Müjdat TELLİ her zaman 'katiliyor' olarak garantilensin
+  const mujdat = state.teachers.find(t => t.id === 39 || (t.name && t.name.includes("MÜJDAT")));
+  if (mujdat) {
+    mujdat.status = 'katiliyor';
+    if (!mujdat.note) mujdat.note = 'Çay Ocağı Sorumlusu';
+  }
+
+  // State alanlarını güvenceye al
+  if (!state.expenses) state.expenses = [];
+  if (state.devredenBakiye === undefined) state.devredenBakiye = 680;
+  if (!state.filterStatus) state.filterStatus = 'all';
+  if (!state.searchQuery) state.searchQuery = '';
+
+  saveState();
+}
+
+// Varsayılan Öğretmen Listesini Sıfırla & Yenile
+function resetToDefaults() {
+  if (confirm("Tüm öğretmen listesi baştan yüklenecek (56 öğretmen). Müjdat TELLİ 'Katılıyor' olarak işaretlenecek. Devam edilsin mi?")) {
     state.teachers = JSON.parse(JSON.stringify(DEFAULT_TEACHERS));
-    state.expenses = [];
-    state.devredenBakiye = 680;
+    const mujdat = state.teachers.find(t => t.id === 39 || (t.name && t.name.includes("MÜJDAT")));
+    if (mujdat) {
+      mujdat.status = 'katiliyor';
+      mujdat.note = 'Çay Ocağı Sorumlusu';
+    }
+    saveState();
+    showToast("✅ Liste 56 öğretmenle başarıyla yenilendi!");
   }
 }
 
@@ -148,6 +187,7 @@ function updateDashboard() {
 function renderTable() {
   const tbody = document.getElementById('teacherTableBody');
   const printTbody = document.getElementById('printTableBody');
+  if (!tbody) return;
   tbody.innerHTML = '';
   if (printTbody) printTbody.innerHTML = '';
 
@@ -565,7 +605,7 @@ Değerli Öğretmenlerimiz,
 📝 *Açıklama:* Adınız Soyadınız - Çay Parası
 
 👇 Çay içecek öğretmenlerimiz lütfen aşağıdaki linkten ismini işaretlesin (Listede adı olmayan hocalarımız en alttaki "Diğer" kısmına adını yazabilir):
-👉 (Form linkinizi buraya ekleyiniz)`;
+👉 https://mujdattelli.github.io/cay-katilim/`;
 
   navigator.clipboard.writeText(msg).then(() => {
     showToast("✅ WhatsApp Duyuru Metni panoya kopyalandı!\nDoğrudan okul grubuna yapıştırabilirsiniz.");
