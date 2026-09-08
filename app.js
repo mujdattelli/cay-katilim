@@ -8,7 +8,7 @@ const DEFAULT_TEACHERS = [
   { id: 6, name: "BİRGÜL COŞKUN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 7, name: "BİROL ATEŞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 8, name: "CELAL ATIŞ", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 10, name: "DEMET KESEN", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 11, name: "DEMET SAVRUK", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -48,14 +48,15 @@ const DEFAULT_TEACHERS = [
   { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 50, name: "SİNAN CAN YÜCEL", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 51, name: "SONER TAŞ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" }
+  { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı (Yeni Öğretmen)" }
 ];
 
 const TAKSIT_BEDELI = 300; // Her taksit 300 TL (Toplam 1200 TL)
@@ -99,18 +100,29 @@ function loadState() {
     });
   }
 
-  // Müjdat TELLİ ve Erdinç SİTRAVA katılım durumları
-  const mujdat = state.teachers.find(t => t.id === 39 || (t.name && t.name.includes("MÜJDAT")));
-  if (mujdat) {
-    mujdat.status = 'katiliyor';
-    if (!mujdat.note) mujdat.note = 'Çay Ocağı Sorumlusu';
-  }
+  // Onaylanan Form Yanıtları (Otomatik Güncelleme)
+  const setStatus = (id, searchName, status, note, branch) => {
+    let t = state.teachers.find(x => x.id === id || (searchName && x.name.toUpperCase('tr').includes(searchName.toUpperCase('tr'))));
+    if (t) {
+      t.status = status;
+      if (note) t.note = note;
+    } else if (searchName) {
+      state.teachers.push({
+        id: id || (state.teachers.reduce((m, x) => Math.max(m, x.id), 0) + 1),
+        name: searchName.toUpperCase('tr'),
+        branch: branch || 'Yeni Öğretmen',
+        status: status,
+        t1: false, t2: false, t3: false, t4: false,
+        note: note || 'Formdan eklendi'
+      });
+    }
+  };
 
-  const erdinc = state.teachers.find(t => t.id === 19 || (t.name && t.name.includes("ERDİNÇ SİTRAVA")));
-  if (erdinc && erdinc.status === 'bekliyor') {
-    erdinc.status = 'katiliyor';
-    if (!erdinc.note) erdinc.note = 'Formdan katıldı';
-  }
+  setStatus(39, "MÜJDAT TELLİ", "katiliyor", "Çay Ocağı Sorumlusu", "Bilişim Teknolojileri");
+  setStatus(19, "ERDİNÇ SİTRAVA", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
+  setStatus(49, "SİNAN RENÇBEROĞLU", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
+  setStatus(9, "CEM KURTOĞLU", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Elektrik-Elektronik Teknolojisi / Elektrik");
+  setStatus(57, "SEMA KANDEMİR", "katiliyor", "Formdan katıldı (Yeni Öğretmen)", "Grafik ve Fotoğraf");
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
@@ -125,16 +137,6 @@ function loadState() {
 function resetToDefaults() {
   if (confirm("⚠️ DİKKAT: Bu işlem tüm öğretmenlerin yanıtlarını ve ödemelerini sıfırlar.\nSadece fabrika ayarlarına dönmek istiyorsanız 'Tamam'a basınız.")) {
     state.teachers = JSON.parse(JSON.stringify(DEFAULT_TEACHERS));
-    const mujdat = state.teachers.find(t => t.id === 39 || (t.name && t.name.includes("MÜJDAT")));
-    if (mujdat) {
-      mujdat.status = 'katiliyor';
-      mujdat.note = 'Çay Ocağı Sorumlusu';
-    }
-    const erdinc = state.teachers.find(t => t.id === 19 || (t.name && t.name.includes("ERDİNÇ SİTRAVA")));
-    if (erdinc) {
-      erdinc.status = 'katiliyor';
-      erdinc.note = 'Formdan katıldı';
-    }
     saveState();
     showToast("✅ Liste sıfırlandı!");
   }
