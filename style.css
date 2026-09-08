@@ -1,0 +1,100 @@
+/* Özel Stiller ve Yazdırma Kuralları */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Tablo geçişleri */
+.taksit-btn {
+  transition: all 0.2s ease;
+}
+
+.taksit-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Yazdırma (Print Media) Stilleri - Öğretmenler Odası Panosu İçin */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 10pt;
+  }
+
+  /* Ekrana ait butonları, navigasyonları, form kılavuzunu gizle */
+  .no-print,
+  nav,
+  button,
+  .quick-stats-cards,
+  .action-bar,
+  #modalGoogleForm,
+  #modalGider,
+  #modalImport,
+  #modalYeniHoca {
+    display: none !important;
+  }
+
+  /* Yazdırma başlığı */
+  .print-only {
+    display: block !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Tablo düzeni */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
+  }
+
+  th, td {
+    border: 1px solid #999 !important;
+    padding: 4px 6px !important;
+    color: #000 !important;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+  }
+
+  /* Rozet ve tiklerin yazıcıda siyah-beyaz belirgin çıkması */
+  .badge-katiliyor {
+    color: #000 !important;
+    font-weight: bold !important;
+  }
+
+  .badge-katilmiyor {
+    color: #777 !important;
+    text-decoration: line-through !important;
+  }
+
+  .print-box {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #333;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 14px;
+  }
+
+  .print-box.checked::after {
+    content: "✓";
+    font-weight: bold;
+    font-size: 11pt;
+  }
+}
+
+.print-only {
+  display: none;
+}

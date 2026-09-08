@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Okul Çay Ocağı Takip Sistemi</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+  <!-- ================= YAZDIRMA (A4 PANO ÇIKTISI) ALANI ================= -->
+  <div class="print-only p-6">
+    <div class="text-center mb-4 border-b-2 border-slate-800 pb-3">
+      <h1 class="text-xl font-bold uppercase tracking-wider text-slate-900">2026-2027 EĞİTİM-ÖĞRETİM YILI OKUL ÇAY OCAĞI KATILIM VE 4 TAKSİT TAKİP ÇİZELGESİ</h1>
+      <p class="text-xs text-slate-600 mt-1">Yıllık Katılım: 1.200 TL (4 Taksit x 300 TL) | 1. Dönem: Taksit 1-2 • 2. Dönem: Taksit 3-4</p>
+      <div class="mt-2 py-1 px-4 border border-slate-700 inline-block rounded text-xs bg-slate-50">
+        <strong>ÖDEME İÇİN IBAN:</strong> TR83 0001 2009 8620 0001 0211 45 &nbsp;|&nbsp; <strong>Alıcı:</strong> MÜJDAT TELLİ &nbsp;|&nbsp; <strong>Açıklama:</strong> Ad Soyad - Çay Parası
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30px;">S.N</th>
+          <th>Öğretmen Adı Soyadı</th>
+          <th>Branş</th>
+          <th style="width: 70px;">1. Taksit (300₺)</th>
+          <th style="width: 70px;">2. Taksit (300₺)</th>
+          <th style="width: 70px;">3. Taksit (300₺)</th>
+          <th style="width: 70px;">4. Taksit (300₺)</th>
+          <th style="width: 75px;">Ödenen</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+    <div class="mt-6 flex justify-between text-xs text-slate-600 border-t pt-2">
+      <span>Tarih: ____________________</span>
+      <span>Çay Ocağı Sorumlusu İmza: ____________________</span>
+    </div>
+  </div>
+
+  <!-- ================= NORMAL EKRAN GÖRÜNÜMÜ (NO-PRINT) ================= -->
+  <div class="no-print">
+    <!-- Üst Bar -->
+    <header class="bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 text-white shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <span class="text-3xl">☕</span>
+            <div>
+              <h1 class="text-2xl font-bold tracking-tight">Okul Çay Ocağı & Taksit Takip Sistemi</h1>
+              <p class="text-xs text-amber-200">1.200 TL (4 x 300 TL Taksit) • Katılım & Gider Yönetimi</p>
+            </div>
+          </div>
+          <!-- Üst Hızlı Butonlar -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openModal('modalGoogleForm')" class="bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5 border border-amber-400">
+              <span>📋</span>
+              <span>Google Form Oluştur</span>
+            </button>
+            <button onclick="openModal('modalImport')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5 border border-emerald-400">
+              <span>📥</span>
+              <span>Form Yanıtlarını Aktar</span>
+            </button>
+            <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5 border border-indigo-400">
+              <span>🖨️</span>
+              <span>Panoya Yazdır (A4)</span>
+            </button>
+            <button onclick="exportToCSV()" class="bg-slate-700 hover:bg-slate-600 text-white font-medium text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+              <span>📊</span>
+              <span>Excel İndir</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+      <!-- ================= ÇOK ÖNEMLİ: IBAN & ÖDEME BİLGİSİ (KOPYALANABİLİR) ================= -->
+      <div class="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 border-2 border-amber-400 rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="flex h-3 w-3 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+              </span>
+              <span class="text-xs font-bold uppercase tracking-wider text-red-700">ÇOK ÖNEMLİ: ÇAY PARASI ÖDEME BİLGİLERİ</span>
+            </div>
+            <h2 class="text-base font-bold text-slate-900">
+              Öğretmenlerimiz çay paralarını elden verebilecekleri gibi doğrudan <span class="text-amber-900 underline font-extrabold">Müjdat TELLİ</span> hesabına atabilirler.
+            </h2>
+            <p class="text-xs text-slate-600">
+              Açıklama kısmına <strong>"Ad Soyad - Çay Parası"</strong> yazılması yeterlidir. (1.200 TL / 4 Taksit: 300 TL x 4)
+            </p>
+          </div>
+
+          <!-- Kopyalanabilir Bilgi Kutusu & Butonlar -->
+          <div class="bg-white p-3 rounded-xl border border-amber-300 shadow-sm flex flex-col sm:flex-row items-center gap-3 shrink-0">
+            <div class="text-left">
+              <div class="text-[10px] text-slate-500 font-semibold uppercase">Alıcı: <span class="text-slate-900 font-bold">MÜJDAT TELLİ</span></div>
+              <div class="font-mono text-sm font-bold text-slate-800 tracking-wide select-all bg-amber-50/70 px-2 py-1 rounded border border-amber-200 mt-0.5">
+                TR83 0001 2009 8620 0001 0211 45
+              </div>
+            </div>
+            <div class="flex flex-wrap sm:flex-col gap-1.5 w-full sm:w-auto">
+              <button onclick="copyIBAN()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition flex items-center justify-center gap-1">
+                <span>📋</span>
+                <span>IBAN Kopyala</span>
+              </button>
+              <button onclick="copyAccountName()" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white font-semibold text-[11px] px-3 py-1 rounded-lg transition flex items-center justify-center gap-1">
+                <span>👤</span>
+                <span>Adı Kopyala</span>
+              </button>
+            </div>
+            <button onclick="copyWhatsAppAnnouncement()" class="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white font-bold text-xs px-3 py-3 rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 border border-green-600" title="Okul WhatsApp grubuna yapıştırılacak hazır duyuru metni">
+              <span>📲</span>
+              <span>WhatsApp Duyurusunu Kopyala</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Finansal ve İstatistik Kartları -->
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 quick-stats-cards">
+        <!-- Katılım Durumu -->
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Katılım Durumu</div>
+          <div class="mt-1 flex items-baseline gap-1">
+            <span id="statKatilanSayisi" class="text-2xl font-bold text-emerald-600">0</span>
+            <span class="text-xs text-slate-400">/ <span id="statToplamKisi">56</span></span>
+          </div>
+          <div class="mt-1 text-[10px] text-slate-500">
+            <span class="text-red-500 font-medium" id="statKatilmayanSayisi">0</span> red, 
+            <span class="text-amber-500 font-medium" id="statBekleyenSayisi">56</span> bekliyor
+          </div>
+        </div>
+
+        <!-- 1. Dönem -->
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">1. Dönem (T1+T2)</div>
+          <div id="statDonem1Toplanan" class="mt-1 text-xl font-bold text-blue-700">0 ₺</div>
+          <div class="mt-1 text-[10px] text-slate-500">
+            Hedef: <span id="statDonem1Hedef" class="font-medium">0 ₺</span>
+          </div>
+        </div>
+
+        <!-- 2. Dönem -->
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">2. Dönem (T3+T4)</div>
+          <div id="statDonem2Toplanan" class="mt-1 text-xl font-bold text-amber-700">0 ₺</div>
+          <div class="mt-1 text-[10px] text-slate-500">
+            Hedef: <span id="statDonem2Hedef" class="font-medium">0 ₺</span>
+          </div>
+        </div>
+
+        <!-- Toplam Tahsilat -->
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Toplam Tahsilat</div>
+          <div id="statToplamToplanan" class="mt-1 text-xl font-bold text-slate-800">0 ₺</div>
+          <div class="mt-1 text-[10px] text-slate-400">Katılanlardan toplanan</div>
+        </div>
+
+        <!-- Giderler -->
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Toplam Gider</div>
+          <div id="statToplamGider" class="mt-1 text-xl font-bold text-rose-600">0 ₺</div>
+          <div class="mt-1 text-[10px] text-slate-400">Çay, şeker, bardak vb.</div>
+        </div>
+
+        <!-- Net Kasa -->
+        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 bg-gradient-to-b from-white to-slate-50">
+          <div class="flex justify-between items-center">
+            <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Net Kasa</span>
+            <button onclick="updateDevreden()" class="text-[10px] text-blue-600 hover:underline" title="Geçen yıldan devreden parayı düzenle">Devreden: <span id="statDevreden">680 ₺</span></button>
+          </div>
+          <div id="statNetKasa" class="mt-1 text-2xl font-bold text-emerald-600">680 ₺</div>
+          <div class="mt-1 text-[10px] text-slate-400">Eldeki nakit para</div>
+        </div>
+      </div>
+
+      <!-- Ana İçerik: Tablo ve Yan Panel -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sol 3 Kolon: Öğretmenler ve 4 Taksit Tablosu -->
+        <div class="lg:col-span-3 space-y-4">
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            
+            <!-- Arama ve Filtreleme Başlığı -->
+            <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/50">
+              <div class="flex items-center space-x-2 flex-1">
+                <div class="relative w-full max-w-xs">
+                  <input type="text" id="searchInput" placeholder="Öğretmen adı veya branş ara..." 
+                    class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+                </div>
+                <select id="filterStatusSelect" class="py-1.5 px-3 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  <option value="all">Tüm Öğretmenler</option>
+                  <option value="katiliyor">☕ Sadece Katılanlar</option>
+                  <option value="bekliyor">⏳ Henüz Yanıtlamayanlar</option>
+                  <option value="katilmiyor">❌ Katılmayanlar</option>
+                  <option value="borclu">⚠️ Taksiti Kalan Katılanlar</option>
+                </select>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <button onclick="openModal('modalYeniHoca')" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-lg border border-amber-200 flex items-center gap-1 transition">
+                  <span>➕</span>
+                  <span>Öğretmen Ekle</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bilgilendirme Notu -->
+            <div class="bg-amber-50/70 px-4 py-2 text-xs text-amber-800 flex items-center justify-between border-b border-amber-100">
+              <span>💡 <strong>İpucu:</strong> Katılım durumunu değiştirmek için durum rozetine, taksitleri "Ödendi" yapmak için ilgili taksit butonuna tıklamanız yeterlidir.</span>
+            </div>
+
+            <!-- Tablo -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-600 text-[11px] uppercase tracking-wider font-semibold border-b border-slate-200">
+                    <th class="py-3 px-3 w-10">No</th>
+                    <th class="py-3 px-3">Ad Soyad</th>
+                    <th class="py-3 px-3">Branş</th>
+                    <th class="py-3 px-3 text-center">Katılım</th>
+                    <th class="py-3 px-2 text-center bg-blue-100/40">1. Dönem (T1 & T2)</th>
+                    <th class="py-3 px-2 text-center bg-amber-100/40">2. Dönem (T3 & T4)</th>
+                    <th class="py-3 px-3 text-right">Ödenen</th>
+                    <th class="py-3 px-2 text-center w-8 no-print">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="teacherTableBody" class="divide-y divide-slate-100 text-slate-700 text-xs"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sağ Kolon: Gider Defteri & Hızlı İşlemler -->
+        <div class="space-y-4">
+          <!-- Gider / Harcama Kartı -->
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                <span>🛒</span>
+                <span>Gider Defteri</span>
+              </h3>
+              <button onclick="openModal('modalGider')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold px-2.5 py-1 rounded-lg border border-rose-200 transition">
+                + Harcama Ekle
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-500 mb-3">Alınan çay, şeker, bardak, temizlik malzemeleri ve fişler.</p>
+            
+            <div id="expenseList" class="space-y-1 max-h-72 overflow-y-auto pr-1"></div>
+          </div>
+
+          <!-- Kural ve Özet Kartı -->
+          <div class="bg-slate-900 text-white rounded-xl p-4 shadow-sm text-xs space-y-2.5">
+            <div class="font-bold text-amber-400 flex items-center gap-1">
+              <span>📌</span>
+              <span>Çay Ocağı Kuralları</span>
+            </div>
+            <ul class="space-y-1.5 text-slate-300 text-[11px]">
+              <li>• Yıllık toplam ücret: <strong>1.200 TL</strong></li>
+              <li>• 1. Dönem: <strong>1. Taksit (300 TL)</strong> + <strong>2. Taksit (300 TL)</strong></li>
+              <li>• 2. Dönem: <strong>3. Taksit (300 TL)</strong> + <strong>4. Taksit (300 TL)</strong></li>
+              <li>• Veriler bilgisayarınızın tarayıcısında (LocalStorage) kalıcı olarak saklanır.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= MODAL 1: GOOGLE FORM OLUŞTURUCU KILAVUZU ================= -->
+  <div id="modalGoogleForm" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <span>📋</span>
+          <span>Google Form Otomatik Kurulum Rehberi</span>
+        </h2>
+        <button onclick="closeModal('modalGoogleForm')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+
+      <p class="text-xs text-slate-600">
+        Google hesabınızda 56 öğretmeninizin adını, branşını, 1200 TL 4 taksit açıklamasını içeren formu <strong>10 saniyede otomatik oluşturmak</strong> için aşağıdaki 3 adımı yapmanız yeterlidir:
+      </p>
+
+      <div class="space-y-3 bg-amber-50/60 p-4 rounded-xl border border-amber-200 text-xs text-slate-700">
+        <div class="flex items-start gap-2">
+          <span class="bg-amber-600 text-white font-bold rounded-full w-5 h-5 flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
+          <div>
+            Aşağıdaki mavi butona tıklayarak <strong>Google Apps Script</strong> kodunu kopyalayın.
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-amber-600 text-white font-bold rounded-full w-5 h-5 flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
+          <div>
+            Yeni sekmede <a href="https://script.new" target="_blank" class="text-blue-600 underline font-semibold">script.new</a> adresini açın. Karşınıza çıkan sayfadaki mevcut yazıyı silip bu kodu yapıştırın.
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-amber-600 text-white font-bold rounded-full w-5 h-5 flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
+          <div>
+            Üstteki <strong>"Çalıştır" (Run)</strong> butonuna basın (Google ilk seferde izin isteyince 'Gelişmiş -> İzin Ver' deyin).
+            <span class="block text-emerald-700 font-semibold mt-1">✓ Formunuz ve yanıt E-Tablonuz Google Drive'ınızda anında oluşacaktır!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button onclick="copyGoogleScriptCode()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow flex items-center gap-1.5 transition">
+          <span>📋</span>
+          <span>Google Apps Script Kodunu Kopyala</span>
+        </button>
+        <a href="https://script.new" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium px-4 py-2 rounded-lg shadow transition">
+          🚀 script.new Sayfasını Aç &rarr;
+        </a>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-500 mb-1">Kod Önizleme (Otomatik Kopyalanacak Kod):</label>
+        <textarea id="googleScriptCodeArea" readonly class="w-full h-44 bg-slate-900 text-slate-200 font-mono text-[11px] p-3 rounded-lg border border-slate-700 focus:outline-none select-all">/**
+ * OKUL ÇAY OCAĞI KATILIM FORMU OTOMATİK KURULUM KODU
+ * 1. https://script.new adresini açın.
+ * 2. Buradaki kodun tamamını yapıştırıp üstteki "Çalıştır" (Run) butonuna basın.
+ */
+function cayKatilimFormuOlustur() {
+  var formBasligi = "2024-2025 Eğitim-Öğretim Yılı Çay Ocağı Katılım Formu";
+  var aciklama = "Değerli Öğretmenlerimiz,\n\n" +
+    "Yeni eğitim-öğretim yılında çay ocağı / ikram katılım bedeli toplam 1.200 TL olarak belirlenmiştir.\n\n" +
+    "Ödemeler 4 eşit taksit (4 x 300 TL) halinde toplanacaktır:\n" +
+    "• 1. DÖNEM: 1. Taksit (300 TL) & 2. Taksit (300 TL)\n" +
+    "• 2. DÖNEM: 3. Taksit (300 TL) & 4. Taksit (300 TL)\n\n" +
+    "════════════════════════════════════════════\n" +
+    "🔴 ÇOK ÖNEMLİ: ÖDEMELERİNİZİ BANA (IBAN) ATABİLİRSİNİZ\n" +
+    "════════════════════════════════════════════\n" +
+    "Ödemelerinizi elden verebileceğiniz gibi doğrudan aşağıdaki IBAN numarasına Havale/EFT/FAST ile de gönderebilirsiniz:\n\n" +
+    "👤 Alıcı Adı: MÜJDAT TELLİ\n" +
+    "🏦 IBAN: TR830001200986200001021145\n" +
+    "📝 Açıklama: Adınız Soyadınız - Çay Parası\n" +
+    "════════════════════════════════════════════\n\n" +
+    "Planlama yapılabilmesi için lütfen aşağıdaki formu doldurarak katılım durumunuzu belirtiniz.";
+
+  var form = FormApp.create(formBasligi);
+  form.setDescription(aciklama);
+  form.setConfirmationMessage("✅ Katılım tercihiniz kaydedildi!\n\nÖDEMELERİ AŞAĞIDAKİ HESABA ATABİLİRSİNİZ:\nAlıcı: MÜJDAT TELLİ\nIBAN: TR830001200986200001021145\nAçıklama: Ad Soyad - Çay Parası\n\nTeşekkür ederiz!");
+  form.setAllowResponseEdits(true);
+
+  var ogretmenler = [
+    "1 - ABDURRAHİM BÜYÜKDAĞ (Din Kültürü ve Ahlâk Bilgisi)",
+    "2 - ASLI GÜREL (Bilişim Teknolojileri)",
+    "3 - AYÇA ÇIKAR (Elektrik-Elektronik Teknolojisi / Elektronik)",
+    "4 - BESTİ GÜZELSOY (Türk Dili ve Edebiyatı)",
+    "5 - BEYZA YETİK (Matematik)",
+    "6 - BİRGÜL COŞKUN (Bilişim Teknolojileri)",
+    "7 - BİROL ATEŞ (Din Kültürü ve Ahlâk Bilgisi)",
+    "8 - CELAL ATIŞ (Türk Dili ve Edebiyatı)",
+    "9 - CEM KURTOĞLU (Elektrik-Elektronik Teknolojisi / Elektrik)",
+    "10 - DEMET KESEN (Matematik)",
+    "11 - DEMET SAVRUK (Bilişim Teknolojileri)",
+    "12 - DERYA YILDIZ (Fizik)",
+    "13 - DEVRİM YILDIZ (Felsefe)",
+    "14 - DİĞDEM ACAR (Biyoloji)",
+    "15 - DURMUŞ KIZILKAYA (Bilişim Teknolojileri)",
+    "16 - EBRU ELMAS (İngilizce)",
+    "17 - EBRU KÜÇÜKALİ TURGUT (Türk Dili ve Edebiyatı)",
+    "18 - EDİP TAŞDEMİR (Beden Eğitimi)",
+    "19 - ERDİNÇ SİTRAVA (Türk Dili ve Edebiyatı)",
+    "20 - FATMA NUR SIVAR (Rehberlik)",
+    "21 - FEYZULLAH KÖKER (Grafik ve Fotoğraf / Grafik)",
+    "22 - GÖKÇE ŞEN (Özel Eğitim)",
+    "23 - GÖKHAN GÜREL (Bilişim Teknolojileri)",
+    "24 - HALDUN YILDIZ (Tarih)",
+    "25 - HANDAN YASA (Kimya / Kimya Teknolojisi)",
+    "26 - HATİCE AĞAN (Kimya / Kimya Teknolojisi)",
+    "27 - ZEYNEP AYNAS (TARİH)",
+    "28 - İBRAHİM CALAYIR (Bilişim Teknolojileri)",
+    "29 - İLKNUR ÇIRPAN (Bilişim Teknolojileri)",
+    "30 - MAHMUT YAVUZ (Elektrik-Elektronik Teknolojisi / Elektrik)",
+    "31 - MERAL HIZAL (Görsel Sanatlar)",
+    "32 - MERİÇ AKKAYA (Elektrik-Elektronik Teknolojisi / Elektrik)",
+    "33 - MERYEM DEMİRTAŞ (İngilizce)",
+    "34 - MİRAY TEKAY (Türk Dili ve Edebiyatı)",
+    "35 - MUHAMMET ŞEKER (Bilgisayar ve Öğretim Teknolojileri)",
+    "36 - MUHAMMET SERDAR BALIKLI (Beden Eğitimi)",
+    "37 - MURAT KAÇAN (Bilişim Teknolojileri)",
+    "38 - MURAT KANTARCI (Bilişim Teknolojileri)",
+    "39 - MÜJDAT TELLİ (Bilişim Teknolojileri)",
+    "40 - MÜNEVVER ÜNAL ÖTÜKEN (Coğrafya)",
+    "41 - NAGİHAN KOÇ ÇAVUR (Coğrafya)",
+    "42 - NURHAN CAN (Türk Dili ve Edebiyatı)",
+    "43 - RABİA SULTAN ÇELİK (Matematik)",
+    "44 - SERAP KAR ATASEVEN (Türk Dili ve Edebiyatı)",
+    "45 - SERDAR ÇIRPAN (Bilişim Teknolojileri)",
+    "46 - SERHAT ARSLAN (Bilişim Teknolojileri)",
+    "47 - SEVİLAY ARSLAN (Rehberlik)",
+    "48 - SEVİLAY DEVECİ (Elektrik-Elektronik Teknolojisi / Elektronik)",
+    "49 - SİNAN RENÇBEROĞLU (Bilişim Teknolojileri)",
+    "50 - SİNAN CAN YÜCEL (İngilizce)",
+    "51 - SONER TAŞ (Elektrik-Elektronik Teknolojisi / Elektronik)",
+    "52 - ŞAHİN KARAKAŞ (Bilişim Teknolojileri)",
+    "53 - ŞAHİN ORHAN (Bilişim Teknolojileri)",
+    "54 - UĞUR YUSUF SEZER (Matematik)",
+    "55 - ZEHRA GENÇ (Matematik)",
+    "56 - ZEYNEP ÇIBIK (İngilizce)"
+  ];
+
+  var isimSorusu = form.addListItem();
+  isimSorusu.setTitle("Adınız Soyadınız ve Branşınız");
+  isimSorusu.setHelpText("Listeden adınızı seçiniz. Listede adınız yoksa en alttaki seçeneği seçip sonraki soruya adınızı yazınız.");
+  isimSorusu.setRequired(true);
+
+  var secenekler = ogretmenler.map(function(ogr) { return isimSorusu.createChoice(ogr); });
+  secenekler.push(isimSorusu.createChoice("👉 LİSTEDE ADIM YOK (Aşağıdaki kutuya kendim yazacağım)"));
+  isimSorusu.setChoices(secenekler);
+
+  var yeniHocaSorusu = form.addTextItem();
+  yeniHocaSorusu.setTitle("Listede adınız yoksa: Ad Soyad ve Branşınızı buraya yazınız");
+  yeniHocaSorusu.setHelpText("Sadece yukarıdaki listede adını bulamayan öğretmenlerimiz doldurmalıdır.");
+  yeniHocaSorusu.setRequired(false);
+
+  var katilimSorusu = form.addMultipleChoiceItem();
+  katilimSorusu.setTitle("Çay ocağına / servisine katılmak istiyor musunuz?");
+  katilimSorusu.setHelpText("Yıllık ücret 1.200 TL olup, her dönem 2 taksit (toplam 4 x 300 TL) olarak toplanacaktır.");
+  katilimSorusu.setChoices([
+    katilimSorusu.createChoice("☕ EVET, katılmak istiyorum (1.200 TL - 4 Taksit ödemeyi kabul ediyorum)"),
+    katilimSorusu.createChoice("❌ HAYIR, katılmak istemiyorum")
+  ]);
+  katilimSorusu.setRequired(true);
+
+  var notSorusu = form.addParagraphTextItem();
+  notSorusu.setTitle("Varsa eklemek istediğiniz not, öneri veya özel durumunuz");
+  notSorusu.setRequired(false);
+
+  var ss = SpreadsheetApp.create(formBasligi + " (Yanıtlar)");
+  form.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
+
+  Logger.log("FORM OLUŞTURULDU!");
+  Logger.log("WhatsApp Paylaşım Linki: " + form.getPublishedUrl());
+  Logger.log("Düzenleme Linki: " + form.getEditUrl());
+  Logger.log("Yanıt Tablosu: " + ss.getUrl());
+}</textarea>
+      </div>
+
+      <div class="text-right">
+        <button onclick="closeModal('modalGoogleForm')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold px-4 py-2 rounded-lg transition">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 2: FORM YANITLARINI İÇE AKTAR ================= -->
+  <div id="modalImport" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <span>📥</span>
+          <span>Google Form Yanıtlarını İçe Aktar</span>
+        </h2>
+        <button onclick="closeModal('modalImport')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+
+      <p class="text-xs text-slate-600">
+        Google Form'unuza bağlı Google E-Tablo'daki satırları (Ad Soyad ve Katılım Durumu sütunlarını) kopyalayıp aşağıdaki kutuya yapıştırın. Sistem öğretmenlerin durumunu otomatik olarak "Katılıyor" veya "Katılmıyor" yapacaktır:
+      </p>
+
+      <textarea id="importText" rows="6" placeholder="Google E-Tablo'dan kopyaladığınız satırları buraya yapıştırın..." 
+        class="w-full p-3 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"></textarea>
+
+      <div class="flex justify-end space-x-2">
+        <button onclick="closeModal('modalImport')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-lg transition">İptal</button>
+        <button onclick="importGoogleFormResponses()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+          Otomatik Eşleştir & Aktar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 3: GİDER EKLE ================= -->
+  <div id="modalGider" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h2 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <span>🛒</span>
+          <span>Harcama / Fiş Ekle</span>
+        </h2>
+        <button onclick="closeModal('modalGider')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Açıklama (Örn: 5 kg Çay, Şeker, Bardak):</label>
+        <input type="text" id="expDesc" placeholder="Harcama detayı..." class="w-full p-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tutar (TL):</label>
+        <input type="number" id="expAmount" placeholder="Örn: 450" class="w-full p-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tarih:</label>
+        <input type="date" id="expDate" class="w-full p-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500">
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2 border-t">
+        <button onclick="closeModal('modalGider')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg">İptal</button>
+        <button onclick="addExpense()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow">Harcamayı Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 4: YENİ ÖĞRETMEN EKLE ================= -->
+  <div id="modalYeniHoca" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h2 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <span>➕</span>
+          <span>Yeni Öğretmen Ekle</span>
+        </h2>
+        <button onclick="closeModal('modalYeniHoca')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Ad Soyad:</label>
+        <input type="text" id="newTeacherName" placeholder="Örn: AHMET YILMAZ" class="w-full p-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Branş:</label>
+        <input type="text" id="newTeacherBranch" placeholder="Örn: Matematik" class="w-full p-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Katılım Durumu:</label>
+        <select id="newTeacherStatus" class="w-full p-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <option value="katiliyor">☕ Katılıyor (1200 TL)</option>
+          <option value="bekliyor">⏳ Henüz Yanıtlamadı (Bekliyor)</option>
+          <option value="katilmiyor">❌ Katılmıyor</option>
+        </select>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2 border-t">
+        <button onclick="closeModal('modalYeniHoca')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg">İptal</button>
+        <button onclick="addTeacher()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
