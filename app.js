@@ -53,7 +53,7 @@ const DEFAULT_TEACHERS = [
   { id: 51, name: "SONER TAŞ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı (Yeni Öğretmen)" }
@@ -131,7 +131,7 @@ function loadState() {
   setStatus(43, "RABİA SULTAN ÇELİK", "katiliyor", "Formdan katıldı", "Matematik");
   setStatus(21, "FEYZULLAH KÖKER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Grafik ve Fotoğraf / Grafik");
   setStatus(52, "ŞAHİN KARAKAŞ", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
-  setStatus(54, "UĞUR YUSUF SEZER", "katiliyor", "Formdan katıldı", "Matematik");
+  setStatus(54, "UĞUR YUSUF SEZER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Matematik");
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
