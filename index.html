@@ -85,26 +85,42 @@
       <div class="text-slate-500 text-[11px]">Yıllık toplam katılım bedeli <strong>1.200 TL</strong>'dir.</div>
     </div>
 
-    <!-- IBAN ÖDEME BİLGİSİ -->
-    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-500 rounded-2xl p-5 shadow-sm space-y-3">
+    <!-- IBAN & ALICI ADI ÖDEME BİLGİSİ (İKİSİ DE KOPYALANABİLİR) -->
+    <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-500 rounded-2xl p-5 shadow-sm space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-emerald-900 text-xs uppercase tracking-wider">
           <span>💳</span>
           <span>ÖDEMELERİNİZİ BANA (IBAN) ATABİLİRSİNİZ</span>
         </div>
       </div>
-      <div class="text-xs text-slate-700 space-y-1">
-        <div><strong>Alıcı:</strong> <span class="text-slate-900 font-bold">MÜJDAT TELLİ</span></div>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-          <div class="font-mono text-sm font-bold text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-emerald-300 select-all tracking-wide">
-            TR83 0001 2009 8620 0001 0211 45
-          </div>
-          <button type="button" onclick="copyIBAN()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3 py-2 rounded-lg shadow transition flex items-center justify-center gap-1">
-            <span>📋</span>
-            <span>IBAN Kopyala</span>
-          </button>
+
+      <!-- Kopyalanabilir 1: Alıcı Adı -->
+      <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-xl border border-emerald-300 shadow-xs">
+        <div class="text-xs">
+          <span class="text-slate-500 text-[10px] block font-semibold uppercase">Alıcı Adı Soyadı:</span>
+          <span class="font-extrabold text-slate-900 text-sm tracking-wide select-all">MÜJDAT TELLİ</span>
         </div>
-        <div class="text-[11px] text-slate-500 pt-1">📝 Açıklama kısmına <strong>"Ad Soyad - Çay Parası"</strong> yazınız.</div>
+        <button type="button" onclick="copyAccountName()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 active:scale-95">
+          <span>👤</span>
+          <span>Adı Kopyala</span>
+        </button>
+      </div>
+
+      <!-- Kopyalanabilir 2: IBAN Numarası -->
+      <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white rounded-xl border border-emerald-300 shadow-xs">
+        <div class="text-xs">
+          <span class="text-slate-500 text-[10px] block font-semibold uppercase">IBAN Numarası:</span>
+          <span class="font-mono font-extrabold text-slate-900 text-sm tracking-wider select-all">TR83 0001 2009 8620 0001 0211 45</span>
+        </div>
+        <button type="button" onclick="copyIBAN()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5 active:scale-95">
+          <span>📋</span>
+          <span>IBAN Kopyala</span>
+        </button>
+      </div>
+
+      <div class="text-[11px] text-slate-600 flex items-center gap-1 pt-0.5">
+        <span>📝</span>
+        <span>Açıklama kısmına <strong>"Adınız Soyadınız - Çay Parası"</strong> yazmanız yeterlidir.</span>
       </div>
     </div>
 
@@ -306,5 +322,11 @@
       a.classList.toggle('hidden');
     }
   </script>
+
+  <!-- Yüzen Kopyalandı Bildirimi (Toast) -->
+  <div id="toastBox" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white font-semibold text-xs px-5 py-3 rounded-2xl shadow-2xl z-50 flex items-center gap-2 border border-slate-700 pointer-events-none transition-all duration-300 opacity-0 translate-y-4">
+    <span id="toastIcon">✅</span>
+    <span id="toastText">Kopyalandı!</span>
+  </div>
 </body>
 </html>

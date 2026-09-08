@@ -570,7 +570,19 @@ Değerli Öğretmenlerimiz,
 
 // Kolay Bildirim / Toast Gösterici
 function showToast(message) {
-  alert(message);
+  const toast = document.getElementById('toastBox');
+  const toastText = document.getElementById('toastText');
+  if (toast && toastText) {
+    toastText.innerText = message;
+    toast.classList.remove('opacity-0', 'translate-y-4');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    setTimeout(() => {
+      toast.classList.remove('opacity-100', 'translate-y-0');
+      toast.classList.add('opacity-0', 'translate-y-4');
+    }, 2500);
+  } else {
+    alert(message);
+  }
 }
 
 // Arama ve Filtre Event Dinleyicileri
