@@ -11,8 +11,8 @@ const DEFAULT_TEACHERS = [
   { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 10, name: "DEMET KESEN", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 11, name: "DEMET SAVRUK", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 13, name: "DEVRİM YILDIZ", branch: "Felsefe", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 13, name: "DEVRİM YILDIZ", branch: "Felsefe", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 14, name: "DİĞDEM ACAR", branch: "Biyoloji", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 15, name: "DURMUŞ KIZILKAYA", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 16, name: "EBRU ELMAS", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -54,7 +54,7 @@ const DEFAULT_TEACHERS = [
   { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı (Yeni Öğretmen)" }
 ];
@@ -123,6 +123,9 @@ function loadState() {
   setStatus(49, "SİNAN RENÇBEROĞLU", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(9, "CEM KURTOĞLU", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Elektrik-Elektronik Teknolojisi / Elektrik");
   setStatus(57, "SEMA KANDEMİR", "katiliyor", "Formdan katıldı (Yeni Öğretmen)", "Grafik ve Fotoğraf");
+  setStatus(55, "ZEHRA GENÇ", "katiliyor", "Formdan katıldı", "Matematik");
+  setStatus(13, "DEVRİM YILDIZ", "katiliyor", "Formdan katıldı", "Felsefe");
+  setStatus(12, "DERYA YILDIZ", "katiliyor", "Formdan katıldı", "Fizik");
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
@@ -542,8 +545,8 @@ function importGoogleFormResponses() {
   saveState();
 }
 
-// FormSubmit Otomatik Senkronizasyon (API Key İle Tüm Yanıtları Tek Tıkla Çeker)
-async function syncFromFormSubmit(apiKey) {
+// FormSubmit Otomatik Senkronizasyon (API Key İle Tüm Yanıtları Çeker)
+async function syncFromFormSubmit(apiKey, silent = false) {
   if (!apiKey) {
     const inputEl = document.getElementById('apiKeyInput');
     apiKey = inputEl ? inputEl.value.trim() : '';
@@ -552,7 +555,8 @@ async function syncFromFormSubmit(apiKey) {
     apiKey = localStorage.getItem('formsubmit_api_key') || '';
   }
   if (!apiKey) {
-    const promptKey = prompt("Lütfen Gmail kutunuza ('tellimujdat@gmail.com') FormSubmit tarafından gönderilen API Key'i yapıştırınız:");
+    if (silent) return; // Arka planda sessiz çalışırken sorma
+    const promptKey = prompt("Lütfen Gmail kutunuza ('tellimujdat@gmail.com') FormSubmit tarafından gönderilen API Key'i yapıştırınız:\n(Bu işlem bir defalıktır, bir kez girince sistem hep otomatik çeker)");
     if (promptKey && promptKey.trim()) {
       apiKey = promptKey.trim();
     } else {
@@ -560,7 +564,7 @@ async function syncFromFormSubmit(apiKey) {
     }
   }
 
-  showToast("⏳ FormSubmit yanıtları çekiliyor...");
+  if (!silent) showToast("⏳ FormSubmit yanıtları çekiliyor...");
   try {
     const res = await fetch(`https://formsubmit.co/api/get-submissions/${apiKey}`);
     const json = await res.json();
@@ -609,13 +613,15 @@ async function syncFromFormSubmit(apiKey) {
 
       saveState();
       updateDashboard();
-      showToast(`✅ ${guncellenenSayisi} öğretmen yanıtı başarıyla eşitlendi!`);
+      if (!silent) {
+        showToast(`✅ ${guncellenenSayisi} öğretmen yanıtı başarıyla eşitlendi!`);
+      }
     } else {
-      alert("❌ FormSubmit yanıtları alınamadı. Lütfen API Key'inizi kontrol ediniz.");
+      if (!silent) alert("❌ FormSubmit yanıtları alınamadı. Lütfen API Key'inizi kontrol ediniz.");
     }
   } catch (err) {
     console.error("FormSubmit senkronizasyon hatası:", err);
-    alert("❌ Bağlantı hatası: " + err.message);
+    if (!silent) alert("❌ Bağlantı hatası: " + err.message);
   }
 }
 
@@ -740,4 +746,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   updateDashboard();
+
+  // Eğer kayıtlı FormSubmit API Key varsa arka planda sessizce en son formları çekip güncelle
+  const savedApiKey = localStorage.getItem('formsubmit_api_key');
+  if (savedApiKey) {
+    syncFromFormSubmit(savedApiKey, true);
+  }
 });
