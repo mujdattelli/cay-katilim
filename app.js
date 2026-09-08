@@ -18,7 +18,7 @@ const DEFAULT_TEACHERS = [
   { id: 16, name: "EBRU ELMAS", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 17, name: "EBRU KÜÇÜKALİ TURGUT", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 18, name: "EDİP TAŞDEMİR", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 20, name: "FATMA NUR SIVAR", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -99,11 +99,17 @@ function loadState() {
     });
   }
 
-  // Müjdat TELLİ her zaman 'katiliyor' olarak garantilensin
+  // Müjdat TELLİ ve Erdinç SİTRAVA katılım durumları
   const mujdat = state.teachers.find(t => t.id === 39 || (t.name && t.name.includes("MÜJDAT")));
   if (mujdat) {
     mujdat.status = 'katiliyor';
     if (!mujdat.note) mujdat.note = 'Çay Ocağı Sorumlusu';
+  }
+
+  const erdinc = state.teachers.find(t => t.id === 19 || (t.name && t.name.includes("ERDİNÇ SİTRAVA")));
+  if (erdinc && erdinc.status === 'bekliyor') {
+    erdinc.status = 'katiliyor';
+    if (!erdinc.note) erdinc.note = 'Formdan katıldı';
   }
 
   // State alanlarını güvenceye al
@@ -115,17 +121,22 @@ function loadState() {
   saveState();
 }
 
-// Varsayılan Öğretmen Listesini Sıfırla & Yenile
+// Varsayılan Öğretmen Listesini Sıfırla (Fabrika Ayarlarına Dön)
 function resetToDefaults() {
-  if (confirm("Tüm öğretmen listesi baştan yüklenecek (56 öğretmen). Müjdat TELLİ 'Katılıyor' olarak işaretlenecek. Devam edilsin mi?")) {
+  if (confirm("⚠️ DİKKAT: Bu işlem tüm öğretmenlerin yanıtlarını ve ödemelerini sıfırlar.\nSadece fabrika ayarlarına dönmek istiyorsanız 'Tamam'a basınız.")) {
     state.teachers = JSON.parse(JSON.stringify(DEFAULT_TEACHERS));
     const mujdat = state.teachers.find(t => t.id === 39 || (t.name && t.name.includes("MÜJDAT")));
     if (mujdat) {
       mujdat.status = 'katiliyor';
       mujdat.note = 'Çay Ocağı Sorumlusu';
     }
+    const erdinc = state.teachers.find(t => t.id === 19 || (t.name && t.name.includes("ERDİNÇ SİTRAVA")));
+    if (erdinc) {
+      erdinc.status = 'katiliyor';
+      erdinc.note = 'Formdan katıldı';
+    }
     saveState();
-    showToast("✅ Liste 56 öğretmenle başarıyla yenilendi!");
+    showToast("✅ Liste sıfırlandı!");
   }
 }
 
@@ -218,14 +229,14 @@ function renderTable() {
     const odenenTutar = odenenTaksitSayisi * TAKSIT_BEDELI;
     const kalanBorc = t.status === 'katiliyor' ? (1200 - odenenTutar) : 0;
 
-    // Durum Rozeti
+    // Durum Rozeti (Dokunarak Katılıyor / Katılmıyor / Bekliyor Yapılabilir)
     let statusBadge = '';
     if (t.status === 'katiliyor') {
-      statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 cursor-pointer" onclick="cycleStatus(${t.id})" title="Değiştirmek için tıklayın">☕ Katılıyor</span>`;
+      statusBadge = `<button type="button" onclick="cycleStatus(${t.id})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200 active:scale-95 shadow-xs transition cursor-pointer" title="Değiştirmek için dokunun">☕ Katılıyor</button>`;
     } else if (t.status === 'katilmiyor') {
-      statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800 cursor-pointer" onclick="cycleStatus(${t.id})" title="Değiştirmek için tıklayın">❌ Katılmıyor</span>`;
+      statusBadge = `<button type="button" onclick="cycleStatus(${t.id})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-red-800 border border-red-300 hover:bg-red-200 active:scale-95 shadow-xs transition cursor-pointer" title="Değiştirmek için dokunun">❌ Katılmıyor</button>`;
     } else {
-      statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800 cursor-pointer" onclick="cycleStatus(${t.id})" title="Değiştirmek için tıklayın">⏳ Yanıt Bekliyor</span>`;
+      statusBadge = `<button type="button" onclick="cycleStatus(${t.id})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 active:scale-95 shadow-xs transition cursor-pointer" title="Katılıyor yapmak için dokunun"><span>⏳</span><span>Yanıt Bekliyor</span><span class="text-[10px] text-amber-600 underline font-normal ml-0.5">Değiştir</span></button>`;
     }
 
     // Taksit Butonları HTML Helper

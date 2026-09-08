@@ -289,9 +289,20 @@
             <span>📊</span>
             <span>Excel İndir</span>
           </button>
-          <button onclick="resetToDefaults()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold px-3 py-2 rounded-lg transition" title="Varsayılan 56 öğretmeni geri yükler">
-            🔄 Listeyi Yenile
+          <button onclick="resetToDefaults()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition" title="Tüm öğretmen verilerini sıfırlar">
+            ⚙️ Sıfırla
           </button>
+        </div>
+      </div>
+
+      <!-- Kullanım Rehberi / Bilgi Kutusu -->
+      <div class="bg-amber-50 border border-amber-300 rounded-2xl p-4 text-xs text-amber-950 shadow-xs flex items-start gap-3">
+        <span class="text-xl">💡</span>
+        <div class="space-y-1">
+          <div class="font-bold text-amber-900 text-sm">Öğretmen Katılımını Onaylama:</div>
+          <p class="leading-relaxed">
+            Öğretmenlerin form yanıtları anında <strong>Gmail</strong> gelen kutunuza düşer. Tabloda ilgili öğretmenin katılım durumunu güncellemek için adının yanındaki <strong>"Yanıt Bekliyor"</strong> butonuna dokununuz (Tek tıkla yeşil <strong>"☕ Katılıyor"</strong> olur). Taksit ödemesini işaretlemek için de ilgili taksit butonuna dokunabilirsiniz.
+          </p>
         </div>
       </div>
 
@@ -339,7 +350,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260908_6"></script>
+  <script src="app.js?v=20260908_7"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -424,11 +435,18 @@
       }
     }
 
-    // Form gönderildiğinde anlık olarak cihaz hafızasına da kaydet
-    document.getElementById('cayForm').addEventListener('submit', function(e) {
+    // Form gönderildiğinde anlık olarak cihaz hafızasına kaydet ve arka planda ilet
+    document.getElementById('cayForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '☕ Tercihiniz Kaydediliyor...';
+
       const selectedRadio = document.querySelector('input[name="Secilen_Ogretmen"]:checked');
       const statusRadio = document.querySelector('input[name="Katilim_Durumu"]:checked');
       const customInput = document.getElementById('customNameInput');
+      const noteInput = this.querySelector('textarea[name="Ogretmen_Notu"]');
 
       if (selectedRadio && statusRadio) {
         const isKatiliyor = statusRadio.value.includes('EVET');
@@ -442,18 +460,42 @@
             branch: 'Yeni Öğretmen',
             status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
             t1: false, t2: false, t3: false, t4: false,
-            note: 'Formdan eklendi'
+            note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan eklendi'
           });
         } else {
           for (let t of state.teachers) {
             if (selectedRadio.value.includes(t.name)) {
               t.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
+              if (noteInput && noteInput.value.trim()) {
+                t.note = noteInput.value.trim();
+              }
               break;
             }
           }
         }
         saveState();
       }
+
+      // Arka planda FormSubmit ile e-posta gönder
+      const formData = new FormData(this);
+      try {
+        await fetch('https://formsubmit.co/ajax/tellimujdat@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: formData
+        });
+      } catch (err) {
+        console.warn('E-posta bildirim gönderimi:', err);
+      }
+
+      // Başarı ekranına geçir
+      document.getElementById('formSection').classList.add('hidden');
+      document.getElementById('successBanner').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
     });
   </script>
 
