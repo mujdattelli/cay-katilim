@@ -38,7 +38,7 @@ const DEFAULT_TEACHERS = [
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Çay Ocağı Sorumlusu" },
   { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -64,7 +64,7 @@ const TAKSIT_BEDELI = 300; // Her taksit 300 TL (Toplam 1200 TL)
 let state = {
   teachers: [],
   expenses: [],
-  devredenBakiye: 680, // Geçen seneden devreden
+  devredenBakiye: 680,
   filterStatus: 'all',
   searchQuery: ''
 };
@@ -75,8 +75,12 @@ function loadState() {
   if (saved) {
     try {
       state = JSON.parse(saved);
+      // Ensure Müjdat Telli is marked katiliyor if not set
+      const mujdat = state.teachers.find(t => t.id === 39 || t.name.includes("MÜJDAT"));
+      if (mujdat && mujdat.status === 'bekliyor') {
+        mujdat.status = 'katiliyor';
+      }
     } catch (e) {
-      console.error("Kayıtlı veri okunamadı, varsayılanlar yükleniyor", e);
       state.teachers = JSON.parse(JSON.stringify(DEFAULT_TEACHERS));
     }
   } else {
@@ -98,7 +102,6 @@ function updateDashboard() {
   const katilmayanlar = state.teachers.filter(t => t.status === 'katilmiyor');
   const bekleyenler = state.teachers.filter(t => t.status === 'bekliyor');
 
-  // Taksit Tahsilatları
   let t1Toplam = 0, t2Toplam = 0, t3Toplam = 0, t4Toplam = 0;
   katilanlar.forEach(t => {
     if (t.t1) t1Toplam += TAKSIT_BEDELI;
@@ -110,31 +113,32 @@ function updateDashboard() {
   const donem1Toplanan = t1Toplam + t2Toplam;
   const donem2Toplanan = t3Toplam + t4Toplam;
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
-  const beklenenToplamGelir = katilanlar.length * 1200;
-
-  // Harcamalar
   const toplamGider = state.expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const netKasa = (state.devredenBakiye || 0) + toplamToplanan - toplamGider;
 
-  // UI Değerlerini Bas
-  document.getElementById('statKatilanSayisi').innerText = katilanlar.length;
-  document.getElementById('statToplamKisi').innerText = state.teachers.length;
-  document.getElementById('statKatilmayanSayisi').innerText = katilmayanlar.length;
-  document.getElementById('statBekleyenSayisi').innerText = bekleyenler.length;
+  // DOM güvenli güncellemeler (Hata vermez)
+  const setTxt = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = val;
+  };
 
-  document.getElementById('statDonem1Toplanan').innerText = donem1Toplanan.toLocaleString('tr-TR') + ' ₺';
-  document.getElementById('statDonem1Hedef').innerText = (katilanlar.length * 600).toLocaleString('tr-TR') + ' ₺';
-
-  document.getElementById('statDonem2Toplanan').innerText = donem2Toplanan.toLocaleString('tr-TR') + ' ₺';
-  document.getElementById('statDonem2Hedef').innerText = (katilanlar.length * 600).toLocaleString('tr-TR') + ' ₺';
-
-  document.getElementById('statToplamToplanan').innerText = toplamToplanan.toLocaleString('tr-TR') + ' ₺';
-  document.getElementById('statToplamGider').innerText = toplamGider.toLocaleString('tr-TR') + ' ₺';
-  document.getElementById('statDevreden').innerText = (state.devredenBakiye || 0).toLocaleString('tr-TR') + ' ₺';
+  setTxt('statKatilanSayisi', katilanlar.length);
+  setTxt('statToplamKisi', state.teachers.length);
+  setTxt('statKatilmayanSayisi', katilmayanlar.length);
+  setTxt('statBekleyenSayisi', bekleyenler.length);
+  setTxt('statDonem1Toplanan', donem1Toplanan.toLocaleString('tr-TR') + ' ₺');
+  setTxt('statDonem1Hedef', (katilanlar.length * 600).toLocaleString('tr-TR') + ' ₺');
+  setTxt('statDonem2Toplanan', donem2Toplanan.toLocaleString('tr-TR') + ' ₺');
+  setTxt('statDonem2Hedef', (katilanlar.length * 600).toLocaleString('tr-TR') + ' ₺');
+  setTxt('statToplamToplanan', toplamToplanan.toLocaleString('tr-TR') + ' ₺');
+  setTxt('statToplamGider', toplamGider.toLocaleString('tr-TR') + ' ₺');
+  setTxt('statDevreden', (state.devredenBakiye || 0).toLocaleString('tr-TR') + ' ₺');
   
   const netKasaEl = document.getElementById('statNetKasa');
-  netKasaEl.innerText = netKasa.toLocaleString('tr-TR') + ' ₺';
-  netKasaEl.className = netKasa >= 0 ? 'text-2xl font-bold text-emerald-600' : 'text-2xl font-bold text-red-600';
+  if (netKasaEl) {
+    netKasaEl.innerText = netKasa.toLocaleString('tr-TR') + ' ₺';
+    netKasaEl.className = netKasa >= 0 ? 'text-xl font-bold text-emerald-600' : 'text-xl font-bold text-red-600';
+  }
 
   renderTable();
   renderExpenses();

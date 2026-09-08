@@ -22,11 +22,23 @@
     <p class="text-sm text-emerald-800">
       Bilgileriniz <strong>Müjdat TELLİ</strong>'ye iletildi. Katılımınız için teşekkür ederiz.
     </p>
-    <div class="bg-white p-4 rounded-xl border border-emerald-300 text-left text-xs text-slate-800 space-y-1 mt-2">
+    <div class="bg-white p-4 rounded-xl border border-emerald-300 text-left text-xs text-slate-800 space-y-2.5 mt-2">
       <div class="font-bold text-slate-900 text-sm">💳 ÖDEME BİLGİSİ (IBAN)</div>
-      <div><strong>Alıcı:</strong> MÜJDAT TELLİ</div>
-      <div><strong>IBAN:</strong> <span class="font-mono font-bold select-all bg-emerald-100 px-1 py-0.5 rounded">TR830001200986200001021145</span></div>
-      <div><strong>Açıklama:</strong> Adınız Soyadınız - Çay Parası</div>
+      <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+        <div><strong>Alıcı:</strong> <span class="select-all font-bold text-slate-900">MÜJDAT TELLİ</span></div>
+        <button type="button" onclick="copyAccountName()" class="bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+          <span>👤</span>
+          <span>Adı Kopyala</span>
+        </button>
+      </div>
+      <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+        <div><strong>IBAN:</strong> <span class="font-mono font-bold select-all text-emerald-700">TR83 0001 2009 8620 0001 0211 45</span></div>
+        <button type="button" onclick="copyIBAN()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+          <span>📋</span>
+          <span>IBAN Kopyala</span>
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-500">📝 Açıklama kısmına: <strong>"Adınız Soyadınız - Çay Parası"</strong> yazınız.</div>
     </div>
     <button onclick="window.location.href='index.html'" class="mt-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2.5 rounded-lg transition">
       Forma Geri Dön
@@ -316,11 +328,57 @@
     renderTeacherRadios();
 
     function toggleAdminView() {
-      const f = document.getElementById('formSection');
       const a = document.getElementById('adminSection');
+      const f = document.getElementById('formSection');
+      const s = document.getElementById('successBanner');
+
+      if (a.classList.contains('hidden')) {
+        const pin = prompt("🔐 Müjdat Hoca Yönetici Şifresini Giriniz:");
+        if (pin !== "2026") {
+          alert("❌ Hatalı şifre! Bu takip paneli yalnızca çay ocağı sorumlusuna (Müjdat TELLİ) özeldir.");
+          return;
+        }
+      }
+
       f.classList.toggle('hidden');
       a.classList.toggle('hidden');
+      if (s) s.classList.add('hidden');
+
+      loadState();
+      updateDashboard();
     }
+
+    // Form gönderildiğinde anlık olarak cihaz hafızasına da kaydet
+    document.getElementById('cayForm').addEventListener('submit', function(e) {
+      const selectedRadio = document.querySelector('input[name="Secilen_Ogretmen"]:checked');
+      const statusRadio = document.querySelector('input[name="Katilim_Durumu"]:checked');
+      const customInput = document.getElementById('customNameInput');
+
+      if (selectedRadio && statusRadio) {
+        const isKatiliyor = statusRadio.value.includes('EVET');
+        loadState();
+
+        if (selectedRadio.value.includes('LİSTEDE ADIM YOK') && customInput && customInput.value.trim()) {
+          const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
+          state.teachers.push({
+            id: nextId,
+            name: customInput.value.trim().toUpperCase('tr'),
+            branch: 'Yeni Öğretmen',
+            status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
+            t1: false, t2: false, t3: false, t4: false,
+            note: 'Formdan eklendi'
+          });
+        } else {
+          for (let t of state.teachers) {
+            if (selectedRadio.value.includes(t.name)) {
+              t.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
+              break;
+            }
+          }
+        }
+        saveState();
+      }
+    });
   </script>
 
   <!-- Yüzen Kopyalandı Bildirimi (Toast) -->
