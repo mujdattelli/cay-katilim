@@ -540,6 +540,83 @@ function importGoogleFormResponses() {
   saveState();
 }
 
+// FormSubmit Otomatik Senkronizasyon (API Key İle Tüm Yanıtları Tek Tıkla Çeker)
+async function syncFromFormSubmit(apiKey) {
+  if (!apiKey) {
+    const inputEl = document.getElementById('apiKeyInput');
+    apiKey = inputEl ? inputEl.value.trim() : '';
+  }
+  if (!apiKey) {
+    apiKey = localStorage.getItem('formsubmit_api_key') || '';
+  }
+  if (!apiKey) {
+    const promptKey = prompt("Lütfen Gmail kutunuza ('tellimujdat@gmail.com') FormSubmit tarafından gönderilen API Key'i yapıştırınız:");
+    if (promptKey && promptKey.trim()) {
+      apiKey = promptKey.trim();
+    } else {
+      return;
+    }
+  }
+
+  showToast("⏳ FormSubmit yanıtları çekiliyor...");
+  try {
+    const res = await fetch(`https://formsubmit.co/api/get-submissions/${apiKey}`);
+    const json = await res.json();
+    if (json && json.success && Array.isArray(json.submissions)) {
+      localStorage.setItem('formsubmit_api_key', apiKey);
+      loadState();
+
+      let guncellenenSayisi = 0;
+      json.submissions.forEach(sub => {
+        const d = sub.form_data || {};
+        const secilen = d.Secilen_Ogretmen || '';
+        const durum = d.Katilim_Durumu || '';
+        const yeniOgretmen = d.Yeni_Ogretmen_Bilgisi || '';
+        const not = d.Ogretmen_Notu || '';
+        const isKatiliyor = durum.includes('EVET');
+
+        if (secilen.includes('LİSTEDE ADIM YOK') && yeniOgretmen && yeniOgretmen.trim()) {
+          const uName = yeniOgretmen.trim().toUpperCase('tr');
+          const existing = state.teachers.find(t => t.name.toUpperCase('tr') === uName);
+          if (existing) {
+            existing.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
+            if (not) existing.note = not;
+          } else {
+            const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
+            state.teachers.push({
+              id: nextId,
+              name: uName,
+              branch: 'Yeni Öğretmen',
+              status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
+              t1: false, t2: false, t3: false, t4: false,
+              note: not || 'Formdan eklendi'
+            });
+          }
+          guncellenenSayisi++;
+        } else if (secilen) {
+          for (let t of state.teachers) {
+            if (secilen.includes(t.name)) {
+              t.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
+              if (not) t.note = not;
+              guncellenenSayisi++;
+              break;
+            }
+          }
+        }
+      });
+
+      saveState();
+      updateDashboard();
+      showToast(`✅ ${guncellenenSayisi} öğretmen yanıtı başarıyla eşitlendi!`);
+    } else {
+      alert("❌ FormSubmit yanıtları alınamadı. Lütfen API Key'inizi kontrol ediniz.");
+    }
+  } catch (err) {
+    console.error("FormSubmit senkronizasyon hatası:", err);
+    alert("❌ Bağlantı hatası: " + err.message);
+  }
+}
+
 // Excel / CSV Olarak İndir
 function exportToCSV() {
   let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem T1 (300 TL);1.Dönem T2 (300 TL);2.Dönem T3 (300 TL);2.Dönem T4 (300 TL);Toplam Ödenen;Kalan Borç;Not\n";

@@ -306,6 +306,23 @@
         </div>
       </div>
 
+      <!-- Otomatik Form Yanıtlarını Çekme Çubuğu -->
+      <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div class="text-xs text-indigo-950">
+          <span class="font-bold flex items-center gap-1.5 text-indigo-900">
+            <span>⚡</span>
+            <span>Tüm Form Yanıtlarını Otomatik Çek</span>
+          </span>
+          <span class="text-[11px] text-slate-600 block mt-0.5">
+            Gmail'inize FormSubmit'ten gelen tek seferlik <strong>API Key</strong> ile tüm öğretmen yanıtlarını tek tıkla otomatik içeri aktarır.
+          </span>
+        </div>
+        <button type="button" onclick="syncFromFormSubmit()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+          <span>🔄</span>
+          <span>Yanıtları Otomatik Eşitle</span>
+        </button>
+      </div>
+
       <!-- Tablo -->
       <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto shadow-xs">
         <table class="w-full text-left text-xs">
@@ -350,7 +367,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260908_7"></script>
+  <script src="app.js?v=20260908_8"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
