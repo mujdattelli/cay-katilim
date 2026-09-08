@@ -41,9 +41,9 @@ const DEFAULT_TEACHERS = [
   { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Çay Ocağı Sorumlusu" },
   { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 45, name: "SERDAR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -120,6 +120,8 @@ function loadState() {
 
   setStatus(39, "MÜJDAT TELLİ", "katiliyor", "Çay Ocağı Sorumlusu", "Bilişim Teknolojileri");
   setStatus(19, "ERDİNÇ SİTRAVA", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
+  setStatus(44, "SERAP KAR ATASEVEN", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
+  setStatus(42, "NURHAN CAN", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
   setStatus(49, "SİNAN RENÇBEROĞLU", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(9, "CEM KURTOĞLU", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Elektrik-Elektronik Teknolojisi / Elektrik");
   setStatus(57, "SEMA KANDEMİR", "katiliyor", "Formdan katıldı (Yeni Öğretmen)", "Grafik ve Fotoğraf");
