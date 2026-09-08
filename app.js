@@ -547,6 +547,70 @@ function importGoogleFormResponses() {
   saveState();
 }
 
+// Ortak Bulut Veritabanı URL (Herkesin Yanıtlarının Buluştuğu Merkezi Depo)
+const CLOUD_DB_URL = 'https://api.restful-api.dev/objects/ff808181a067127101a080f9bb33499e';
+
+// Bulut Veritabanı Otomatik Senkronizasyon (Tam Otomatik & Sıfır Zahmet)
+async function fetchFromCloudSync(silent = true) {
+  if (!silent) showToast("⏳ Bulut veritabanından yanıtlar eşitleniyor...");
+  try {
+    const res = await fetch(CLOUD_DB_URL);
+    if (!res.ok) return;
+    const json = await res.json();
+    if (!json || !json.data) return;
+
+    let updatedCount = 0;
+    for (const [key, val] of Object.entries(json.data)) {
+      const parts = String(val).split('|');
+      const status = parts[0];
+      const note = parts[1] || '';
+      const customName = parts[2] || '';
+      const customBranch = parts[3] || 'Yeni Öğretmen';
+
+      let teacher = null;
+      if (!isNaN(key) && Number(key) > 0) {
+        teacher = state.teachers.find(t => t.id === Number(key));
+      }
+      if (!teacher && customName) {
+        teacher = state.teachers.find(t => t.name.toUpperCase('tr') === customName.toUpperCase('tr'));
+      }
+      if (!teacher && isNaN(key)) {
+        teacher = state.teachers.find(t => t.name.toUpperCase('tr') === key.toUpperCase('tr'));
+      }
+
+      if (teacher) {
+        if (teacher.status !== status || (note && teacher.note !== note)) {
+          teacher.status = status;
+          if (note) teacher.note = note;
+          updatedCount++;
+        }
+      } else {
+        const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
+        state.teachers.push({
+          id: nextId,
+          name: (customName || key).toUpperCase('tr'),
+          branch: customBranch,
+          status: status,
+          t1: false, t2: false, t3: false, t4: false,
+          note: note || 'Formdan eklendi'
+        });
+        updatedCount++;
+      }
+    }
+
+    if (updatedCount > 0) {
+      saveState();
+      updateDashboard();
+      if (!silent) showToast(`✅ Buluttan ${updatedCount} öğretmen yanıtı güncellendi!`);
+    } else {
+      if (!silent) showToast("✅ Liste zaten en güncel durumda.");
+    }
+  } catch (err) {
+    console.warn("Bulut senkronizasyon hatası:", err);
+    if (!silent) alert("Bulut bağlantı hatası: " + err.message);
+  }
+}
+
 // FormSubmit Otomatik Senkronizasyon (API Key İle Tüm Yanıtları Çeker)
 async function syncFromFormSubmit(apiKey, silent = false) {
   if (!apiKey) {
@@ -749,7 +813,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateDashboard();
 
-  // Eğer kayıtlı FormSubmit API Key varsa arka planda sessizce en son formları çekip güncelle
+  // 1. Ortak Bulut Veritabanından yanıtları anında çek
+  fetchFromCloudSync(true);
+
+  // 2. Her 15 saniyede bir yeni form yanıtı gelmiş mi diye kontrol et
+  setInterval(() => {
+    fetchFromCloudSync(true);
+  }, 15000);
+
+  // Eğer kayıtlı FormSubmit API Key varsa arka planda onu da çalıştır
   const savedApiKey = localStorage.getItem('formsubmit_api_key');
   if (savedApiKey) {
     syncFromFormSubmit(savedApiKey, true);

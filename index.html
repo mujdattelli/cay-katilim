@@ -307,19 +307,19 @@
       </div>
 
       <!-- Otomatik Form Yanıtlarını Çekme Çubuğu -->
-      <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-        <div class="text-xs text-indigo-950">
-          <span class="font-bold flex items-center gap-1.5 text-indigo-900">
-            <span>⚡</span>
-            <span>Tüm Form Yanıtlarını Otomatik Çek</span>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div class="text-xs text-emerald-950">
+          <span class="font-bold flex items-center gap-1.5 text-emerald-900">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Canlı Bulut Veritabanı Aktif</span>
           </span>
           <span class="text-[11px] text-slate-600 block mt-0.5">
-            Gmail'inize FormSubmit'ten gelen tek seferlik <strong>API Key</strong> ile tüm öğretmen yanıtlarını tek tıkla otomatik içeri aktarır.
+            Öğretmenler formu doldurdukça buraya anında düşer. Sayfa her 15 saniyede bir kendini otomatik günceller.
           </span>
         </div>
-        <button type="button" onclick="syncFromFormSubmit()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
+        <button type="button" onclick="fetchFromCloudSync(false)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer">
           <span>🔄</span>
-          <span>Yanıtları Otomatik Eşitle</span>
+          <span>Yanıtları Şimdi Eşitle</span>
         </button>
       </div>
 
@@ -367,7 +367,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260908_12"></script>
+  <script src="app.js?v=20260908_13"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -391,7 +391,7 @@
         const label = document.createElement('label');
         label.className = 'flex items-center p-2 rounded-lg hover:bg-amber-50/60 cursor-pointer transition border border-transparent hover:border-amber-200';
         label.innerHTML = `
-          <input type="radio" name="Secilen_Ogretmen" value="${t.id} - ${t.name} (${t.branch})" required class="w-4 h-4 text-amber-600 focus:ring-amber-500" onchange="handleTeacherSelect(false)">
+          <input type="radio" name="Secilen_Ogretmen" value="${t.id} - ${t.name} (${t.branch})" data-id="${t.id}" required class="w-4 h-4 text-amber-600 focus:ring-amber-500" onchange="handleTeacherSelect(false)">
           <span class="ml-2.5 text-xs text-slate-800">
             <span class="font-bold">${t.name}</span> 
             <span class="text-slate-400 text-[11px]">— ${t.branch}</span>
@@ -491,6 +491,38 @@
           }
         }
         saveState();
+
+        // Ortak Bulut Veritabanına Anlık Kaydet (Herkesin Gördüğü Canlı Havuz)
+        try {
+          const cloudDbUrl = 'https://api.restful-api.dev/objects/ff808181a067127101a080f9bb33499e';
+          const cloudRes = await fetch(cloudDbUrl);
+          if (cloudRes.ok) {
+            const cloudJson = await cloudRes.json();
+            const cloudData = cloudJson.data || {};
+            let teacherKey = selectedRadio.getAttribute('data-id');
+            let noteVal = noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı';
+            let valStr = (isKatiliyor ? 'katiliyor' : 'katilmiyor') + '|' + noteVal;
+
+            if (selectedRadio.value.includes('LİSTEDE ADIM YOK') && customInput && customInput.value.trim()) {
+              teacherKey = customInput.value.trim().toUpperCase('tr');
+              valStr += '|' + customInput.value.trim().toUpperCase('tr') + '|Yeni Öğretmen';
+            }
+
+            if (teacherKey) {
+              cloudData[String(teacherKey)] = valStr;
+              await fetch(cloudDbUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: 'cay_takip_sync_2026',
+                  data: cloudData
+                })
+              });
+            }
+          }
+        } catch (cloudErr) {
+          console.warn('Bulut senkronizasyon hatası:', cloudErr);
+        }
       }
 
       // Arka planda FormSubmit ile e-posta gönder
