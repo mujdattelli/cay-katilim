@@ -20,7 +20,7 @@ const DEFAULT_TEACHERS = [
   { id: 18, name: "EDİP TAŞDEMİR", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 20, name: "FATMA NUR SIVAR", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 23, name: "GÖKHAN GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 24, name: "HALDUN YILDIZ", branch: "Tarih", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "Dışarı tüp alıyor" },
@@ -129,6 +129,7 @@ function loadState() {
   setStatus(13, "DEVRİM YILDIZ", "katiliyor", "Formdan katıldı", "Felsefe");
   setStatus(12, "DERYA YILDIZ", "katiliyor", "Formdan katıldı", "Fizik");
   setStatus(43, "RABİA SULTAN ÇELİK", "katiliyor", "Formdan katıldı", "Matematik");
+  setStatus(21, "FEYZULLAH KÖKER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Grafik ve Fotoğraf / Grafik");
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
@@ -555,7 +556,7 @@ const CLOUD_DB_URL = 'https://api.restful-api.dev/objects/ff808181a067127101a080
 async function fetchFromCloudSync(silent = true) {
   if (!silent) showToast("⏳ Bulut veritabanından yanıtlar eşitleniyor...");
   try {
-    const res = await fetch(CLOUD_DB_URL);
+    const res = await fetch(CLOUD_DB_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     const json = await res.json();
     if (!json || !json.data) return;
@@ -817,10 +818,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Ortak Bulut Veritabanından yanıtları anında çek
   fetchFromCloudSync(true);
 
-  // 2. Her 15 saniyede bir yeni form yanıtı gelmiş mi diye kontrol et
+  // 2. Her 10 saniyede bir yeni form yanıtı gelmiş mi diye kontrol et
   setInterval(() => {
     fetchFromCloudSync(true);
-  }, 15000);
+  }, 10000);
+
+  // 3. Kullanıcı telefondan ekrana her döndüğünde veya ekran kilidini açtığında anında buluttan çek
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      fetchFromCloudSync(true);
+    }
+  });
+  window.addEventListener('focus', () => {
+    fetchFromCloudSync(true);
+  });
 
   // Eğer kayıtlı FormSubmit API Key varsa arka planda onu da çalıştır
   const savedApiKey = localStorage.getItem('formsubmit_api_key');

@@ -367,7 +367,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260908_14"></script>
+  <script src="app.js?v=20260908_15"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -445,6 +445,9 @@
         if (s) s.classList.add('hidden');
         loadState();
         updateDashboard();
+        if (typeof fetchFromCloudSync === 'function') {
+          fetchFromCloudSync(true);
+        }
       } else {
         a.classList.add('hidden');
         if (f) f.classList.remove('hidden');
@@ -495,7 +498,7 @@
         // Ortak Bulut Veritabanına Anlık Kaydet (Herkesin Gördüğü Canlı Havuz)
         try {
           const cloudDbUrl = 'https://api.restful-api.dev/objects/ff808181a067127101a080f9bb33499e';
-          const cloudRes = await fetch(cloudDbUrl);
+          const cloudRes = await fetch(cloudDbUrl + '?t=' + Date.now(), { cache: 'no-store' });
           if (cloudRes.ok) {
             const cloudJson = await cloudRes.json();
             const cloudData = cloudJson.data || {};
