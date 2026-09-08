@@ -367,7 +367,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260908_15"></script>
+  <script src="app.js?v=20260908_16"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -503,6 +503,19 @@
             const cloudJson = await cloudRes.json();
             const cloudData = cloudJson.data || {};
             let teacherKey = selectedRadio.getAttribute('data-id');
+            if (!teacherKey && selectedRadio.value) {
+              const m = selectedRadio.value.match(/^(\d+)\s*-/);
+              if (m) teacherKey = m[1];
+            }
+            if (!teacherKey && selectedRadio.value && typeof DEFAULT_TEACHERS !== 'undefined') {
+              for (let t of DEFAULT_TEACHERS) {
+                if (selectedRadio.value.includes(t.name)) {
+                  teacherKey = String(t.id);
+                  break;
+                }
+              }
+            }
+
             let noteVal = noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı';
             let valStr = (isKatiliyor ? 'katiliyor' : 'katilmiyor') + '|' + noteVal;
 
