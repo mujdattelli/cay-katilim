@@ -45,7 +45,7 @@ const DEFAULT_TEACHERS = [
   { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 45, name: "SERDAR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
@@ -132,6 +132,7 @@ function loadState() {
   setStatus(21, "FEYZULLAH KÖKER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Grafik ve Fotoğraf / Grafik");
   setStatus(52, "ŞAHİN KARAKAŞ", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(54, "UĞUR YUSUF SEZER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Matematik");
+  setStatus(46, "SERHAT ARSLAN", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
@@ -551,14 +552,24 @@ function importGoogleFormResponses() {
   saveState();
 }
 
-// Ortak Bulut Veritabanı URL (Herkesin Yanıtlarının Buluştuğu Merkezi Depo)
-const CLOUD_DB_URL = 'https://api.restful-api.dev/objects/ff808181a067127101a080f9bb33499e';
-
-// Bulut Veritabanı Otomatik Senkronizasyon (Tam Otomatik & Sıfır Zahmet)
+// Bulut Senkronizasyon (Google E-Tablo / Web App Bağlantısı)
 async function fetchFromCloudSync(silent = true) {
+  const cloudUrl = localStorage.getItem('google_script_url');
+  if (!cloudUrl) {
+    if (!silent) {
+      const ask = prompt("Google E-Tablo / Apps Script Web App bağlantı URL'nizi giriniz:\n(Otomatik 20.000 istek/gün kotası sağlar)");
+      if (ask && ask.trim().startsWith('http')) {
+        localStorage.setItem('google_script_url', ask.trim());
+        showToast("✅ Bulut bağlantı adresi kaydedildi!");
+        fetchFromCloudSync(false);
+      }
+    }
+    return;
+  }
+
   if (!silent) showToast("⏳ Bulut veritabanından yanıtlar eşitleniyor...");
   try {
-    const res = await fetch(CLOUD_DB_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    const res = await fetch(cloudUrl + (cloudUrl.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return;
     const json = await res.json();
     if (!json || !json.data) return;
@@ -726,6 +737,21 @@ function closeModal(id) {
   document.getElementById(id).classList.add('hidden');
 }
 
+// Google Apps Script URL Kaydet
+function saveGoogleScriptUrl() {
+  const el = document.getElementById('googleScriptUrlInput');
+  if (el && el.value.trim()) {
+    localStorage.setItem('google_script_url', el.value.trim());
+    showToast("✅ Google E-Tablo Web App URL'si kaydedildi!");
+    closeModal('modalCloudConfig');
+    fetchFromCloudSync(false);
+  } else {
+    localStorage.removeItem('google_script_url');
+    showToast("Bağlantı temizlendi.");
+    closeModal('modalCloudConfig');
+  }
+}
+
 // Kodu Panoya Kopyala
 function copyGoogleScriptCode() {
   const codeEl = document.getElementById('googleScriptCodeArea');
@@ -819,15 +845,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateDashboard();
 
-  // 1. Ortak Bulut Veritabanından yanıtları anında çek
+  // 1. Ortak Bulut Veritabanından yanıtları çek (varsa)
   fetchFromCloudSync(true);
 
-  // 2. Her 10 saniyede bir yeni form yanıtı gelmiş mi diye kontrol et
-  setInterval(() => {
-    fetchFromCloudSync(true);
-  }, 10000);
-
-  // 3. Kullanıcı telefondan ekrana her döndüğünde veya ekran kilidini açtığında anında buluttan çek
+  // 2. Kullanıcı telefondan ekrana her döndüğünde veya ekran kilidini açtığında kontrol et
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       fetchFromCloudSync(true);
