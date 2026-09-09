@@ -65,7 +65,7 @@ const TAKSIT_BEDELI = 300; // Her taksit 300 TL (Toplam 1200 TL)
 let state = {
   teachers: [],
   expenses: [],
-  devredenBakiye: 680,
+  devredenBakiye: 0,
   filterStatus: 'all',
   searchQuery: ''
 };
@@ -86,7 +86,7 @@ function loadState() {
     state = {
       teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
       expenses: (state && state.expenses) || [],
-      devredenBakiye: (state && state.devredenBakiye !== undefined) ? state.devredenBakiye : 680,
+      devredenBakiye: 0,
       filterStatus: 'all',
       searchQuery: ''
     };
@@ -136,7 +136,7 @@ function loadState() {
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
-  if (state.devredenBakiye === undefined) state.devredenBakiye = 680;
+  state.devredenBakiye = 0;
   if (!state.filterStatus) state.filterStatus = 'all';
   if (!state.searchQuery) state.searchQuery = '';
 
@@ -189,7 +189,7 @@ function updateDashboard() {
   const donem2Toplanan = t3Toplam + t4Toplam;
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
   const toplamGider = state.expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-  const netKasa = (state.devredenBakiye || 0) + toplamToplanan - toplamGider;
+  const netKasa = toplamToplanan - toplamGider;
 
   // DOM güvenli güncellemeler (Hata vermez)
   const setTxt = (id, val) => {
