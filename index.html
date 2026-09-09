@@ -281,6 +281,10 @@
           </select>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          <button onclick="manualRefreshList()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer" title="Listeyi ve durumları hemen yenile">
+            <span>🔄</span>
+            <span>Listeyi Yenile</span>
+          </button>
           <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1">
             <span>🖨️</span>
             <span>Panoya Yazdır (A4)</span>
@@ -310,21 +314,25 @@
       <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div class="text-xs text-emerald-950">
           <span class="font-bold flex items-center gap-1.5 text-emerald-900">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Canlı Takip & Anlık Güncelleme</span>
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>Katılım & Ödeme Takip Paneli</span>
           </span>
           <span class="text-[11px] text-slate-600 block mt-0.5">
-            Öğretmen durumunu değiştirmek için listedeki <strong>"Yanıt Bekliyor"</strong> butonuna dokunabilirsiniz.
+            İstediğiniz zaman <strong>"Listeyi Yenile"</strong> butonuna basarak güncel durumu görebilirsiniz.
           </span>
         </div>
         <div class="flex items-center gap-2">
+          <button type="button" onclick="manualRefreshList()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer" title="Listeyi Yenile">
+            <span>🔄</span>
+            <span>Listeyi Yenile</span>
+          </button>
           <button type="button" onclick="openModal('modalImport')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-xs cursor-pointer">
             <span>📋</span>
             <span>Hızlı Yanıt Yapıştır</span>
           </button>
-          <button type="button" onclick="openModal('modalCloudConfig')" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-xs cursor-pointer">
+          <button type="button" onclick="openModal('modalCloudConfig')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-xs cursor-pointer">
             <span>☁️</span>
-            <span>E-Tablo Bulut Ayarı</span>
+            <span>E-Tablo Ayarı</span>
           </button>
         </div>
       </div>
@@ -373,7 +381,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260909_30"></script>
+  <script src="app.js?v=20260909_40"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {

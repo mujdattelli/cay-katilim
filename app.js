@@ -143,6 +143,19 @@ function loadState() {
   saveState();
 }
 
+// Listeyi ve Durumları Manuel Yenile
+function manualRefreshList() {
+  loadState();
+  updateDashboard();
+  renderTable();
+  const cloudUrl = localStorage.getItem('google_script_url');
+  if (cloudUrl && typeof fetchFromCloudSync === 'function') {
+    fetchFromCloudSync(false);
+  } else {
+    showToast("🔄 Liste ve durumlar başarıyla yenilendi!");
+  }
+}
+
 // Varsayılan Öğretmen Listesini Sıfırla (Fabrika Ayarlarına Dön)
 function resetToDefaults() {
   if (confirm("⚠️ DİKKAT: Bu işlem tüm öğretmenlerin yanıtlarını ve ödemelerini sıfırlar.\nSadece fabrika ayarlarına dönmek istiyorsanız 'Tamam'a basınız.")) {
@@ -845,18 +858,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateDashboard();
 
-  // 1. Ortak Bulut Veritabanından yanıtları çek (varsa)
+  // 1. Ortak Bulut Veritabanından yanıtları ilk açılışta çek (varsa)
   fetchFromCloudSync(true);
-
-  // 2. Kullanıcı telefondan ekrana her döndüğünde veya ekran kilidini açtığında kontrol et
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      fetchFromCloudSync(true);
-    }
-  });
-  window.addEventListener('focus', () => {
-    fetchFromCloudSync(true);
-  });
 
   // Eğer kayıtlı FormSubmit API Key varsa arka planda onu da çalıştır
   const savedApiKey = localStorage.getItem('formsubmit_api_key');
