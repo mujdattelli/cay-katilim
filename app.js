@@ -170,7 +170,7 @@ function updateDashboard() {
   const donem1Toplanan = t1Toplam + t2Toplam;
   const donem2Toplanan = t3Toplam + t4Toplam;
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
-  const toplamGider = state.expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const toplamGider = (state.expenses || []).reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const netKasa = toplamToplanan - toplamGider;
 
   // DOM güvenli güncellemeler (Hata vermez)
@@ -369,58 +369,313 @@ function toggleTaksit(id, field) {
   saveState();
 }
 
-// Harcamaları Listele
+// ================= HARCAMA & FATURA YÖNETİMİ =================
+let currentExpenseReceiptImg = null;
+
+// Fatura ve Harcamaları Listele
 function renderExpenses() {
-  const container = document.getElementById('expenseList');
-  if (!container) return;
-  container.innerHTML = '';
+  const tbody = document.getElementById('expenseTableBody');
+  const footerTotal = document.getElementById('expenseTableFooterTotal');
+  const badgeTotal = document.getElementById('statExpenseTotalBadge');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!state.expenses) state.expenses = [];
+
+  // Toplam Tutar ve Sayaçları Hesapla
+  let totalGider = 0;
+  let totalCayCount = 0;
+  let totalSekerCount = 0;
+  let totalDeterjanCount = 0;
+  let totalBardakCount = 0;
+
+  const cayItems = [];
+  const sekerItems = [];
+  const deterjanItems = [];
+  const bardakItems = [];
 
   if (state.expenses.length === 0) {
-    container.innerHTML = '<p class="text-xs text-gray-400 py-3 text-center">Henüz harcama / gider kaydı girilmedi.</p>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center py-6 text-slate-400 text-xs">
+          Henüz fatura veya harcama kaydı girilmedi. Aşağıdaki "➕ Yeni Fatura Ekle" butonuna basarak ilk harcamanızı girebilirsiniz.
+        </td>
+      </tr>
+    `;
+    if (footerTotal) footerTotal.innerText = '0 ₺';
+    if (badgeTotal) badgeTotal.innerText = '0 ₺';
+    const setEl = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+    setEl('statTotalCay', '0');
+    setEl('statTotalSeker', '0');
+    setEl('statTotalDeterjan', '0');
+    setEl('statTotalBardak', '0');
     return;
   }
 
-  state.expenses.slice().reverse().forEach((exp, idx) => {
-    const realIndex = state.expenses.length - 1 - idx;
-    const div = document.createElement('div');
-    div.className = 'flex justify-between items-center py-2 border-b border-gray-100 text-xs';
-    div.innerHTML = `
-      <div>
-        <span class="font-medium text-gray-800">${exp.desc}</span>
-        <span class="text-gray-400 text-[10px] ml-1">(${exp.date})</span>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span class="font-bold text-red-600">-${Number(exp.amount).toLocaleString('tr-TR')} ₺</span>
-        <button onclick="deleteExpense(${realIndex})" class="text-gray-300 hover:text-red-500 font-bold ml-1" title="Sil">×</button>
-      </div>
+  state.expenses.slice().reverse().forEach((exp) => {
+    const amountNum = Number(exp.amount || 0);
+    totalGider += amountNum;
+
+    // Sayaçları topla
+    if (exp.items) {
+      if (exp.items.cay) { cayItems.push(exp.items.cay); totalCayCount++; }
+      if (exp.items.seker) { sekerItems.push(exp.items.seker); totalSekerCount++; }
+      if (exp.items.deterjan) { deterjanItems.push(exp.items.deterjan); totalDeterjanCount++; }
+      if (exp.items.bardak) { bardakItems.push(exp.items.bardak); totalBardakCount++; }
+    }
+
+    // Malzeme etiketleri
+    const itemBadges = [];
+    if (exp.items) {
+      if (exp.items.cay) itemBadges.push(`<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-semibold text-[11px]">🍵 ${escapeHtml(exp.items.cay)}</span>`);
+      if (exp.items.seker) itemBadges.push(`<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-900 font-semibold text-[11px]">🍬 ${escapeHtml(exp.items.seker)}</span>`);
+      if (exp.items.deterjan) itemBadges.push(`<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-100 text-teal-900 font-semibold text-[11px]">🧼 ${escapeHtml(exp.items.deterjan)}</span>`);
+      if (exp.items.bardak) itemBadges.push(`<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-900 font-semibold text-[11px]">🥛 ${escapeHtml(exp.items.bardak)}</span>`);
+      if (exp.items.diger) itemBadges.push(`<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 text-[11px]">📦 ${escapeHtml(exp.items.diger)}</span>`);
+    }
+
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+    const safeDesc = escapeHtml(exp.desc || 'Açıklamasız Harcama');
+    const safeDate = exp.date || '-';
+
+    tr.innerHTML = `
+      <td class="p-2.5 font-mono text-slate-600 text-[11px] whitespace-nowrap">${safeDate}</td>
+      <td class="p-2.5 font-bold text-slate-800 text-xs">
+        ${safeDesc}
+      </td>
+      <td class="p-2.5">
+        <div class="flex flex-wrap gap-1">
+          ${itemBadges.length > 0 ? itemBadges.join('') : '<span class="text-slate-400 text-[11px]">-</span>'}
+        </div>
+      </td>
+      <td class="p-2.5 text-right font-extrabold text-red-600 text-sm whitespace-nowrap">
+        -${amountNum.toLocaleString('tr-TR')} ₺
+      </td>
+      <td class="p-2.5 text-center whitespace-nowrap">
+        ${exp.receiptImg ? `
+          <button type="button" onclick="openReceiptPreview('${exp.id}', '${safeDesc}')" class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-[11px] text-slate-700 transition cursor-pointer active:scale-95" title="Dekontu Gör">
+            <img src="${exp.receiptImg}" alt="Fiş" class="w-4 h-4 rounded object-cover">
+            <span>Gör</span>
+          </button>
+        ` : `<span class="text-slate-400 text-[11px]">Yok</span>`}
+      </td>
+      <td class="p-2.5 text-center whitespace-nowrap">
+        <div class="flex items-center justify-center gap-1">
+          <button type="button" onclick="openExpenseModal('${exp.id}')" class="p-1 text-slate-400 hover:text-blue-600 transition" title="Düzenle">
+            ✏️
+          </button>
+          <button type="button" onclick="deleteExpense('${exp.id}')" class="p-1 text-slate-400 hover:text-red-600 transition" title="Sil">
+            🗑️
+          </button>
+        </div>
+      </td>
     `;
-    container.appendChild(div);
+    tbody.appendChild(tr);
+  });
+
+  // Alt Toplam ve Rozetler
+  if (footerTotal) footerTotal.innerText = '-' + totalGider.toLocaleString('tr-TR') + ' ₺';
+  if (badgeTotal) badgeTotal.innerText = totalGider.toLocaleString('tr-TR') + ' ₺';
+
+  const formatSummary = (items, count, unitName) => {
+    if (count === 0) return '0';
+    return items.join(', ');
+  };
+
+  const setEl = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+  setEl('statTotalCay', cayItems.length > 0 ? formatSummary(cayItems, totalCayCount, 'Çay') : '0');
+  setEl('statTotalSeker', sekerItems.length > 0 ? formatSummary(sekerItems, totalSekerCount, 'Şeker') : '0');
+  setEl('statTotalDeterjan', deterjanItems.length > 0 ? formatSummary(deterjanItems, totalDeterjanCount, 'Deterjan') : '0');
+  setEl('statTotalBardak', bardakItems.length > 0 ? formatSummary(bardakItems, totalBardakCount, 'Bardak') : '0');
+}
+
+// XSS Güvenliği için HTML kaçışı
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
   });
 }
 
-// Harcama Ekle
-function addExpense() {
+// Fatura Ekleme/Düzenleme Modalı Aç
+function openExpenseModal(editingId = null) {
+  currentExpenseReceiptImg = null;
+  document.getElementById('expId').value = '';
+  document.getElementById('expDesc').value = '';
+  document.getElementById('expAmount').value = '';
+  document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('expCay').value = '';
+  document.getElementById('expSeker').value = '';
+  document.getElementById('expDeterjan').value = '';
+  document.getElementById('expBardak').value = '';
+  document.getElementById('expDiger').value = '';
+  document.getElementById('expReceiptFileInput').value = '';
+  document.getElementById('receiptPreviewBox').classList.add('hidden');
+  document.getElementById('receiptPreviewThumb').src = '';
+  document.getElementById('receiptUploadStatusText').innerText = 'Görsel seçilmedi';
+
+  if (editingId) {
+    const exp = state.expenses.find(e => String(e.id) === String(editingId));
+    if (exp) {
+      document.getElementById('modalExpenseTitle').innerText = 'Faturayı / Harcamayı Düzenle';
+      document.getElementById('expId').value = exp.id;
+      document.getElementById('expDate').value = exp.date || '';
+      document.getElementById('expDesc').value = exp.desc || '';
+      document.getElementById('expAmount').value = exp.amount || '';
+      if (exp.items) {
+        document.getElementById('expCay').value = exp.items.cay || '';
+        document.getElementById('expSeker').value = exp.items.seker || '';
+        document.getElementById('expDeterjan').value = exp.items.deterjan || '';
+        document.getElementById('expBardak').value = exp.items.bardak || '';
+        document.getElementById('expDiger').value = exp.items.diger || '';
+      }
+      if (exp.receiptImg) {
+        currentExpenseReceiptImg = exp.receiptImg;
+        document.getElementById('receiptPreviewThumb').src = exp.receiptImg;
+        document.getElementById('receiptPreviewBox').classList.remove('hidden');
+        document.getElementById('receiptUploadStatusText').innerText = 'Görsel yüklü';
+      }
+    }
+  } else {
+    document.getElementById('modalExpenseTitle').innerText = 'Yeni Fatura / Harcama Girişi';
+  }
+
+  openModal('modalExpense');
+}
+
+// Fiş / Dekont Görseli Seçildiğinde İstemci Tarafında Sıkıştır
+function handleReceiptFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const statusText = document.getElementById('receiptUploadStatusText');
+  if (statusText) statusText.innerText = "⏳ Görsel optimize ediliyor...";
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const maxDim = 1000;
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+
+      currentExpenseReceiptImg = canvas.toDataURL('image/jpeg', 0.72);
+      document.getElementById('receiptPreviewThumb').src = currentExpenseReceiptImg;
+      document.getElementById('receiptPreviewBox').classList.remove('hidden');
+      if (statusText) statusText.innerText = "✅ Görsel hazır (" + Math.round(currentExpenseReceiptImg.length / 1024) + " KB)";
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Yüklenen Dekontu Kaldır
+function removeReceiptImage() {
+  currentExpenseReceiptImg = null;
+  document.getElementById('expReceiptFileInput').value = '';
+  document.getElementById('receiptPreviewThumb').src = '';
+  document.getElementById('receiptPreviewBox').classList.add('hidden');
+  document.getElementById('receiptUploadStatusText').innerText = 'Görsel seçilmedi';
+}
+
+// Faturayı Kaydet
+function saveExpense() {
   const desc = document.getElementById('expDesc').value.trim();
   const amount = parseFloat(document.getElementById('expAmount').value);
   const date = document.getElementById('expDate').value || new Date().toISOString().split('T')[0];
 
-  if (!desc || isNaN(amount) || amount <= 0) {
-    alert("Lütfen geçerli bir harcama açıklaması ve tutarı girin.");
+  if (!desc) {
+    alert("Lütfen harcama açıklamasını giriniz.");
+    document.getElementById('expDesc').focus();
     return;
   }
 
-  state.expenses.push({ desc, amount, date });
-  document.getElementById('expDesc').value = '';
-  document.getElementById('expAmount').value = '';
-  closeModal('modalGider');
+  if (isNaN(amount) || amount <= 0) {
+    alert("Lütfen geçerli bir harcama tutarı giriniz.");
+    document.getElementById('expAmount').focus();
+    return;
+  }
+
+  const expId = document.getElementById('expId').value;
+  const items = {
+    cay: document.getElementById('expCay').value.trim(),
+    seker: document.getElementById('expSeker').value.trim(),
+    deterjan: document.getElementById('expDeterjan').value.trim(),
+    bardak: document.getElementById('expBardak').value.trim(),
+    diger: document.getElementById('expDiger').value.trim()
+  };
+
+  if (!state.expenses) state.expenses = [];
+
+  if (expId) {
+    const existing = state.expenses.find(e => String(e.id) === String(expId));
+    if (existing) {
+      existing.date = date;
+      existing.desc = desc;
+      existing.amount = amount;
+      existing.items = items;
+      if (currentExpenseReceiptImg !== undefined) {
+        existing.receiptImg = currentExpenseReceiptImg;
+      }
+    }
+  } else {
+    state.expenses.push({
+      id: Date.now(),
+      date: date,
+      desc: desc,
+      amount: amount,
+      items: items,
+      receiptImg: currentExpenseReceiptImg || null
+    });
+  }
+
+  closeModal('modalExpense');
   saveState();
+  showToast("✅ Fatura başarıyla kaydedildi!");
 }
 
-function deleteExpense(index) {
-  if (confirm("Bu harcamayı silmek istediğinizden emin misiniz?")) {
-    state.expenses.splice(index, 1);
+// Faturayı Sil
+function deleteExpense(id) {
+  const exp = state.expenses.find(e => String(e.id) === String(id));
+  const desc = exp ? exp.desc : 'Bu faturayı';
+  if (confirm(`"${desc}" faturasını silmek istediğinizden emin misiniz?`)) {
+    state.expenses = state.expenses.filter(e => String(e.id) !== String(id));
     saveState();
+    showToast("🗑️ Fatura silindi!");
   }
+}
+
+// Dekontu Büyük Boyutta Önizle
+function openReceiptPreview(idOrSrc, title = 'Dekont / Fatura') {
+  let src = idOrSrc;
+  if (!idOrSrc.startsWith('data:')) {
+    const exp = state.expenses.find(e => String(e.id) === String(idOrSrc));
+    if (exp && exp.receiptImg) {
+      src = exp.receiptImg;
+      title = exp.desc || title;
+    }
+  }
+  document.getElementById('modalReceiptViewImg').src = src;
+  document.getElementById('modalReceiptViewTitle').innerText = title;
+  const downloadBtn = document.getElementById('modalReceiptDownloadBtn');
+  if (downloadBtn) downloadBtn.href = src;
+  openModal('modalReceiptView');
 }
 
 // Geçen Sene Devreden Bakiyeyi Güncelle

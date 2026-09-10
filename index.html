@@ -356,6 +356,90 @@
         </table>
       </div>
 
+      <!-- ================= HARCAMA & FATURA / FİŞ TAKİP BÖLÜMÜ ================= -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4 no-print">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <span>🧾</span>
+              <span>Çay Ocağı Malzeme Harcamaları & Faturalar</span>
+            </h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">
+              Alınan çay, şeker, deterjan, bardak vb. malzeme alımları, fatura tutarları ve dekont fotoğrafları.
+            </p>
+          </div>
+          <button type="button" onclick="openExpenseModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+            <span>➕</span>
+            <span>Yeni Fatura / Harcama Gir</span>
+          </button>
+        </div>
+
+        <!-- Özet Malzeme Sayaçları (Hızlı Bakış Rozetleri) -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+          <div class="bg-amber-50/80 border border-amber-200 p-2.5 rounded-xl">
+            <div class="text-[10px] font-bold text-amber-800 uppercase flex items-center gap-1">
+              <span>🍵</span> Çay
+            </div>
+            <div id="statTotalCay" class="text-sm font-extrabold text-amber-950 mt-1">0</div>
+          </div>
+          <div class="bg-blue-50/80 border border-blue-200 p-2.5 rounded-xl">
+            <div class="text-[10px] font-bold text-blue-800 uppercase flex items-center gap-1">
+              <span>🍬</span> Şeker
+            </div>
+            <div id="statTotalSeker" class="text-sm font-extrabold text-blue-950 mt-1">0</div>
+          </div>
+          <div class="bg-teal-50/80 border border-teal-200 p-2.5 rounded-xl">
+            <div class="text-[10px] font-bold text-teal-800 uppercase flex items-center gap-1">
+              <span>🧼</span> Deterjan
+            </div>
+            <div id="statTotalDeterjan" class="text-sm font-extrabold text-teal-950 mt-1">0</div>
+          </div>
+          <div class="bg-indigo-50/80 border border-indigo-200 p-2.5 rounded-xl">
+            <div class="text-[10px] font-bold text-indigo-800 uppercase flex items-center gap-1">
+              <span>🥛</span> Bardak
+            </div>
+            <div id="statTotalBardak" class="text-sm font-extrabold text-indigo-950 mt-1">0</div>
+          </div>
+          <div class="bg-red-50/80 border border-red-200 p-2.5 rounded-xl">
+            <div class="text-[10px] font-bold text-red-800 uppercase flex items-center gap-1">
+              <span>💰</span> Toplam Gider
+            </div>
+            <div id="statExpenseTotalBadge" class="text-sm font-extrabold text-red-700 mt-1">0 ₺</div>
+          </div>
+        </div>
+
+        <!-- Fatura / Harcama Tablosu -->
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
+              <tr>
+                <th class="p-2.5 w-24">Tarih</th>
+                <th class="p-2.5 min-w-[160px]">Açıklama</th>
+                <th class="p-2.5 min-w-[200px]">Alınan Malzemeler</th>
+                <th class="p-2.5 text-right w-28">Tutar</th>
+                <th class="p-2.5 text-center w-28">Dekont / Fiş</th>
+                <th class="p-2.5 text-center w-20">İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="expenseTableBody" class="divide-y divide-slate-100">
+              <!-- JS ile renderExpenses() dolduracak -->
+            </tbody>
+            <tfoot class="bg-slate-50 border-t-2 border-slate-300 font-extrabold text-slate-900">
+              <tr>
+                <td colspan="3" class="p-3 text-right text-xs">GENEL TOPLAM HARCAMA:</td>
+                <td id="expenseTableFooterTotal" class="p-3 text-right text-sm text-red-600 font-extrabold">0 ₺</td>
+                <td colspan="2" class="p-3 text-center">
+                  <button type="button" onclick="openExpenseModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 mx-auto shadow-xs active:scale-95 cursor-pointer">
+                    <span>➕</span>
+                    <span>Yeni Fatura Ekle</span>
+                  </button>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
       <!-- Yazdırma Şablonu (Sadece Baskıda Çıkar) -->
       <div class="hidden print-only">
         <div class="text-center mb-4">
@@ -381,7 +465,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260910_3"></script>
+  <script src="app.js?v=20260910_4"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -635,6 +719,115 @@ veya gelen e-posta bildirim metni..." class="w-full p-3 text-xs border border-sl
       <div class="flex justify-between items-center pt-2">
         <button type="button" onclick="saveGoogleScriptUrl()" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition cursor-pointer">💾 Kaydet ve Eşitle</button>
         <button type="button" onclick="closeModal('modalCloudConfig')" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= YENİ FATURA / HARCAMA GİRİŞ MODALI ================= -->
+  <div id="modalExpense" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+          <span id="modalExpenseIcon">🧾</span>
+          <span id="modalExpenseTitle">Yeni Fatura / Harcama Girişi</span>
+        </h3>
+        <button type="button" onclick="closeModal('modalExpense')" class="text-slate-400 hover:text-slate-600 text-lg font-bold cursor-pointer">✕</button>
+      </div>
+
+      <input type="hidden" id="expId" value="">
+
+      <!-- Temel Bilgiler: Tarih & Tutar -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Fatura / Fiş Tarihi <span class="text-red-500">*</span></label>
+          <input type="date" id="expDate" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Toplam Tutar (₺) <span class="text-red-500">*</span></label>
+          <input type="number" id="expAmount" step="0.01" min="0" placeholder="Örn: 1200" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-red-600">
+        </div>
+      </div>
+
+      <!-- Açıklama (Her Satırda Açıklama) -->
+      <div>
+        <label class="block text-[11px] font-bold text-slate-700 mb-1">Harcama Açıklaması / Alışveriş Yeri <span class="text-red-500">*</span></label>
+        <input type="text" id="expDesc" placeholder="Örn: Metro Market - Toptan Çay ve Bardak Alımı" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      </div>
+
+      <!-- Alınan Malzemeler Sayaç / Miktar Alanları -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2.5">
+        <label class="block text-[11px] font-extrabold text-slate-800 uppercase tracking-wider">
+          📦 Alınan Malzeme Miktarları:
+        </label>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <span class="text-[10px] font-bold text-amber-900 block mb-0.5">🍵 Çay:</span>
+            <input type="text" id="expCay" placeholder="Örn: 5 kg / 10 Paket" class="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+          </div>
+          <div>
+            <span class="text-[10px] font-bold text-blue-900 block mb-0.5">🍬 Şeker:</span>
+            <input type="text" id="expSeker" placeholder="Örn: 10 kg / 2 Çuval" class="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <span class="text-[10px] font-bold text-teal-900 block mb-0.5">🧼 Deterjan:</span>
+            <input type="text" id="expDeterjan" placeholder="Örn: 2 Adet / 5 Lt" class="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+          </div>
+          <div>
+            <span class="text-[10px] font-bold text-indigo-900 block mb-0.5">🥛 Bardak:</span>
+            <input type="text" id="expBardak" placeholder="Örn: 2000 Adet / 2 Koli" class="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+        <div>
+          <span class="text-[10px] font-bold text-slate-700 block mb-0.5">➕ Diğer Malzemeler (Varsa):</span>
+          <input type="text" id="expDiger" placeholder="Örn: 5 paket sünger, ıslak mendil vb." class="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+      </div>
+
+      <!-- Fatura / Dekont Görseli Yükleme -->
+      <div class="space-y-1.5">
+        <label class="block text-[11px] font-bold text-slate-700">📸 Fiş / Fatura / Dekont Fotoğrafı:</label>
+        <div class="flex items-center gap-3">
+          <label class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs">
+            <span>📷</span>
+            <span>Fotoğraf Çek / Yükle</span>
+            <input type="file" id="expReceiptFileInput" accept="image/*" class="hidden" onchange="handleReceiptFileSelect(event)">
+          </label>
+          <span id="receiptUploadStatusText" class="text-[11px] text-slate-400">Görsel seçilmedi</span>
+        </div>
+
+        <!-- Görsel Önizleme Kutusu -->
+        <div id="receiptPreviewBox" class="hidden relative inline-block mt-2 border border-slate-300 rounded-xl p-1 bg-slate-50 shadow-xs">
+          <img id="receiptPreviewThumb" src="" alt="Dekont Önizleme" class="h-20 w-auto rounded-lg object-cover cursor-pointer" onclick="openReceiptPreview(this.src, 'Fatura Önizleme')">
+          <button type="button" onclick="removeReceiptImage()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow hover:bg-red-700 cursor-pointer" title="Görseli Kaldır">✕</button>
+        </div>
+      </div>
+
+      <!-- Butonlar -->
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeModal('modalExpense')" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">Vazgeç</button>
+        <button type="button" onclick="saveExpense()" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5">
+          <span>💾</span>
+          <span>Faturayı Kaydet</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DEKONT / FİŞ BÜYÜK BOY GÖRÜNTÜLEME MODALI (LIGHTBOX) ================= -->
+  <div id="modalReceiptView" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4 hidden" onclick="closeModal('modalReceiptView')">
+    <div class="relative max-w-2xl w-full max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+      <div class="w-full flex justify-between items-center text-white mb-2 px-1">
+        <span id="modalReceiptViewTitle" class="text-xs font-bold truncate">Dekont / Fatura Görseli</span>
+        <div class="flex items-center gap-2">
+          <a id="modalReceiptDownloadBtn" href="#" download="dekont.jpg" class="text-xs bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+            <span>💾</span>
+            <span>İndir</span>
+          </a>
+          <button type="button" onclick="closeModal('modalReceiptView')" class="text-white hover:text-red-400 text-xl font-bold px-2 py-0.5 rounded cursor-pointer">✕</button>
+        </div>
+      </div>
+      <div class="bg-black/40 rounded-2xl overflow-hidden max-h-[80vh] flex items-center justify-center border border-white/10 shadow-2xl">
+        <img id="modalReceiptViewImg" src="" alt="Dekont" class="max-h-[80vh] max-w-full object-contain rounded-xl">
       </div>
     </div>
   </div>
