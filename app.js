@@ -61,129 +61,55 @@ const DEFAULT_TEACHERS = [
   { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" }
 ];
 
-const TAKSIT_BEDELI = 300; // Her taksit 300 TL (Toplam 1200 TL)
+const CANONICAL_DATA_VERSION = "2026.09.10_v3";
 
-// Uygulama Durumu (State)
 let state = {
-  teachers: [],
+  version: CANONICAL_DATA_VERSION,
+  teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
   expenses: [],
   devredenBakiye: 0,
   filterStatus: 'all',
   searchQuery: ''
 };
 
-// Veriyi LocalStorage'dan Yükle veya İlklendir
+const TAKSIT_BEDELI = 300;
+
+// Veriyi LocalStorage'dan Yükle ve Otomatik Onar
 function loadState() {
   const saved = localStorage.getItem('cay_takip_state_v1');
+  let loadedState = null;
   if (saved) {
     try {
-      state = JSON.parse(saved);
+      loadedState = JSON.parse(saved);
     } catch (e) {
-      state = null;
+      loadedState = null;
     }
   }
 
-  // Eğer state boşsa, bozuksa veya teachers dizisi yok/boşsa:
-  if (!state || !state.teachers || !Array.isArray(state.teachers) || state.teachers.length === 0) {
+  // Sürüm kontrolü: Eğer kayıt yoksa, eski sürüme aitse veya bozuksa:
+  if (!loadedState || loadedState.version !== CANONICAL_DATA_VERSION || !Array.isArray(loadedState.teachers)) {
     state = {
+      version: CANONICAL_DATA_VERSION,
       teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
-      expenses: (state && state.expenses) || [],
+      expenses: (loadedState && loadedState.expenses) || [],
       devredenBakiye: 0,
       filterStatus: 'all',
       searchQuery: ''
     };
-  } else {
-    // Mevcut listede eksik olan varsayılan öğretmenler varsa ekle
-    DEFAULT_TEACHERS.forEach(dt => {
-      const exists = state.teachers.some(t => t.id === dt.id || t.name.toUpperCase('tr') === dt.name.toUpperCase('tr'));
-      if (!exists) {
-        state.teachers.push(JSON.parse(JSON.stringify(dt)));
-      }
-    });
+    saveState();
+    return;
   }
 
-  // Onaylanan Form Yanıtları ve Banka Dekontu Ödemeleri (Otomatik Güncelleme)
-  const setStatus = (id, searchName, status, note, branch, payments) => {
-    let t = state.teachers.find(x => x.id === id || (searchName && x.name.toUpperCase('tr').includes(searchName.toUpperCase('tr'))));
-    if (t) {
-      t.status = status;
-      if (note) t.note = note;
-      if (branch) t.branch = branch;
-      if (payments) {
-        if (payments.t1 !== undefined) t.t1 = payments.t1;
-        if (payments.t2 !== undefined) t.t2 = payments.t2;
-        if (payments.t3 !== undefined) t.t3 = payments.t3;
-        if (payments.t4 !== undefined) t.t4 = payments.t4;
-      }
-    } else if (searchName) {
-      state.teachers.push({
-        id: id || (state.teachers.reduce((m, x) => Math.max(m, x.id), 0) + 1),
-        name: searchName.toUpperCase('tr'),
-        branch: branch || 'Yeni Öğretmen',
-        status: status,
-        t1: (payments && payments.t1) || false,
-        t2: (payments && payments.t2) || false,
-        t3: (payments && payments.t3) || false,
-        t4: (payments && payments.t4) || false,
-        note: note || 'Formdan eklendi'
-      });
+  state = loadedState;
+
+  // Güvence: Listede eksik öğretmen varsa DEFAULT_TEACHERS'dan tamamla
+  DEFAULT_TEACHERS.forEach(dt => {
+    const exists = state.teachers.some(t => t.id === dt.id || t.name.toUpperCase('tr') === dt.name.toUpperCase('tr'));
+    if (!exists) {
+      state.teachers.push(JSON.parse(JSON.stringify(dt)));
     }
-  };
+  });
 
-  setStatus(39, "MÜJDAT TELLİ", "katiliyor", "Çay Ocağı Sorumlusu", "Bilişim Teknolojileri");
-  setStatus(19, "ERDİNÇ SİTRAVA", "katiliyor", "300 TL (1. Taksit) ödendi", "Türk Dili ve Edebiyatı", { t1: true });
-  setStatus(44, "SERAP KAR ATASEVEN", "katiliyor", "600 TL (1. Dönem Peşin) ödendi", "Türk Dili ve Edebiyatı", { t1: true, t2: true });
-  setStatus(42, "NURHAN CAN", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
-  setStatus(49, "SİNAN RENÇBEROĞLU", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
-  setStatus(9, "CEM KURTOĞLU", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Elektrik-Elektronik Teknolojisi / Elektrik");
-  setStatus(57, "SEMA KANDEMİR", "katiliyor", "300 TL (1. Taksit) ödendi", "Grafik ve Fotoğraf", { t1: true });
-  setStatus(55, "ZEHRA GENÇ", "katiliyor", "300 TL (1. Taksit) ödendi", "Matematik", { t1: true });
-  setStatus(13, "DEVRİM YILDIZ", "katiliyor", "Formdan katıldı", "Felsefe");
-  setStatus(12, "DERYA YILDIZ", "katiliyor", "Formdan katıldı", "Fizik");
-  setStatus(43, "RABİA SULTAN ÇELİK", "katiliyor", "300 TL (1. Taksit) ödendi", "Matematik", { t1: true });
-  setStatus(21, "FEYZULLAH KÖKER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Grafik ve Fotoğraf / Grafik");
-  setStatus(52, "ŞAHİN KARAKAŞ", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
-  setStatus(54, "UĞUR YUSUF SEZER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Matematik");
-  setStatus(46, "SERHAT ARSLAN", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
-  setStatus(31, "MERAL HIZAL", "katiliyor", "600 TL (1. Dönem Peşin) ödendi", "Görsel Sanatlar", { t1: true, t2: true });
-  setStatus(35, "MUHAMMET ŞEKER", "katiliyor", "1.200 TL (Yıllık Tam Ödeme) ödendi", "Bilişim Teknolojileri", { t1: true, t2: true, t3: true, t4: true });
-  setStatus(50, "SİNAN CAN YÜCEL", "katiliyor", "1.200 TL (Yıllık Tam Ödeme) ödendi", "İngilizce", { t1: true, t2: true, t3: true, t4: true });
-  setStatus(58, "ZEYNEP BOZDEMİR", "katiliyor", "600 TL (1. Dönem Peşin) ödendi", "Okul Aile Birliği", { t1: true, t2: true });
-  setStatus(59, "DEMET TÜRKMEN", "bekliyor", "", "Okul Aile Birliği");
-
-  const mSeker = state.teachers.find(t => t.id === 35 || t.name.includes("MUHAMMET ŞEKER"));
-  if (mSeker) {
-    mSeker.branch = "Bilişim Teknolojileri";
-    mSeker.status = "katiliyor";
-    mSeker.t1 = true;
-    mSeker.t2 = true;
-    mSeker.t3 = true;
-    mSeker.t4 = true;
-    mSeker.note = "1.200 TL (Yıllık Tam Ödeme) ödendi";
-  }
-
-  const sCan = state.teachers.find(t => t.id === 50 || t.name.includes("SİNAN CAN YÜCEL"));
-  if (sCan) {
-    sCan.status = "katiliyor";
-    sCan.t1 = true;
-    sCan.t2 = true;
-    sCan.t3 = true;
-    sCan.t4 = true;
-    sCan.note = "1.200 TL (Yıllık Tam Ödeme) ödendi";
-  }
-
-  const zb = state.teachers.find(t => t.id === 58 || t.name.includes("ZEYNEP BOZDEMİR"));
-  if (zb) {
-    zb.branch = "Okul Aile Birliği";
-    zb.status = "katiliyor";
-    zb.t1 = true;
-    zb.t2 = true;
-    zb.note = "600 TL (1. Dönem Peşin) ödendi";
-  }
-  const dt = state.teachers.find(t => t.id === 59 || t.name.includes("DEMET TÜRKMEN"));
-  if (dt) dt.branch = "Okul Aile Birliği";
-
-  // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
   state.devredenBakiye = 0;
   if (!state.filterStatus) state.filterStatus = 'all';
@@ -206,15 +132,23 @@ async function manualRefreshList() {
 
 // Varsayılan Öğretmen Listesini Sıfırla (Fabrika Ayarlarına Dön)
 function resetToDefaults() {
-  if (confirm("⚠️ DİKKAT: Bu işlem tüm öğretmenlerin yanıtlarını ve ödemelerini sıfırlar.\nSadece fabrika ayarlarına dönmek istiyorsanız 'Tamam'a basınız.")) {
-    state.teachers = JSON.parse(JSON.stringify(DEFAULT_TEACHERS));
+  if (confirm("⚠️ DİKKAT: Bu işlem tüm öğretmenlerin yanıtlarını ve ödemelerini banka dekontundaki resmi duruma sıfırlar.\n\nOnaylıyor musunuz?")) {
+    state = {
+      version: CANONICAL_DATA_VERSION,
+      teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
+      expenses: (state && state.expenses) || [],
+      devredenBakiye: 0,
+      filterStatus: 'all',
+      searchQuery: ''
+    };
     saveState();
-    showToast("✅ Liste sıfırlandı!");
+    showToast("✅ Liste resmi dekont durumuna sıfırlandı!");
   }
 }
 
 // Veriyi Kaydet
 function saveState() {
+  state.version = CANONICAL_DATA_VERSION;
   localStorage.setItem('cay_takip_state_v1', JSON.stringify(state));
   updateDashboard();
 }
