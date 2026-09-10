@@ -1,4 +1,4 @@
-// 56 Öğretmenin Başlangıç Listesi
+// Öğretmen ve Personel Başlangıç Listesi (59 Kişi)
 const DEFAULT_TEACHERS = [
   { id: 1, name: "ABDURRAHİM BÜYÜKDAĞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 2, name: "ASLI GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -56,7 +56,9 @@ const DEFAULT_TEACHERS = [
   { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı (Yeni Öğretmen)" }
+  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı (Yeni Öğretmen)" },
+  { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" }
 ];
 
 const TAKSIT_BEDELI = 300; // Her taksit 300 TL (Toplam 1200 TL)
@@ -134,9 +136,15 @@ function loadState() {
   setStatus(54, "UĞUR YUSUF SEZER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Matematik");
   setStatus(46, "SERHAT ARSLAN", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(31, "MERAL HIZAL", "katiliyor", "Formdan katıldı", "Görsel Sanatlar");
+  setStatus(58, "ZEYNEP BOZDEMİR", "katiliyor", "Formdan katıldı", "Okul Aile Birliği");
 
   const mSeker = state.teachers.find(t => t.id === 35 || t.name.includes("MUHAMMET ŞEKER"));
   if (mSeker) mSeker.branch = "Bilişim Teknolojileri";
+
+  const zb = state.teachers.find(t => t.id === 58 || t.name.includes("ZEYNEP BOZDEMİR"));
+  if (zb) zb.branch = "Okul Aile Birliği";
+  const dt = state.teachers.find(t => t.id === 59 || t.name.includes("DEMET TÜRKMEN"));
+  if (dt) dt.branch = "Okul Aile Birliği";
 
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];

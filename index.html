@@ -166,7 +166,7 @@
           <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
         </div>
 
-        <!-- 56 Öğretmen Seçenek Listesi -->
+        <!-- Öğretmen Seçenek Listesi -->
         <div id="teacherRadioContainer" class="max-h-64 overflow-y-auto space-y-1.5 border border-slate-200 rounded-xl p-2 bg-slate-50/50">
           <!-- JS ile doldurulacak -->
         </div>
@@ -273,7 +273,7 @@
         <div class="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
           <input type="text" id="searchInput" placeholder="Öğretmen ara..." class="px-3 py-2 text-xs border border-slate-300 rounded-lg flex-1 min-w-[160px] focus:outline-none focus:ring-2 focus:ring-amber-500">
           <select id="filterStatusSelect" class="px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
-            <option value="all">Tüm Öğretmenler (56)</option>
+            <option value="all">Tüm Öğretmenler / Personel</option>
             <option value="katiliyor">☕ Sadece Katılanlar</option>
             <option value="katilmiyor">❌ Sadece Katılmayanlar</option>
             <option value="bekliyor">⏳ Yanıt Bekleyenler</option>
@@ -381,7 +381,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260909_70"></script>
+  <script src="app.js?v=20260910_1"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -389,7 +389,7 @@
       document.getElementById('formSection').classList.add('hidden');
     }
 
-    // 56 Öğretmeni Radyo Butonlarına Doldur
+    // Öğretmenleri Radyo Butonlarına Doldur
     const container = document.getElementById('teacherRadioContainer');
     const customBox = document.getElementById('customNameBox');
     const customInput = document.getElementById('customNameInput');

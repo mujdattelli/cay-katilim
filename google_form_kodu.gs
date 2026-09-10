@@ -84,7 +84,7 @@ function cayKatilimFormuOlustur() {
     "32 - MERİÇ AKKAYA (Elektrik-Elektronik Teknolojisi / Elektrik)",
     "33 - MERYEM DEMİRTAŞ (İngilizce)",
     "34 - MİRAY TEKAY (Türk Dili ve Edebiyatı)",
-    "35 - MUHAMMET ŞEKER (Bilgisayar ve Öğretim Teknolojileri)",
+    "35 - MUHAMMET ŞEKER (Bilişim Teknolojileri)",
     "36 - MUHAMMET SERDAR BALIKLI (Beden Eğitimi)",
     "37 - MURAT KAÇAN (Bilişim Teknolojileri)",
     "38 - MURAT KANTARCI (Bilişim Teknolojileri)",
@@ -105,7 +105,10 @@ function cayKatilimFormuOlustur() {
     "53 - ŞAHİN ORHAN (Bilişim Teknolojileri)",
     "54 - UĞUR YUSUF SEZER (Matematik)",
     "55 - ZEHRA GENÇ (Matematik)",
-    "56 - ZEYNEP ÇIBIK (İngilizce)"
+    "56 - ZEYNEP ÇIBIK (İngilizce)",
+    "57 - SEMA KANDEMİR (Grafik ve Fotoğraf)",
+    "58 - ZEYNEP BOZDEMİR (Okul Aile Birliği)",
+    "59 - DEMET TÜRKMEN (Okul Aile Birliği)"
   ];
 
   // TEK SORU: İsminin yanındaki kutucuğu işaretleme
