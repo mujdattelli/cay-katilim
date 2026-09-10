@@ -18,7 +18,7 @@ const DEFAULT_TEACHERS = [
   { id: 16, name: "EBRU ELMAS", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 17, name: "EBRU KÜÇÜKALİ TURGUT", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 18, name: "EDİP TAŞDEMİR", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
   { id: 20, name: "FATMA NUR SIVAR", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -30,11 +30,11 @@ const DEFAULT_TEACHERS = [
   { id: 28, name: "İBRAHİM CALAYIR", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 29, name: "İLKNUR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 30, name: "MAHMUT YAVUZ", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
   { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, note: "1.200 TL (Yıllık Tam Ödeme) ödendi" },
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -42,22 +42,22 @@ const DEFAULT_TEACHERS = [
   { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
+  { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
   { id: 45, name: "SERDAR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 50, name: "SİNAN CAN YÜCEL", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 50, name: "SİNAN CAN YÜCEL", branch: "İngilizce", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, note: "1.200 TL (Yıllık Tam Ödeme) ödendi" },
   { id: 51, name: "SONER TAŞ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
   { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı (Yeni Öğretmen)" },
-  { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
+  { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
   { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" }
 ];
 
@@ -102,47 +102,84 @@ function loadState() {
     });
   }
 
-  // Onaylanan Form Yanıtları (Otomatik Güncelleme)
-  const setStatus = (id, searchName, status, note, branch) => {
+  // Onaylanan Form Yanıtları ve Banka Dekontu Ödemeleri (Otomatik Güncelleme)
+  const setStatus = (id, searchName, status, note, branch, payments) => {
     let t = state.teachers.find(x => x.id === id || (searchName && x.name.toUpperCase('tr').includes(searchName.toUpperCase('tr'))));
     if (t) {
       t.status = status;
       if (note) t.note = note;
+      if (branch) t.branch = branch;
+      if (payments) {
+        if (payments.t1 !== undefined) t.t1 = payments.t1;
+        if (payments.t2 !== undefined) t.t2 = payments.t2;
+        if (payments.t3 !== undefined) t.t3 = payments.t3;
+        if (payments.t4 !== undefined) t.t4 = payments.t4;
+      }
     } else if (searchName) {
       state.teachers.push({
         id: id || (state.teachers.reduce((m, x) => Math.max(m, x.id), 0) + 1),
         name: searchName.toUpperCase('tr'),
         branch: branch || 'Yeni Öğretmen',
         status: status,
-        t1: false, t2: false, t3: false, t4: false,
+        t1: (payments && payments.t1) || false,
+        t2: (payments && payments.t2) || false,
+        t3: (payments && payments.t3) || false,
+        t4: (payments && payments.t4) || false,
         note: note || 'Formdan eklendi'
       });
     }
   };
 
   setStatus(39, "MÜJDAT TELLİ", "katiliyor", "Çay Ocağı Sorumlusu", "Bilişim Teknolojileri");
-  setStatus(19, "ERDİNÇ SİTRAVA", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
-  setStatus(44, "SERAP KAR ATASEVEN", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
+  setStatus(19, "ERDİNÇ SİTRAVA", "katiliyor", "300 TL (1. Taksit) ödendi", "Türk Dili ve Edebiyatı", { t1: true });
+  setStatus(44, "SERAP KAR ATASEVEN", "katiliyor", "600 TL (1. Dönem Peşin) ödendi", "Türk Dili ve Edebiyatı", { t1: true, t2: true });
   setStatus(42, "NURHAN CAN", "katiliyor", "Formdan katıldı", "Türk Dili ve Edebiyatı");
   setStatus(49, "SİNAN RENÇBEROĞLU", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(9, "CEM KURTOĞLU", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Elektrik-Elektronik Teknolojisi / Elektrik");
-  setStatus(57, "SEMA KANDEMİR", "katiliyor", "Formdan katıldı (Yeni Öğretmen)", "Grafik ve Fotoğraf");
-  setStatus(55, "ZEHRA GENÇ", "katiliyor", "Formdan katıldı", "Matematik");
+  setStatus(57, "SEMA KANDEMİR", "katiliyor", "300 TL (1. Taksit) ödendi", "Grafik ve Fotoğraf", { t1: true });
+  setStatus(55, "ZEHRA GENÇ", "katiliyor", "300 TL (1. Taksit) ödendi", "Matematik", { t1: true });
   setStatus(13, "DEVRİM YILDIZ", "katiliyor", "Formdan katıldı", "Felsefe");
   setStatus(12, "DERYA YILDIZ", "katiliyor", "Formdan katıldı", "Fizik");
-  setStatus(43, "RABİA SULTAN ÇELİK", "katiliyor", "Formdan katıldı", "Matematik");
+  setStatus(43, "RABİA SULTAN ÇELİK", "katiliyor", "300 TL (1. Taksit) ödendi", "Matematik", { t1: true });
   setStatus(21, "FEYZULLAH KÖKER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Grafik ve Fotoğraf / Grafik");
   setStatus(52, "ŞAHİN KARAKAŞ", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(54, "UĞUR YUSUF SEZER", "katilmiyor", "Formdan bildirildi: Katılmıyor", "Matematik");
   setStatus(46, "SERHAT ARSLAN", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
-  setStatus(31, "MERAL HIZAL", "katiliyor", "Formdan katıldı", "Görsel Sanatlar");
-  setStatus(58, "ZEYNEP BOZDEMİR", "katiliyor", "Formdan katıldı", "Okul Aile Birliği");
+  setStatus(31, "MERAL HIZAL", "katiliyor", "600 TL (1. Dönem Peşin) ödendi", "Görsel Sanatlar", { t1: true, t2: true });
+  setStatus(35, "MUHAMMET ŞEKER", "katiliyor", "1.200 TL (Yıllık Tam Ödeme) ödendi", "Bilişim Teknolojileri", { t1: true, t2: true, t3: true, t4: true });
+  setStatus(50, "SİNAN CAN YÜCEL", "katiliyor", "1.200 TL (Yıllık Tam Ödeme) ödendi", "İngilizce", { t1: true, t2: true, t3: true, t4: true });
+  setStatus(58, "ZEYNEP BOZDEMİR", "katiliyor", "600 TL (1. Dönem Peşin) ödendi", "Okul Aile Birliği", { t1: true, t2: true });
+  setStatus(59, "DEMET TÜRKMEN", "bekliyor", "", "Okul Aile Birliği");
 
   const mSeker = state.teachers.find(t => t.id === 35 || t.name.includes("MUHAMMET ŞEKER"));
-  if (mSeker) mSeker.branch = "Bilişim Teknolojileri";
+  if (mSeker) {
+    mSeker.branch = "Bilişim Teknolojileri";
+    mSeker.status = "katiliyor";
+    mSeker.t1 = true;
+    mSeker.t2 = true;
+    mSeker.t3 = true;
+    mSeker.t4 = true;
+    mSeker.note = "1.200 TL (Yıllık Tam Ödeme) ödendi";
+  }
+
+  const sCan = state.teachers.find(t => t.id === 50 || t.name.includes("SİNAN CAN YÜCEL"));
+  if (sCan) {
+    sCan.status = "katiliyor";
+    sCan.t1 = true;
+    sCan.t2 = true;
+    sCan.t3 = true;
+    sCan.t4 = true;
+    sCan.note = "1.200 TL (Yıllık Tam Ödeme) ödendi";
+  }
 
   const zb = state.teachers.find(t => t.id === 58 || t.name.includes("ZEYNEP BOZDEMİR"));
-  if (zb) zb.branch = "Okul Aile Birliği";
+  if (zb) {
+    zb.branch = "Okul Aile Birliği";
+    zb.status = "katiliyor";
+    zb.t1 = true;
+    zb.t2 = true;
+    zb.note = "600 TL (1. Dönem Peşin) ödendi";
+  }
   const dt = state.teachers.find(t => t.id === 59 || t.name.includes("DEMET TÜRKMEN"));
   if (dt) dt.branch = "Okul Aile Birliği";
 
@@ -604,9 +641,11 @@ async function fetchFromCloudSync(silent = true) {
                 teacher = state.teachers.find(t => norm(t.name) === norm(data.name));
               }
               if (teacher) {
-                if (teacher.status !== data.status || (data.note && teacher.note !== data.note)) {
+                const noteIsGeneric = !data.note || data.note === 'Formdan katıldı' || data.note === 'Formdan eklendi';
+                const hasPaymentNote = teacher.note && teacher.note.includes('ödendi');
+                if (teacher.status !== data.status || (!hasPaymentNote && data.note && teacher.note !== data.note)) {
                   teacher.status = data.status;
-                  if (data.note) teacher.note = data.note;
+                  if (data.note && !hasPaymentNote && !noteIsGeneric) teacher.note = data.note;
                   if (data.branch && (!teacher.branch || teacher.branch === 'Yeni Öğretmen')) {
                     teacher.branch = data.branch;
                   }
