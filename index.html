@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2026-2027 Okul Çay Ocağı Katılım Formu</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260910_5">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,14 +24,14 @@
     </p>
     <div class="bg-white p-4 rounded-xl border border-emerald-300 text-left text-xs text-slate-800 space-y-2.5 mt-2">
       <div class="font-bold text-slate-900 text-sm">💳 ÖDEME BİLGİSİ (IBAN)</div>
-      <div class="flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-400 transition cursor-pointer" onclick="copyAccountName()">
+      <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-400 transition cursor-pointer" onclick="copyAccountName()">
         <div><strong>Alıcı:</strong> <span class="select-all font-bold text-slate-900 ml-1">MÜJDAT TELLİ</span></div>
         <button type="button" onclick="event.stopPropagation(); copyAccountName();" class="bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1 active:scale-95">
           <span>👤</span>
           <span>Adı Kopyala</span>
         </button>
       </div>
-      <div class="flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-400 transition cursor-pointer" onclick="copyIBAN()">
+      <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-emerald-400 transition cursor-pointer" onclick="copyIBAN()">
         <div><strong>IBAN:</strong> <span class="font-mono font-bold select-all text-emerald-700 ml-1">TR83 0001 2009 8620 0001 0211 45</span></div>
         <button type="button" onclick="event.stopPropagation(); copyIBAN();" class="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1 active:scale-95">
           <span>📋</span>
@@ -232,7 +232,7 @@
           <span class="text-[11px] text-slate-400">2026-2027 Öğretmenler Odası Çay Ocağı</span>
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <button onclick="copyWhatsAppAnnouncement()" class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition active:scale-95">
           <span>📲</span>
           <span>WhatsApp Duyurusunu Kopyala</span>
@@ -270,8 +270,8 @@
 
       <!-- Filtre ve Aksiyon Çubuğu -->
       <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-wrap gap-3 justify-between items-center">
-        <div class="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
-          <input type="text" id="searchInput" placeholder="Öğretmen ara..." class="px-3 py-2 text-xs border border-slate-300 rounded-lg flex-1 min-w-[160px] focus:outline-none focus:ring-2 focus:ring-amber-500">
+        <div class="flex flex-wrap items-center gap-2 flex-1 w-full sm:w-auto min-w-0 sm:min-w-[280px]">
+          <input type="text" id="searchInput" placeholder="Öğretmen ara..." class="px-3 py-2 text-xs border border-slate-300 rounded-lg flex-1 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-amber-500">
           <select id="filterStatusSelect" class="px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
             <option value="all">Tüm Öğretmenler / Personel</option>
             <option value="katiliyor">☕ Sadece Katılanlar</option>
@@ -321,7 +321,7 @@
             İstediğiniz zaman <strong>"Listeyi Yenile"</strong> butonuna basarak güncel durumu görebilirsiniz.
           </span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <button type="button" onclick="manualRefreshList()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer" title="Listeyi Yenile">
             <span>🔄</span>
             <span>Listeyi Yenile</span>
@@ -339,7 +339,7 @@
 
       <!-- Tablo -->
       <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto shadow-xs">
-        <table class="w-full text-left text-xs">
+        <table class="w-full text-left text-xs min-w-[880px]">
           <thead class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
             <tr>
               <th class="p-3">No</th>
@@ -400,7 +400,7 @@
             </div>
             <div id="statTotalBardak" class="text-sm font-extrabold text-indigo-950 mt-1">0</div>
           </div>
-          <div class="bg-red-50/80 border border-red-200 p-2.5 rounded-xl">
+          <div class="bg-red-50/80 border border-red-200 p-2.5 rounded-xl col-span-2 sm:col-span-1">
             <div class="text-[10px] font-bold text-red-800 uppercase flex items-center gap-1">
               <span>💰</span> Toplam Gider
             </div>
@@ -410,7 +410,7 @@
 
         <!-- Fatura / Harcama Tablosu -->
         <div class="overflow-x-auto border border-slate-200 rounded-xl">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs min-w-[650px]">
             <thead class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
               <tr>
                 <th class="p-2.5 w-24">Tarih</th>
@@ -465,7 +465,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260910_4"></script>
+  <script src="app.js?v=20260910_5"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -676,8 +676,8 @@
   </script>
 
   <!-- HIZLI İÇE AKTARMA / LİSTE YAPISTIR MODALI -->
-  <div id="modalImport" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200">
+  <div id="modalImport" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto my-auto">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
         <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
           <span>📋</span>
@@ -700,8 +700,8 @@ veya gelen e-posta bildirim metni..." class="w-full p-3 text-xs border border-sl
   </div>
 
   <!-- GOOGLE APPS SCRIPT / BULUT BAĞLANTISI MODALI -->
-  <div id="modalCloudConfig" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200">
+  <div id="modalCloudConfig" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto my-auto">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
         <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
           <span>☁️</span>
