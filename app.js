@@ -34,7 +34,7 @@ const DEFAULT_TEACHERS = [
   { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilgisayar ve Öğretim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -135,6 +135,9 @@ function loadState() {
   setStatus(46, "SERHAT ARSLAN", "katiliyor", "Formdan katıldı", "Bilişim Teknolojileri");
   setStatus(31, "MERAL HIZAL", "katiliyor", "Formdan katıldı", "Görsel Sanatlar");
 
+  const mSeker = state.teachers.find(t => t.id === 35 || t.name.includes("MUHAMMET ŞEKER"));
+  if (mSeker) mSeker.branch = "Bilişim Teknolojileri";
+
   // State alanlarını güvenceye al
   if (!state.expenses) state.expenses = [];
   state.devredenBakiye = 0;
@@ -145,13 +148,12 @@ function loadState() {
 }
 
 // Listeyi ve Durumları Manuel Yenile
-function manualRefreshList() {
+async function manualRefreshList() {
   loadState();
   updateDashboard();
   renderTable();
-  const cloudUrl = localStorage.getItem('google_script_url');
-  if (cloudUrl && typeof fetchFromCloudSync === 'function') {
-    fetchFromCloudSync(false);
+  if (typeof fetchFromCloudSync === 'function') {
+    await fetchFromCloudSync(false);
   } else {
     showToast("🔄 Liste ve durumlar başarıyla yenilendi!");
   }
@@ -566,79 +568,122 @@ function importGoogleFormResponses() {
   saveState();
 }
 
-// Bulut Senkronizasyon (Google E-Tablo / Web App Bağlantısı)
+// Canlı Bulut Senkronizasyon (Tam Otomatik & Canlı)
 async function fetchFromCloudSync(silent = true) {
-  const cloudUrl = localStorage.getItem('google_script_url');
-  if (!cloudUrl) {
-    if (!silent) {
-      const ask = prompt("Google E-Tablo / Apps Script Web App bağlantı URL'nizi giriniz:\n(Otomatik 20.000 istek/gün kotası sağlar)");
-      if (ask && ask.trim().startsWith('http')) {
-        localStorage.setItem('google_script_url', ask.trim());
-        showToast("✅ Bulut bağlantı adresi kaydedildi!");
-        fetchFromCloudSync(false);
-      }
-    }
-    return;
-  }
-
   if (!silent) showToast("⏳ Bulut veritabanından yanıtlar eşitleniyor...");
+  let updatedCount = 0;
+
+  const norm = (s) => (s || '').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/i/g, 'I').replace(/ğ/g, 'G').replace(/Ğ/g, 'G').replace(/ş/g, 'S').replace(/Ş/g, 'S').replace(/ç/g, 'C').replace(/Ç/g, 'C').replace(/ö/g, 'O').replace(/Ö/g, 'O').replace(/ü/g, 'U').replace(/Ü/g, 'U').toUpperCase().trim();
+
+  // 1. Canlı Veri Kanalından Çek (ntfy.sh - Sıfır Kurulum, Anında Eşitleme)
   try {
-    const res = await fetch(cloudUrl + (cloudUrl.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) return;
-    const json = await res.json();
-    if (!json || !json.data) return;
-
-    let updatedCount = 0;
-    for (const [key, val] of Object.entries(json.data)) {
-      const parts = String(val).split('|');
-      const status = parts[0];
-      const note = parts[1] || '';
-      const customName = parts[2] || '';
-      const customBranch = parts[3] || 'Yeni Öğretmen';
-
-      const norm = (s) => (s || '').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/i/g, 'I').replace(/ğ/g, 'G').replace(/Ğ/g, 'G').replace(/ş/g, 'S').replace(/Ş/g, 'S').replace(/ç/g, 'C').replace(/Ç/g, 'C').replace(/ö/g, 'O').replace(/Ö/g, 'O').replace(/ü/g, 'U').replace(/Ü/g, 'U').toUpperCase().trim();
-
-      let teacher = null;
-      if (!isNaN(key) && Number(key) > 0) {
-        teacher = state.teachers.find(t => t.id === Number(key));
-      }
-      if (!teacher && customName) {
-        teacher = state.teachers.find(t => norm(t.name) === norm(customName));
-      }
-      if (!teacher && isNaN(key)) {
-        teacher = state.teachers.find(t => norm(t.name) === norm(key));
-      }
-
-      if (teacher) {
-        if (teacher.status !== status || (note && teacher.note !== note)) {
-          teacher.status = status;
-          if (note) teacher.note = note;
-          updatedCount++;
-        }
-      } else {
-        const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
-        state.teachers.push({
-          id: nextId,
-          name: (customName || key).toUpperCase('tr'),
-          branch: customBranch,
-          status: status,
-          t1: false, t2: false, t3: false, t4: false,
-          note: note || 'Formdan eklendi'
-        });
-        updatedCount++;
-      }
-    }
-
-    if (updatedCount > 0) {
-      saveState();
-      updateDashboard();
-      if (!silent) showToast(`✅ Buluttan ${updatedCount} öğretmen yanıtı güncellendi!`);
-    } else {
-      if (!silent) showToast("✅ Liste zaten en güncel durumda.");
+    const res = await fetch('https://ntfy.sh/cay_mujdattelli_2026_okul/json?poll=1&since=12h', { cache: 'no-store' });
+    if (res.ok) {
+      const text = await res.text();
+      const lines = text.trim().split('\n').filter(Boolean);
+      lines.forEach(line => {
+        try {
+          const item = JSON.parse(line);
+          if (item.event === 'message' && item.message) {
+            let data = null;
+            try { data = JSON.parse(item.message); } catch(e) {}
+            if (data && (data.id || data.name)) {
+              let teacher = null;
+              if (data.id && !isNaN(data.id)) {
+                teacher = state.teachers.find(t => t.id === Number(data.id));
+              }
+              if (!teacher && data.name) {
+                teacher = state.teachers.find(t => norm(t.name) === norm(data.name));
+              }
+              if (teacher) {
+                if (teacher.status !== data.status || (data.note && teacher.note !== data.note)) {
+                  teacher.status = data.status;
+                  if (data.note) teacher.note = data.note;
+                  if (data.branch && (!teacher.branch || teacher.branch === 'Yeni Öğretmen')) {
+                    teacher.branch = data.branch;
+                  }
+                  updatedCount++;
+                }
+              } else if (data.name) {
+                const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
+                state.teachers.push({
+                  id: nextId,
+                  name: data.name.toUpperCase('tr'),
+                  branch: data.branch || 'Yeni Öğretmen',
+                  status: data.status,
+                  t1: false, t2: false, t3: false, t4: false,
+                  note: data.note || 'Formdan eklendi'
+                });
+                updatedCount++;
+              }
+            }
+          }
+        } catch(e) {}
+      });
     }
   } catch (err) {
-    console.warn("Bulut senkronizasyon hatası:", err);
-    if (!silent) alert("Bulut bağlantı hatası: " + err.message);
+    console.warn("ntfy senkronizasyon hatası:", err);
+  }
+
+  // 2. Varsa Google E-Tablo Web App Bağlantısından Çek
+  const cloudUrl = localStorage.getItem('google_script_url');
+  if (cloudUrl) {
+    try {
+      const res = await fetch(cloudUrl + (cloudUrl.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.data) {
+          for (const [key, val] of Object.entries(json.data)) {
+            const parts = String(val).split('|');
+            const status = parts[0];
+            const note = parts[1] || '';
+            const customName = parts[2] || '';
+            const customBranch = parts[3] || 'Yeni Öğretmen';
+
+            let teacher = null;
+            if (!isNaN(key) && Number(key) > 0) {
+              teacher = state.teachers.find(t => t.id === Number(key));
+            }
+            if (!teacher && customName) {
+              teacher = state.teachers.find(t => norm(t.name) === norm(customName));
+            }
+            if (!teacher && isNaN(key)) {
+              teacher = state.teachers.find(t => norm(t.name) === norm(key));
+            }
+
+            if (teacher) {
+              if (teacher.status !== status || (note && teacher.note !== note)) {
+                teacher.status = status;
+                if (note) teacher.note = note;
+                updatedCount++;
+              }
+            } else {
+              const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
+              state.teachers.push({
+                id: nextId,
+                name: (customName || key).toUpperCase('tr'),
+                branch: customBranch,
+                status: status,
+                t1: false, t2: false, t3: false, t4: false,
+                note: note || 'Formdan eklendi'
+              });
+              updatedCount++;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Google Script senkronizasyon hatası:", err);
+    }
+  }
+
+  if (updatedCount > 0) {
+    saveState();
+    updateDashboard();
+    renderTable();
+    if (!silent) showToast(`✅ Buluttan ${updatedCount} öğretmen yanıtı güncellendi!`);
+  } else {
+    if (!silent) showToast("✅ Liste zaten en güncel durumda.");
   }
 }
 

@@ -381,7 +381,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260909_60"></script>
+  <script src="app.js?v=20260909_70"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -509,50 +509,62 @@
         }
         saveState();
 
-        // Google E-Tablo / Web App Bağlantısı Varsa Anlık İlet
+        // 1. CANLI BULUT VERİTABANINA ANINDA İLET (ntfy.sh - Sıfır Kota, Anında Canlı İletim)
+        try {
+          let teacherKey = selectedRadio.getAttribute('data-id');
+          let teacherName = '';
+          let teacherBranch = '';
+
+          if (selectedRadio.value.includes('LİSTEDE ADIM YOK') && customInput && customInput.value.trim()) {
+            teacherName = customInput.value.trim().toUpperCase('tr');
+            teacherBranch = 'Yeni Öğretmen';
+            teacherKey = teacherName;
+          } else if (selectedRadio.value) {
+            const m = selectedRadio.value.match(/^(?:(\d+)\s*-\s*)?([^(]+)(?:\(([^)]+)\))?/);
+            if (m) {
+              if (m[1]) teacherKey = m[1];
+              if (m[2]) teacherName = m[2].trim();
+              if (m[3]) teacherBranch = m[3].trim();
+            }
+          }
+
+          const payload = {
+            id: teacherKey,
+            name: teacherName || selectedRadio.value,
+            branch: teacherBranch,
+            status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
+            note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı',
+            time: Date.now()
+          };
+
+          await fetch('https://ntfy.sh/cay_mujdattelli_2026_okul', {
+            method: 'POST',
+            headers: { 'Title': 'Cay Katilimi' },
+            body: JSON.stringify(payload)
+          });
+        } catch (cloudErr) {
+          console.warn('Canlı bulut iletim hatası:', cloudErr);
+        }
+
+        // 2. Varsa Google E-Tablo / Web App Bağlantısına İlet
         try {
           const cloudDbUrl = localStorage.getItem('google_script_url');
           if (cloudDbUrl) {
-            let teacherKey = selectedRadio.getAttribute('data-id');
-            if (!teacherKey && selectedRadio.value) {
-              const m = selectedRadio.value.match(/^(\d+)\s*-/);
-              if (m) teacherKey = m[1];
-            }
-            if (!teacherKey && selectedRadio.value && typeof DEFAULT_TEACHERS !== 'undefined') {
-              for (let t of DEFAULT_TEACHERS) {
-                if (selectedRadio.value.includes(t.name)) {
-                  teacherKey = String(t.id);
-                  break;
-                }
-              }
-            }
-
-            let noteVal = noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı';
-            let nameVal = selectedRadio.value;
-            let branchVal = '';
-
-            if (selectedRadio.value.includes('LİSTEDE ADIM YOK') && customInput && customInput.value.trim()) {
-              teacherKey = customInput.value.trim().toUpperCase('tr');
-              nameVal = customInput.value.trim().toUpperCase('tr');
-              branchVal = 'Yeni Öğretmen';
-            }
-
-            if (teacherKey) {
-              await fetch(cloudDbUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  key: teacherKey,
-                  status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
-                  note: noteVal,
-                  name: nameVal,
-                  branch: branchVal
-                })
-              });
-            }
+            let teacherKey = selectedRadio.getAttribute('data-id') || selectedRadio.value;
+            await fetch(cloudDbUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                key: teacherKey,
+                status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
+                note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı',
+                name: selectedRadio.value,
+                branch: ''
+              })
+            });
           }
-        } catch (cloudErr) {
-          console.warn('Bulut senkronizasyon hatası:', cloudErr);
+        } catch (scriptErr) {
+          console.warn('Google Script iletim hatası:', scriptErr);
         }
       }
 
