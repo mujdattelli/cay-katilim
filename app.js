@@ -1101,34 +1101,21 @@ Değerli Öğretmenlerimiz,
   });
 }
 
-// Maaş Günü Özel Hatırlatma Metnini Kopyala
+// Maaş Günü Özel Hatırlatma Metnini Kopyala (Kısa & Net)
 function copyMaasGunuAnnouncement() {
   const msg = 
-`☕ *GÜNAYDIN DEĞERLİ ÖĞRETMENLERİMİZ / MAAŞ GÜNÜ & KATILIM HATIRLATMASI* 💸
+`☕ *Değerli Öğretmenlerimiz, Hayırlı Maaşlar!* 💸
 
-Maaş günümüz hayırlı ve bereketli olsun. 💐
-
-⚠️ *ÖNEMLİ: HENÜZ KATILIM TERCİHİNİ BİLDİRMEYEN HOCALARIMIZ*
-Çay ocağımızın malzeme alımları (kaç kilo çay, şeker, bardak vb. alınacağı) net katılımcı sayısına göre planlanmaktadır. 
-
-Bu nedenle; *çay ocağına katılacak olan hocalarımızın da katılmayacak olan hocalarımızın da* aşağıdaki bağlantıya tıklayarak adını seçip *EVET* veya *HAYIR* tercihini işaretlemesi rica olunur:
+⚠️ Çay ocağı malzeme planlaması için *HENÜZ TERCİHİNİ BİLDİRMEYEN* tüm hocalarımızın aşağıdaki linkten *"Katılıyorum"* ya da *"Katılmıyorum"* şeklinde seçim yapması rica olunur:
 👉 https://mujdattelli.github.io/cay-katilim/
-*(Listede adını göremeyen hocalarımız en alttaki seçeneği işaretleyip adını yazabilir.)*
 
-💳 *KATILAN HOCALARIMIZ İÇİN ÖDEME BİLGİLERİ (IBAN):*
-Katılacak hocalarımız *1. Taksit (300 TL)* veya dileyenler *1. Dönem Peşin (600 TL)* katılım payını aşağıdaki hesaba gönderebilirler:
-
+💳 *Katılacak hocalarımız 1. Taksit (300 TL) veya 1. Dönem (600 TL) ödemesini gönderebilir:*
 👤 *Alıcı:* MÜJDAT TELLİ
 🏦 *IBAN:* TR83 0001 2009 8620 0001 0211 45
-📝 *Açıklama:* Adınız Soyadınız - Çay Parası
-
-Ödemesini gönderen hocalarımızın kayıtları sisteme anlık işlenmektedir; durumunuzu aynı bağlantıdan takip edebilirsiniz.
-
-Anlayışınız, iş birliğiniz ve desteğiniz için çok teşekkür eder, iyi dersler dilerim. ☕✨
-*Müjdat TELLİ* - Çay Ocağı Sorumlusu`;
+📝 *Açıklama:* Adınız Soyadınız - Çay Parası`;
 
   navigator.clipboard.writeText(msg).then(() => {
-    showToast("✅ Maaş Günü ve Katılım Tercihi Mesajı panoya kopyalandı!\nOkul WhatsApp grubuna doğrudan yapıştırabilirsiniz.");
+    showToast("✅ Kısa Maaş Günü Mesajı panoya kopyalandı!");
   });
 }
 
