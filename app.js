@@ -1,4 +1,4 @@
-// Öğretmen ve Personel Başlangıç Listesi (59 Kişi)
+// Öğretmen ve Personel Başlangıç Listesi (60 Kişi)
 const DEFAULT_TEACHERS = [
   { id: 1, name: "ABDURRAHİM BÜYÜKDAĞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 2, name: "ASLI GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -11,17 +11,17 @@ const DEFAULT_TEACHERS = [
   { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 10, name: "DEMET KESEN", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 11, name: "DEMET SAVRUK", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 13, name: "DEVRİM YILDIZ", branch: "Felsefe", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
+  { id: 13, name: "DEVRİM YILDIZ", branch: "Felsefe", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
   { id: 14, name: "DİĞDEM ACAR", branch: "Biyoloji", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 15, name: "DURMUŞ KIZILKAYA", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 16, name: "EBRU ELMAS", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 17, name: "EBRU KÜÇÜKALİ TURGUT", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 17, name: "EBRU KÜÇÜKALİ TURGUT", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
   { id: 18, name: "EDİP TAŞDEMİR", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
   { id: 20, name: "FATMA NUR SIVAR", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
   { id: 23, name: "GÖKHAN GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 24, name: "HALDUN YILDIZ", branch: "Tarih", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "Dışarı tüp alıyor" },
   { id: 25, name: "HANDAN YASA", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -37,7 +37,7 @@ const DEFAULT_TEACHERS = [
   { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, note: "1.200 TL (Yıllık Tam Ödeme) ödendi" },
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
+  { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
   { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Çay Ocağı Sorumlusu" },
   { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
@@ -48,20 +48,21 @@ const DEFAULT_TEACHERS = [
   { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
+  { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
   { id: 50, name: "SİNAN CAN YÜCEL", branch: "İngilizce", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, note: "1.200 TL (Yıllık Tam Ödeme) ödendi" },
   { id: 51, name: "SONER TAŞ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
   { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
+  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem / 1. ve 2. Taksit) ödendi" },
   { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
   { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
   { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" }
+  { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) Zeynep Bozdemir tarafından ödendi" },
+  { id: 60, name: "ELİF CANSU KESKİN", branch: "Öğretmen", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.09.10_v3";
+const CANONICAL_DATA_VERSION = "2026.09.15_v1";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
