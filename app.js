@@ -1104,25 +1104,31 @@ Değerli Öğretmenlerimiz,
 // Maaş Günü Özel Hatırlatma Metnini Kopyala
 function copyMaasGunuAnnouncement() {
   const msg = 
-`☕ *GÜNAYDIN DEĞERLİ ÖĞRETMENLERİMİZ / MAAŞ GÜNÜ HATIRLATMASI* 💸
+`☕ *GÜNAYDIN DEĞERLİ ÖĞRETMENLERİMİZ / MAAŞ GÜNÜ & KATILIM HATIRLATMASI* 💸
 
 Maaş günümüz hayırlı ve bereketli olsun. 💐
 
-Öğretmenler odası çay ocağımızın kesintisiz devam edebilmesi, taze çay, şeker ve ikram malzemesi alımlarını aksatmadan yapabilmemiz için *1. Taksit (300 TL)* veya isteyen hocalarımız için *1. Dönem Peşin (600 TL)* çay ocağı katılım payınızı gönderebilirsiniz.
+⚠️ *ÖNEMLİ: HENÜZ KATILIM TERCİHİNİ BİLDİRMEYEN HOCALARIMIZ*
+Çay ocağımızın malzeme alımları (kaç kilo çay, şeker, bardak vb. alınacağı) net katılımcı sayısına göre planlanmaktadır. 
 
-💳 *ÖDEME BİLGİLERİ (IBAN)*
+Bu nedenle; *çay ocağına katılacak olan hocalarımızın da katılmayacak olan hocalarımızın da* aşağıdaki bağlantıya tıklayarak adını seçip *EVET* veya *HAYIR* tercihini işaretlemesi rica olunur:
+👉 https://mujdattelli.github.io/cay-katilim/
+*(Listede adını göremeyen hocalarımız en alttaki seçeneği işaretleyip adını yazabilir.)*
+
+💳 *KATILAN HOCALARIMIZ İÇİN ÖDEME BİLGİLERİ (IBAN):*
+Katılacak hocalarımız *1. Taksit (300 TL)* veya dileyenler *1. Dönem Peşin (600 TL)* katılım payını aşağıdaki hesaba gönderebilirler:
+
 👤 *Alıcı:* MÜJDAT TELLİ
 🏦 *IBAN:* TR83 0001 2009 8620 0001 0211 45
 📝 *Açıklama:* Adınız Soyadınız - Çay Parası
 
-Ödemesini gönderen hocalarımızın listesini anlık olarak güncelliyoruz. Durumunuzu ve güncel listeyi aşağıdaki bağlantıdan takip edebilir, henüz bildirmeyen hocalarımız tercihlerini iletebilir:
-👉 https://mujdattelli.github.io/cay-katilim/
+Ödemesini gönderen hocalarımızın kayıtları sisteme anlık işlenmektedir; durumunuzu aynı bağlantıdan takip edebilirsiniz.
 
-Desteğiniz ve iş birliğiniz için çok teşekkür eder, iyi dersler dilerim. ☕✨
+Anlayışınız, iş birliğiniz ve desteğiniz için çok teşekkür eder, iyi dersler dilerim. ☕✨
 *Müjdat TELLİ* - Çay Ocağı Sorumlusu`;
 
   navigator.clipboard.writeText(msg).then(() => {
-    showToast("✅ Maaş Günü Hatırlatma Mesajı panoya kopyalandı!\nOkul WhatsApp grubuna doğrudan yapıştırabilirsiniz.");
+    showToast("✅ Maaş Günü ve Katılım Tercihi Mesajı panoya kopyalandı!\nOkul WhatsApp grubuna doğrudan yapıştırabilirsiniz.");
   });
 }
 
