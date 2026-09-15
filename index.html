@@ -233,11 +233,15 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <button onclick="copyWhatsAppAnnouncement()" class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition active:scale-95">
-          <span>📲</span>
-          <span>WhatsApp Duyurusunu Kopyala</span>
+        <button onclick="copyMaasGunuAnnouncement()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition active:scale-95 shadow-sm" title="Maaş Günü Hatırlatma Mesajını Kopyala">
+          <span>💸</span>
+          <span>Maaş Günü Mesajı</span>
         </button>
-        <button onclick="toggleAdminView()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold px-3 py-1.5 rounded-lg transition">
+        <button onclick="copyWhatsAppAnnouncement()" class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition active:scale-95" title="Genel Katılım Duyurusunu Kopyala">
+          <span>📲</span>
+          <span>Genel Duyuru</span>
+        </button>
+        <button onclick="toggleAdminView()" class="text-xs bg-slate-800 hover:bg-slate-700 text-white font-semibold px-3 py-1.5 rounded-lg transition border border-slate-700">
           &larr; Öğretmen Formuna Dön
         </button>
       </div>
@@ -465,7 +469,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260910_5"></script>
+  <script src="app.js?v=20260915_1"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {

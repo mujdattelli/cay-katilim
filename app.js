@@ -1101,6 +1101,31 @@ Değerli Öğretmenlerimiz,
   });
 }
 
+// Maaş Günü Özel Hatırlatma Metnini Kopyala
+function copyMaasGunuAnnouncement() {
+  const msg = 
+`☕ *GÜNAYDIN DEĞERLİ ÖĞRETMENLERİMİZ / MAAŞ GÜNÜ HATIRLATMASI* 💸
+
+Maaş günümüz hayırlı ve bereketli olsun. 💐
+
+Öğretmenler odası çay ocağımızın kesintisiz devam edebilmesi, taze çay, şeker ve ikram malzemesi alımlarını aksatmadan yapabilmemiz için *1. Taksit (300 TL)* veya isteyen hocalarımız için *1. Dönem Peşin (600 TL)* çay ocağı katılım payınızı gönderebilirsiniz.
+
+💳 *ÖDEME BİLGİLERİ (IBAN)*
+👤 *Alıcı:* MÜJDAT TELLİ
+🏦 *IBAN:* TR83 0001 2009 8620 0001 0211 45
+📝 *Açıklama:* Adınız Soyadınız - Çay Parası
+
+Ödemesini gönderen hocalarımızın listesini anlık olarak güncelliyoruz. Durumunuzu ve güncel listeyi aşağıdaki bağlantıdan takip edebilir, henüz bildirmeyen hocalarımız tercihlerini iletebilir:
+👉 https://mujdattelli.github.io/cay-katilim/
+
+Desteğiniz ve iş birliğiniz için çok teşekkür eder, iyi dersler dilerim. ☕✨
+*Müjdat TELLİ* - Çay Ocağı Sorumlusu`;
+
+  navigator.clipboard.writeText(msg).then(() => {
+    showToast("✅ Maaş Günü Hatırlatma Mesajı panoya kopyalandı!\nOkul WhatsApp grubuna doğrudan yapıştırabilirsiniz.");
+  });
+}
+
 // Kolay Bildirim / Toast Gösterici
 function showToast(message) {
   const toast = document.getElementById('toastBox');
