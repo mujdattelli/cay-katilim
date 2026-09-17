@@ -220,10 +220,19 @@ function saveState() {
     }
   }
 
-  // İkincil bağımsız fatura yedeği (Fatura asla kaybolmasın):
+  // İkincil bağımsız fatura yedeği (Fatura asla kaybolmasın - Kota korumalı):
   try {
     if (state.expenses && state.expenses.length > 0) {
-      localStorage.setItem('cay_expenses_backup', JSON.stringify(state.expenses));
+      try {
+        localStorage.setItem('cay_expenses_backup', JSON.stringify(state.expenses));
+      } catch(qErr) {
+        const lightweightExpenses = state.expenses.map(exp => {
+          const c = { ...exp };
+          delete c.receiptImg;
+          return c;
+        });
+        localStorage.setItem('cay_expenses_backup', JSON.stringify(lightweightExpenses));
+      }
     }
   } catch(e) {}
 
