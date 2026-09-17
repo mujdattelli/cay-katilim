@@ -62,12 +62,16 @@ const DEFAULT_TEACHERS = [
   { id: 60, name: "ELİF CANSU KESKİN", branch: "Öğretmen", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" }
 ];
 
+const DEFAULT_EXPENSES = [
+  // Kalıcı sistem faturaları buraya eklenecektir
+];
+
 const CANONICAL_DATA_VERSION = "2026.09.15_v1";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
   teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
-  expenses: [],
+  expenses: JSON.parse(JSON.stringify(DEFAULT_EXPENSES)),
   devredenBakiye: 0,
   filterStatus: 'all',
   searchQuery: ''
@@ -89,10 +93,14 @@ function loadState() {
 
   // Sürüm kontrolü: Eğer kayıt yoksa, eski sürüme aitse veya bozuksa:
   if (!loadedState || loadedState.version !== CANONICAL_DATA_VERSION || !Array.isArray(loadedState.teachers)) {
+    const preservedExpenses = (loadedState && Array.isArray(loadedState.expenses) && loadedState.expenses.length > 0)
+      ? loadedState.expenses
+      : JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
+
     state = {
       version: CANONICAL_DATA_VERSION,
       teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
-      expenses: (loadedState && loadedState.expenses) || [],
+      expenses: preservedExpenses,
       devredenBakiye: 0,
       filterStatus: 'all',
       searchQuery: ''
@@ -112,6 +120,15 @@ function loadState() {
   });
 
   if (!state.expenses) state.expenses = [];
+  // Varsa DEFAULT_EXPENSES'tan eksik olanları koru
+  if (Array.isArray(DEFAULT_EXPENSES)) {
+    DEFAULT_EXPENSES.forEach(de => {
+      if (!state.expenses.some(e => String(e.id) === String(de.id))) {
+        state.expenses.push(JSON.parse(JSON.stringify(de)));
+      }
+    });
+  }
+
   state.devredenBakiye = 0;
   if (!state.filterStatus) state.filterStatus = 'all';
   if (!state.searchQuery) state.searchQuery = '';
@@ -137,7 +154,7 @@ function resetToDefaults() {
     state = {
       version: CANONICAL_DATA_VERSION,
       teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
-      expenses: (state && state.expenses) || [],
+      expenses: (state && state.expenses && state.expenses.length > 0) ? state.expenses : JSON.parse(JSON.stringify(DEFAULT_EXPENSES)),
       devredenBakiye: 0,
       filterStatus: 'all',
       searchQuery: ''
@@ -147,10 +164,28 @@ function resetToDefaults() {
   }
 }
 
-// Veriyi Kaydet
+// Veriyi Kaydet (Kota Korumalı ve Güvenli)
 function saveState() {
   state.version = CANONICAL_DATA_VERSION;
-  localStorage.setItem('cay_takip_state_v1', JSON.stringify(state));
+  try {
+    localStorage.setItem('cay_takip_state_v1', JSON.stringify(state));
+  } catch (err) {
+    console.warn("LocalStorage kotası uyarısı, metinleri koruyarak kaydediliyor:", err);
+    try {
+      const safeState = JSON.parse(JSON.stringify(state));
+      if (safeState.expenses) {
+        // Dekont görseli çok büyükse görseli çıkartıp faturanın tarih, tutar ve açıklamasını koru
+        safeState.expenses.forEach(exp => {
+          if (exp.receiptImg && exp.receiptImg.length > 1000) {
+            delete exp.receiptImg;
+          }
+        });
+      }
+      localStorage.setItem('cay_takip_state_v1', JSON.stringify(safeState));
+    } catch(e2) {
+      console.error("Yerel kayıt hatası:", e2);
+    }
+  }
   updateDashboard();
 }
 
