@@ -297,7 +297,16 @@
             <span>📊</span>
             <span>Excel İndir</span>
           </button>
-          <button onclick="resetToDefaults()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition" title="Tüm öğretmen verilerini sıfırlar">
+          <button onclick="exportFullBackupJSON()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer" title="Tüm öğretmen seçimleri, notlar ve faturaları JSON yedeği olarak indir">
+            <span>💾</span>
+            <span>Yedek İndir</span>
+          </button>
+          <label class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer" title="Daha önce indirdiğiniz JSON yedeğini geri yükle">
+            <span>📥</span>
+            <span>Yedek Yükle</span>
+            <input type="file" accept=".json" onchange="importFullBackupJSON(event)" class="hidden">
+          </label>
+          <button onclick="resetToDefaults()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition" title="Tüm öğretmen verilerini sıfırlar (Faturalar korunur)">
             ⚙️ Sıfırla
           </button>
         </div>
@@ -372,10 +381,16 @@
               Alınan çay, şeker, deterjan, bardak vb. malzeme alımları, fatura tutarları ve dekont fotoğrafları.
             </p>
           </div>
-          <button type="button" onclick="openExpenseModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-            <span>➕</span>
-            <span>Yeni Fatura / Harcama Gir</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="exportFullBackupJSON()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl transition flex items-center gap-1 active:scale-95 cursor-pointer" title="Faturalar dahil tüm verileri yedek dosyası olarak indir">
+              <span>💾</span>
+              <span>Yedek İndir</span>
+            </button>
+            <button type="button" onclick="openExpenseModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+              <span>➕</span>
+              <span>Yeni Fatura / Harcama Gir</span>
+            </button>
+          </div>
         </div>
 
         <!-- Özet Malzeme Sayaçları (Hızlı Bakış Rozetleri) -->
@@ -469,7 +484,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260915_3"></script>
+  <script src="app.js?v=20260917_1"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
