@@ -63,10 +63,79 @@ const DEFAULT_TEACHERS = [
 ];
 
 const DEFAULT_EXPENSES = [
-  // Kalıcı sistem faturaları buraya eklenecektir
+  {
+    id: 1,
+    date: "2026-09-08",
+    desc: "Okul İdaresi Alımı (5 Çay - Destek/Bağış)",
+    amount: 1,
+    items: {
+      cay: "5 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: "Okul tarafından alındı (Ödeme yapılmadı)"
+    },
+    receiptImg: null
+  },
+  {
+    id: 2,
+    date: "2026-09-09",
+    desc: "Şahin Hoca Alımı (Çay)",
+    amount: 390,
+    items: {
+      cay: "1 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: ""
+    },
+    receiptImg: null
+  },
+  {
+    id: 3,
+    date: "2026-09-11",
+    desc: "Şahin Hoca Alımı (Çay)",
+    amount: 462,
+    items: {
+      cay: "1 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: ""
+    },
+    receiptImg: null
+  },
+  {
+    id: 4,
+    date: "2026-09-12",
+    desc: "ŞOK Market Alımı (Müjdat Telli)",
+    amount: 2899,
+    items: {
+      cay: "6 Çay",
+      seker: "5 Şeker",
+      deterjan: "",
+      bardak: "12 Bardak",
+      diger: ""
+    },
+    receiptImg: null
+  },
+  {
+    id: 5,
+    date: "2026-09-14",
+    desc: "ŞOK Market Alımı (Müjdat Telli)",
+    amount: 2330,
+    items: {
+      cay: "6 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: ""
+    },
+    receiptImg: null
+  }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.09.15_v1";
+const CANONICAL_DATA_VERSION = "2026.09.17_v2";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
@@ -567,6 +636,18 @@ function renderExpenses() {
 
   const formatSummary = (items, count, unitName) => {
     if (count === 0) return '0';
+    let totalNum = 0;
+    let hasNumbers = false;
+    items.forEach(it => {
+      const m = String(it).match(/\d+/);
+      if (m) {
+        totalNum += parseInt(m[0], 10);
+        hasNumbers = true;
+      }
+    });
+    if (hasNumbers && totalNum > 0) {
+      return totalNum + ' Adet';
+    }
     return items.join(', ');
   };
 
