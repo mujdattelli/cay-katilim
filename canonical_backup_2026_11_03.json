@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.03_LOCKED_v15",
-  "exportDate": "2026-11-03T17:23:55.134Z",
+  "version": "2026.11.03_LOCKED_v16",
+  "exportDate": "2026-11-03T17:40:58.880Z",
   "state": {
-    "version": "2026.11.03_LOCKED_v15",
+    "version": "2026.11.03_LOCKED_v16",
     "teachers": [
       {
         "id": 1,
@@ -57,30 +57,6 @@
         "id": 5,
         "name": "BEYZA YETİK",
         "branch": "Matematik",
-        "status": "bekliyor",
-        "t1": false,
-        "t2": false,
-        "t3": false,
-        "t4": false,
-        "t5": false,
-        "note": ""
-      },
-      {
-        "id": 6,
-        "name": "BİRGÜL COŞKUN",
-        "branch": "Bilişim Teknolojileri",
-        "status": "bekliyor",
-        "t1": false,
-        "t2": false,
-        "t3": false,
-        "t4": false,
-        "t5": false,
-        "note": ""
-      },
-      {
-        "id": 7,
-        "name": "BİROL ATEŞ",
-        "branch": "Din Kültürü ve Ahlâk Bilgisi",
         "status": "bekliyor",
         "t1": false,
         "t2": false,
@@ -345,13 +321,13 @@
         "id": 30,
         "name": "MAHMUT YAVUZ",
         "branch": "Elektrik-Elektronik Teknolojisi / Elektrik",
-        "status": "bekliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": ""
+        "note": "Bildirildi: Katılmıyor"
       },
       {
         "id": 31,

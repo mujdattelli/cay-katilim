@@ -1,12 +1,10 @@
-// Öğretmen ve Personel Başlangıç Listesi (60 Kişi)
+// Öğretmen ve Personel Başlangıç Listesi (58 Kişi)
 const DEFAULT_TEACHERS = [
   { id: 1, name: "ABDURRAHİM BÜYÜKDAĞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 2, name: "ASLI GÜREL", branch: "Bilişim Teknolojileri", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor (15.09.2026)" },
   { id: 3, name: "AYÇA ÇIKAR", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor (15.09.2026)" },
   { id: 4, name: "BESTİ GÜZELSOY", branch: "Türk Dili ve Edebiyatı", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 5, name: "BEYZA YETİK", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
-  { id: 6, name: "BİRGÜL COŞKUN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
-  { id: 7, name: "BİROL ATEŞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 8, name: "CELAL ATIŞ", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 10, name: "DEMET KESEN", branch: "Matematik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (Banka: 07-10-2026)" },
@@ -28,7 +26,7 @@ const DEFAULT_TEACHERS = [
   { id: 27, name: "ZEYNEP AYNAS", branch: "TARİH", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, t5: false, note: "1.200 TL ödendi (Banka: 29-09-2026 Havale - Zeynep Mila Aynas)" },
   { id: 28, name: "İBRAHİM CALAYIR", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 29, name: "İLKNUR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Biz Üst katta demliyoruz hocam, o yüzden katılmıyoruz." },
-  { id: 30, name: "MAHMUT YAVUZ", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 30, name: "MAHMUT YAVUZ", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Bildirildi: Katılmıyor" },
   { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
   { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (Banka: 22-09-2026)" },
@@ -135,7 +133,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_LOCKED_v15";
+const CANONICAL_DATA_VERSION = "2026.11.03_LOCKED_v16";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
 const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";
@@ -683,8 +681,8 @@ function setCheckPayMode(mode) {
   }
 }
 
-// Emekli olup listeden kalıcı çıkarılan öğretmen ID'leri (tarayıcı önbelleğinden geri gelmesini engeller)
-const RETIRED_TEACHER_IDS = new Set([25]); // 25 - Handan Yasa (Emekli oldu)
+// Listeden kalıcı çıkarılan öğretmen ID'leri (6 - Birgül Coşkun, 7 - Birol Ateş, 25 - Handan Yasa)
+const RETIRED_TEACHER_IDS = new Set([6, 7, 25]);
 
 // Veriyi LocalStorage + Mirror'dan Yükle ve Akıllıca Birleştir (SIFIR VERİ KAYBI GARANTİSİ)
 function loadState() {

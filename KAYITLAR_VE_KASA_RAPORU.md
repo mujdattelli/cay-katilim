@@ -1,7 +1,7 @@
 # ☕ 2026-2027 Eğitim-Öğretim Yılı Çay Ocağı Tam Kayıt ve Kasa Raporu
 
 > [!IMPORTANT]
-> **Son Güncelleme ve Kilitleme Tarihi:** `03.11.2026` (`2026.11.03_LOCKED_v15`)  
+> **Son Güncelleme ve Kilitleme Tarihi:** `03.11.2026` (`2026.11.03_LOCKED_v16`)  
 > **Sorumlu:** Müjdat TELLİ (`TR830001200986200001021145` — Halkbank *Okul Çay P*)  
 > **Ücret Tarifesi:** Yıllık **1.800 ₺** (*1. Dönem: 900 ₺* + *2. Dönem: 900 ₺*)
 
@@ -17,9 +17,9 @@
 | **🧾 Toplam Harcama / Fatura Gideri** | **5 Kayıt** *(19 Çay, 5 Şeker, 12 Bardak)* | **6.082 ₺** |
 | **✅ NET KASA BAKİYESİ** | *Gelir (16.700 ₺) − Gider (6.082 ₺)* | **10.618 ₺** |
 | **☕ Katılıyor** | **26 Kişi** | 24 ödeme yapan + 2 henüz ödeme görünmeyen |
-| **❌ Katılmıyor** | **13 Kişi** | Tamamı form/mesaj ile doğrulandı |
-| **⏳ Yanıt Bekliyor** | **21 Kişi** | Form doldurmayan ve ödeme yapmayanlar |
-| **👥 Toplam Aktif Öğretmen / Personel** | **60 Kişi** | *Handan Yasa emekli olduğu için listeden çıkarıldı* |
+| **❌ Katılmıyor** | **14 Kişi** | Tamamı form/mesaj ile doğrulandı |
+| **⏳ Yanıt Bekliyor** | **18 Kişi** | Form doldurmayan ve ödeme yapmayanlar |
+| **👥 Toplam Aktif Öğretmen / Personel** | **58 Kişi** | *Handan Yasa (emekli), Birgül Coşkun ve Birol Ateş listeden çıkarıldı* |
 
 ---
 
@@ -109,7 +109,7 @@
 
 ---
 
-## 5. 👥 Tüm Öğretmen ve Personel Tam Listesi (60 Kişi — Sıralı)
+## 5. 👥 Tüm Öğretmen ve Personel Tam Listesi (58 Kişi — Sıralı)
 
 | Sıra | Ad Soyad | Branş | Durum | Banka | Elden | Toplam Ödenen | 1. Dönem Kalan | Yıllık Kalan | Not / Açıklama |
 |---|---|---|---|---|---|---|---|---|---|
@@ -118,62 +118,60 @@
 | 3 | **AYÇA ÇIKAR** | Elektrik-Elektronik Teknolojisi / Elektronik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
 | 4 | **BESTİ GÜZELSOY** | Türk Dili ve Edebiyatı | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
 | 5 | **BEYZA YETİK** | Matematik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 6 | **BİRGÜL COŞKUN** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 7 | **BİROL ATEŞ** | Din Kültürü ve Ahlâk Bilgisi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 8 | **CELAL ATIŞ** | Türk Dili ve Edebiyatı | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 9 | **CEM KURTOĞLU** | Elektrik-Elektronik Teknolojisi / Elektrik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
-| 10 | **DEMET KESEN** | Matematik | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (Banka: 07-10-2026) |
-| 11 | **DEMET SAVRUK** | Bilişim Teknolojileri | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (Banka: 17-09-2026) |
-| 12 | **DERYA YILDIZ** | Fizik | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
-| 13 | **DEVRİM YILDIZ** | Felsefe | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
-| 14 | **DİĞDEM ACAR** | Biyoloji | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
-| 15 | **DURMUŞ KIZILKAYA** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 16 | **EBRU ELMAS** | İngilizce | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 17 | **EBRU KÜÇÜKALİ TURGUT** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 18 | **EDİP TAŞDEMİR** | Beden Eğitimi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 19 | **ERDİNÇ SİTRAVA** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
-| 20 | **FATMA NUR SIVAR** | Rehberlik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
-| 21 | **FEYZULLAH KÖKER** | Grafik ve Fotoğraf / Grafik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
-| 22 | **GÖKÇE ŞEN** | Özel Eğitim | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
-| 23 | **GÖKHAN GÜREL** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
-| 24 | **HALDUN YILDIZ** | Tarih | ⏳ Bekliyor | — | — | 0 ₺ | — | — | Dışarı tüp alıyor |
-| 25 | **HATİCE AĞAN** | Kimya / Kimya Teknolojisi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 26 | **ZEYNEP AYNAS** | TARİH | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (Banka: 29-09-2026 Havale - Zeynep Mila Aynas) |
-| 27 | **İBRAHİM CALAYIR** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 28 | **İLKNUR ÇIRPAN** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Biz Üst katta demliyoruz hocam, o yüzden katılmıyoruz. |
-| 29 | **MAHMUT YAVUZ** | Elektrik-Elektronik Teknolojisi / Elektrik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 30 | **MERAL HIZAL** | Görsel Sanatlar | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 31 | **MERİÇ AKKAYA** | Elektrik-Elektronik Teknolojisi / Elektrik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 32 | **MERYEM DEMİRTAŞ** | İngilizce | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (Banka: 22-09-2026) |
-| 33 | **MİRAY TEKAY** | Türk Dili ve Edebiyatı | ☕ Katılıyor | — | 800 ₺ | **800 ₺** | 100 ₺ | 1.000 ₺ | 800 TL ödendi (Elden: 600 TL + 200 TL | 1. Dönem 900 TL için +100 TL kalan) |
-| 34 | **MUHAMMET ŞEKER** | Bilişim Teknolojileri | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (1. Dönem 900 TL tam + 2. Dönem 300 TL) |
-| 35 | **MUHAMMET SERDAR BALIKLI** | Beden Eğitimi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 36 | **MURAT KAÇAN** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
-| 37 | **MURAT KANTARCI** | Bilişim Teknolojileri | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 38 | **MÜJDAT TELLİ** | Bilişim Teknolojileri | ☕ Katılıyor | — | 900 ₺ | **900 ₺** | 0 ₺ | 900 ₺ | Çay Ocağı Sorumlusu | 900 TL ödendi (1. Dönem Tam - Elden) |
-| 39 | **MÜNEVVER ÜNAL ÖTÜKEN** | Coğrafya | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 40 | **NAGİHAN KOÇ ÇAVUR** | Coğrafya | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 41 | **NURHAN CAN** | Türk Dili ve Edebiyatı | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (08.09.2026) |
-| 42 | **RABİA SULTAN ÇELİK** | Matematik | ☕ Katılıyor | 900 ₺ | — | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11) |
-| 43 | **SERAP KAR ATASEVEN** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 44 | **SERDAR ÇIRPAN** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Odada çay yapıyorum hocam, sizleri de beklerim :) |
-| 45 | **SERHAT ARSLAN** | Bilişim Teknolojileri | ☕ Katılıyor | — | — | 0 ₺ | 900 ₺ | 1.800 ₺ | Formdan katıldı |
-| 46 | **SEVİLAY ARSLAN** | Rehberlik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 47 | **SEVİLAY DEVECİ** | Elektrik-Elektronik Teknolojisi / Elektronik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 48 | **SİNAN RENÇBEROĞLU** | Bilişim Teknolojileri | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 49 | **SİNAN CAN YÜCEL** | İngilizce | ☕ Katılıyor | 1.800 ₺ | — | **1.800 ₺** | 0 ₺ | 0 ₺ | 1.800 TL ödendi (Tüm Yıl Tam - 1.200 TL 10-09 + 600 TL 03-11 fark) |
-| 50 | **SONER TAŞ** | Elektrik-Elektronik Teknolojisi / Elektronik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 51 | **ŞAHİN KARAKAŞ** | Bilişim Teknolojileri | ☕ Katılıyor | — | — | 0 ₺ | 900 ₺ | 1.800 ₺ | Onaylandı: Katılıyor |
-| 52 | **ŞAHİN ORHAN** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 53 | **UĞUR YUSUF SEZER** | Matematik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Çay tüketmiyorum. Teşekkürler. |
-| 54 | **ZEHRA GENÇ** | Matematik | ☕ Katılıyor | 600 ₺ | 300 ₺ | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 600 TL Banka + 300 TL Elden) |
-| 55 | **ZEYNEP ÇIBIK** | İngilizce | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 56 | **SEMA KANDEMİR** | Grafik ve Fotoğraf | ☕ Katılıyor | 900 ₺ | — | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11) |
-| 57 | **ZEYNEP BOZDEMİR** | Okul Aile Birliği | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 58 | **DEMET TÜRKMEN** | Okul Aile Birliği | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL Zeynep Bozdemir tarafından ödendi (1. Dönem için +300 TL kalan) |
-| 59 | **ELİF CANSU KESKİN** | Kimya / Kimya Teknolojisi | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
-| 60 | **ŞULE ERGUVAN** | Öğretmen | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (Banka: 17-09-2026 - 1. Dönem 900 TL + 2. Dönem 300 TL) |
-| — | **GENEL TOPLAM (60 KİŞİ)** | — | **26 ☕ / 13 ❌ / 21 ⏳** | **14.700 ₺** | **2.000 ₺** | **16.700 ₺** | — | — | — |
+| 6 | **CELAL ATIŞ** | Türk Dili ve Edebiyatı | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 7 | **CEM KURTOĞLU** | Elektrik-Elektronik Teknolojisi / Elektrik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
+| 8 | **DEMET KESEN** | Matematik | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (Banka: 07-10-2026) |
+| 9 | **DEMET SAVRUK** | Bilişim Teknolojileri | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (Banka: 17-09-2026) |
+| 10 | **DERYA YILDIZ** | Fizik | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
+| 11 | **DEVRİM YILDIZ** | Felsefe | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
+| 12 | **DİĞDEM ACAR** | Biyoloji | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
+| 13 | **DURMUŞ KIZILKAYA** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 14 | **EBRU ELMAS** | İngilizce | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 15 | **EBRU KÜÇÜKALİ TURGUT** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 16 | **EDİP TAŞDEMİR** | Beden Eğitimi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 17 | **ERDİNÇ SİTRAVA** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
+| 18 | **FATMA NUR SIVAR** | Rehberlik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
+| 19 | **FEYZULLAH KÖKER** | Grafik ve Fotoğraf / Grafik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
+| 20 | **GÖKÇE ŞEN** | Özel Eğitim | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
+| 21 | **GÖKHAN GÜREL** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
+| 22 | **HALDUN YILDIZ** | Tarih | ⏳ Bekliyor | — | — | 0 ₺ | — | — | Dışarı tüp alıyor |
+| 23 | **HATİCE AĞAN** | Kimya / Kimya Teknolojisi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 24 | **ZEYNEP AYNAS** | TARİH | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (Banka: 29-09-2026 Havale - Zeynep Mila Aynas) |
+| 25 | **İBRAHİM CALAYIR** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 26 | **İLKNUR ÇIRPAN** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Biz Üst katta demliyoruz hocam, o yüzden katılmıyoruz. |
+| 27 | **MAHMUT YAVUZ** | Elektrik-Elektronik Teknolojisi / Elektrik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Bildirildi: Katılmıyor |
+| 28 | **MERAL HIZAL** | Görsel Sanatlar | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 29 | **MERİÇ AKKAYA** | Elektrik-Elektronik Teknolojisi / Elektrik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 30 | **MERYEM DEMİRTAŞ** | İngilizce | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (Banka: 22-09-2026) |
+| 31 | **MİRAY TEKAY** | Türk Dili ve Edebiyatı | ☕ Katılıyor | — | 800 ₺ | **800 ₺** | 100 ₺ | 1.000 ₺ | 800 TL ödendi (Elden: 600 TL + 200 TL | 1. Dönem 900 TL için +100 TL kalan) |
+| 32 | **MUHAMMET ŞEKER** | Bilişim Teknolojileri | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (1. Dönem 900 TL tam + 2. Dönem 300 TL) |
+| 33 | **MUHAMMET SERDAR BALIKLI** | Beden Eğitimi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 34 | **MURAT KAÇAN** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor |
+| 35 | **MURAT KANTARCI** | Bilişim Teknolojileri | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 36 | **MÜJDAT TELLİ** | Bilişim Teknolojileri | ☕ Katılıyor | — | 900 ₺ | **900 ₺** | 0 ₺ | 900 ₺ | Çay Ocağı Sorumlusu | 900 TL ödendi (1. Dönem Tam - Elden) |
+| 37 | **MÜNEVVER ÜNAL ÖTÜKEN** | Coğrafya | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 38 | **NAGİHAN KOÇ ÇAVUR** | Coğrafya | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 39 | **NURHAN CAN** | Türk Dili ve Edebiyatı | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (08.09.2026) |
+| 40 | **RABİA SULTAN ÇELİK** | Matematik | ☕ Katılıyor | 900 ₺ | — | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11) |
+| 41 | **SERAP KAR ATASEVEN** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 42 | **SERDAR ÇIRPAN** | Bilişim Teknolojileri | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Odada çay yapıyorum hocam, sizleri de beklerim :) |
+| 43 | **SERHAT ARSLAN** | Bilişim Teknolojileri | ☕ Katılıyor | — | — | 0 ₺ | 900 ₺ | 1.800 ₺ | Formdan katıldı |
+| 44 | **SEVİLAY ARSLAN** | Rehberlik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 45 | **SEVİLAY DEVECİ** | Elektrik-Elektronik Teknolojisi / Elektronik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 46 | **SİNAN RENÇBEROĞLU** | Bilişim Teknolojileri | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 47 | **SİNAN CAN YÜCEL** | İngilizce | ☕ Katılıyor | 1.800 ₺ | — | **1.800 ₺** | 0 ₺ | 0 ₺ | 1.800 TL ödendi (Tüm Yıl Tam - 1.200 TL 10-09 + 600 TL 03-11 fark) |
+| 48 | **SONER TAŞ** | Elektrik-Elektronik Teknolojisi / Elektronik | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 49 | **ŞAHİN KARAKAŞ** | Bilişim Teknolojileri | ☕ Katılıyor | — | — | 0 ₺ | 900 ₺ | 1.800 ₺ | Onaylandı: Katılıyor |
+| 50 | **ŞAHİN ORHAN** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 51 | **UĞUR YUSUF SEZER** | Matematik | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Çay tüketmiyorum. Teşekkürler. |
+| 52 | **ZEHRA GENÇ** | Matematik | ☕ Katılıyor | 600 ₺ | 300 ₺ | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 600 TL Banka + 300 TL Elden) |
+| 53 | **ZEYNEP ÇIBIK** | İngilizce | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 54 | **SEMA KANDEMİR** | Grafik ve Fotoğraf | ☕ Katılıyor | 900 ₺ | — | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11) |
+| 55 | **ZEYNEP BOZDEMİR** | Okul Aile Birliği | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 56 | **DEMET TÜRKMEN** | Okul Aile Birliği | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL Zeynep Bozdemir tarafından ödendi (1. Dönem için +300 TL kalan) |
+| 57 | **ELİF CANSU KESKİN** | Kimya / Kimya Teknolojisi | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
+| 58 | **ŞULE ERGUVAN** | Öğretmen | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (Banka: 17-09-2026 - 1. Dönem 900 TL + 2. Dönem 300 TL) |
+| — | **GENEL TOPLAM (58 KİŞİ)** | — | **26 ☕ / 14 ❌ / 18 ⏳** | **14.700 ₺** | **2.000 ₺** | **16.700 ₺** | — | — | — |
 
 ---
 
@@ -182,4 +180,4 @@
 * **Canlı Web Adresi:** https://mujdattelli.github.io/cay-katilim/ *(Yönetim Şifresi: `2026`)*
 * **GitHub Deposu:** https://github.com/mujdattelli/cay-katilim
 * **Tam JSON Yedeği:** `canonical_backup_2026_11_03.json`
-* **Kilitli Veri Sürümü:** `2026.11.03_LOCKED_v15`
+* **Kilitli Veri Sürümü:** `2026.11.03_LOCKED_v16`
