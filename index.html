@@ -313,12 +313,12 @@
       </div>
 
       <!-- Kullanım Rehberi / Bilgi Kutusu -->
-      <div class="bg-amber-50 border border-amber-300 rounded-2xl p-4 text-xs text-amber-950 shadow-xs flex items-start gap-3">
-        <span class="text-xl">💡</span>
+      <div class="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-xs text-emerald-950 shadow-xs flex items-start gap-3">
+        <span class="text-xl">☁️</span>
         <div class="space-y-1">
-          <div class="font-bold text-amber-900 text-sm">Öğretmen Katılımını Onaylama:</div>
+          <div class="font-bold text-emerald-900 text-sm">Otomatik Kalıcı Bulut Sistemi Aktif (Gmail'e Gerek Yok!):</div>
           <p class="leading-relaxed">
-            Öğretmenlerin form yanıtları anında <strong>Gmail</strong> gelen kutunuza düşer. Tabloda ilgili öğretmenin katılım durumunu güncellemek için adının yanındaki <strong>"Yanıt Bekliyor"</strong> butonuna dokununuz (Tek tıkla yeşil <strong>"☕ Katılıyor"</strong> olur). Dönem ödemesini işaretlemek veya 900 TL'ye tamamlamak için ilgili dönem butonuna dokunabilirsiniz.
+            Öğretmenler formu doldurduğunda yanıtları <strong>doğrudan bu panele ve kalıcı bulut veritabanına</strong> otomatik kaydedilir (Gmail kontrol etmenize gerek yoktur). Tabloda istediğiniz öğretmenin durumunu veya <strong>300 ₺</strong> ödeme kutucuklarını tıkladığınızda da anında buluta kaydedilir.
           </p>
         </div>
       </div>
@@ -482,7 +482,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_7"></script>
+  <script src="app.js?v=20261103_8"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -604,6 +604,9 @@
               if (noteInput && noteInput.value.trim()) {
                 t.note = noteInput.value.trim();
               }
+              if (typeof pushTeachersToPermanentCloud === 'function') {
+                await pushTeachersToPermanentCloud(t.id);
+              }
               break;
             }
           }
@@ -646,44 +649,9 @@
         } catch (cloudErr) {
           console.warn('Canlı bulut iletim hatası:', cloudErr);
         }
-
-        // 2. Varsa Google E-Tablo / Web App Bağlantısına İlet
-        try {
-          const cloudDbUrl = localStorage.getItem('google_script_url');
-          if (cloudDbUrl) {
-            let teacherKey = selectedRadio.getAttribute('data-id') || selectedRadio.value;
-            await fetch(cloudDbUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                key: teacherKey,
-                status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
-                note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : (isKatiliyor ? 'Formdan katıldı' : 'Formdan bildirildi: Katılmıyor'),
-                name: selectedRadio.value,
-                branch: ''
-              })
-            });
-          }
-        } catch (scriptErr) {
-          console.warn('Google Script iletim hatası:', scriptErr);
-        }
       }
 
-      // Arka planda FormSubmit ile e-posta gönder
-      const formData = new FormData(this);
-      try {
-        await fetch('https://formsubmit.co/ajax/tellimujdat@gmail.com', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json'
-          },
-          body: formData
-        });
-      } catch (err) {
-        console.warn('E-posta bildirim gönderimi:', err);
-      }
-
-      // Başarı ekranına geçir
+      // Başarı ekranına geçir (Gmail / FormSubmit devre dışı bırakıldı - Doğrudan Buluta Kaydedilir)
       document.getElementById('formSection').classList.add('hidden');
       document.getElementById('successBanner').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });

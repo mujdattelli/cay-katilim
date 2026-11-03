@@ -135,7 +135,63 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_v7";
+const CANONICAL_DATA_VERSION = "2026.11.03_v8";
+const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
+const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";
+
+// Kalıcı Bulut Veritabanına Öğretmen Yanıt ve Ödemelerini Kaydet (Gmail'e Gerek Kalmadan Süresiz Saklar)
+async function pushTeachersToPermanentCloud(changedTeacherId = null) {
+  try {
+    let remoteMap = {};
+    try {
+      const getRes = await fetch(CLOUD_TEACHERS_DB_URL, { cache: 'no-store' });
+      if (getRes.ok) {
+        const getJson = await getRes.json();
+        if (getJson && getJson.data && getJson.data.t) {
+          remoteMap = { ...getJson.data.t };
+        }
+      }
+    } catch (ge) {}
+
+    const encodeTeacher = (t) => {
+      const mask = (t.t1 ? 1 : 0) | (t.t2 ? 2 : 0) | (t.t3 ? 4 : 0) | (t.t4 ? 8 : 0) | (t.t5 ? 16 : 0);
+      const ek1 = Number(t.ek1) || 0;
+      const ek2 = Number(t.ek2) || 0;
+      const stCode = t.status === 'katiliyor' ? '1' : (t.status === 'katilmiyor' ? '0' : '2');
+      let val = `${stCode}:${mask}`;
+      if (ek1 > 0 || ek2 > 0) val += `:${ek1}`;
+      if (ek2 > 0) val += `:${ek2}`;
+      return { val, isDefault: (t.status === 'bekliyor' && mask === 0 && ek1 === 0 && ek2 === 0) };
+    };
+
+    if (changedTeacherId !== null) {
+      const t = state.teachers.find(x => String(x.id) === String(changedTeacherId));
+      if (t) {
+        const { val, isDefault } = encodeTeacher(t);
+        if (isDefault) {
+          delete remoteMap[String(t.id)];
+        } else {
+          remoteMap[String(t.id)] = val;
+        }
+      }
+    } else {
+      state.teachers.forEach(t => {
+        const { val, isDefault } = encodeTeacher(t);
+        if (!isDefault) {
+          remoteMap[String(t.id)] = val;
+        }
+      });
+    }
+
+    await fetch(CLOUD_TEACHERS_DB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'cay_db', data: { t: remoteMap } })
+    });
+  } catch (e) {
+    console.warn("Kalıcı bulut kayıt uyarısı:", e);
+  }
+}
 
 let state = {
   version: CANONICAL_DATA_VERSION,
@@ -558,6 +614,7 @@ function cycleStatus(id) {
     teacher.status = 'katiliyor';
   }
   saveState();
+  pushTeachersToPermanentCloud(id);
 }
 
 // Dönem Ödeme Durumunu Değiştir (1. Dönem 900 TL / 2. Dönem 900 TL)
@@ -587,6 +644,7 @@ function toggleDonemOdeme(id, donemNo) {
     }
   }
   saveState();
+  pushTeachersToPermanentCloud(id);
 }
 
 // Eski fonksiyon uyumluluğu
@@ -595,6 +653,7 @@ function toggleTaksit(id, field) {
   if (!teacher) return;
   teacher[field] = !teacher[field];
   saveState();
+  pushTeachersToPermanentCloud(id);
 }
 
 // ================= HARCAMA & FATURA YÖNETİMİ =================
@@ -1088,6 +1147,45 @@ async function fetchFromCloudSync(silent = true) {
 
   const norm = (s) => (s || '').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/i/g, 'I').replace(/ğ/g, 'G').replace(/Ğ/g, 'G').replace(/ş/g, 'S').replace(/Ş/g, 'S').replace(/ç/g, 'C').replace(/Ç/g, 'C').replace(/ö/g, 'O').replace(/Ö/g, 'O').replace(/ü/g, 'U').replace(/Ü/g, 'U').toUpperCase().trim();
 
+  // 0. Kalıcı Bulut Veritabanından Çek (Süresiz saklanan ana bulut kayıtları - Gmail'e gerek bırakmaz)
+  try {
+    const permRes = await fetch(CLOUD_TEACHERS_DB_URL, { cache: 'no-store' });
+    if (permRes.ok) {
+      const permJson = await permRes.json();
+      if (permJson && permJson.data && permJson.data.t) {
+        const tMap = permJson.data.t;
+        for (const [idStr, codeStr] of Object.entries(tMap)) {
+          const teacher = state.teachers.find(t => String(t.id) === String(idStr));
+          if (teacher && typeof codeStr === 'string') {
+            const parts = codeStr.split(':');
+            const stCode = parts[0];
+            const mask = parseInt(parts[1] || '0', 10);
+            const ek1 = parseInt(parts[2] || '0', 10);
+            const ek2 = parseInt(parts[3] || '0', 10);
+
+            const newStatus = stCode === '1' ? 'katiliyor' : (stCode === '0' ? 'katilmiyor' : 'bekliyor');
+            if (newStatus !== 'bekliyor' && teacher.status !== newStatus) {
+              teacher.status = newStatus;
+              if (!teacher.note) {
+                teacher.note = newStatus === 'katiliyor' ? 'Formdan katıldı' : 'Formdan bildirildi: Katılmıyor';
+              }
+              updatedCount++;
+            }
+            if ((mask & 1) && !teacher.t1) { teacher.t1 = true; updatedCount++; }
+            if ((mask & 2) && !teacher.t2) { teacher.t2 = true; updatedCount++; }
+            if ((mask & 4) && !teacher.t3) { teacher.t3 = true; updatedCount++; }
+            if ((mask & 8) && !teacher.t4) { teacher.t4 = true; updatedCount++; }
+            if ((mask & 16) && !teacher.t5) { teacher.t5 = true; updatedCount++; }
+            if (ek1 > (Number(teacher.ek1) || 0)) { teacher.ek1 = ek1; updatedCount++; }
+            if (ek2 > (Number(teacher.ek2) || 0)) { teacher.ek2 = ek2; updatedCount++; }
+          }
+        }
+      }
+    }
+  } catch (permErr) {
+    console.warn("Kalıcı bulut okuma uyarısı:", permErr);
+  }
+
   // 1. Canlı Veri Kanalından Çek (ntfy.sh - Sıfır Kurulum, Anında Eşitleme)
   try {
     const res = await fetch('https://ntfy.sh/cay_mujdattelli_2026_okul/json?poll=1&since=all', { cache: 'no-store' });
@@ -1212,6 +1310,7 @@ async function fetchFromCloudSync(silent = true) {
 
   if (updatedCount > 0) {
     saveState();
+    pushTeachersToPermanentCloud();
     updateDashboard();
     renderTable();
     if (!silent) showToast(`✅ Buluttan ${updatedCount} öğretmen yanıtı güncellendi!`);
