@@ -82,26 +82,25 @@
       </p>
     </div>
 
-    <!-- FİYAT & TAKSİT KURALI -->
+    <!-- FİYAT & DÖNEM PLANI -->
     <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 text-xs text-slate-700">
       <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
         <span>💰</span>
-        <span>Güncel Katılım Ücreti & Dönem Planı (Yıllık Toplam: 1.800 TL)</span>
+        <span>Katılım Ücreti & Dönem Planı (Yıllık Toplam: 1.800 TL)</span>
       </h4>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
         <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl">
-          <div class="font-bold text-blue-900">1. DÖNEM (900 TL)</div>
-          <div class="text-blue-700 mt-1">• 1. Taksit: 300 TL | 2. Taksit: 300 TL</div>
-          <div class="text-blue-700 font-semibold">• Tamamlama (3. Taksit): +300 TL</div>
+          <div class="font-bold text-blue-900 text-xs">1. DÖNEM: 900 TL</div>
+          <div class="text-blue-700 mt-1">• 1. Dönem Katılım Bedeli: <strong>900 TL</strong></div>
           <div class="text-[10px] text-blue-600 mt-0.5">(1. dönem eksik yatıranlar 900 TL'ye tamamlar)</div>
         </div>
         <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
-          <div class="font-bold text-amber-900">2. DÖNEM (900 TL)</div>
-          <div class="text-amber-700 mt-1">• 2. Dönem Katılım Bedeli: 900 TL</div>
-          <div class="text-amber-700">• (2. dönem başında toplanacaktır)</div>
+          <div class="font-bold text-amber-900 text-xs">2. DÖNEM: 900 TL</div>
+          <div class="text-amber-700 mt-1">• 2. Dönem Katılım Bedeli: <strong>900 TL</strong></div>
+          <div class="text-[10px] text-amber-700 mt-0.5">(2. dönem başında toplanacaktır)</div>
         </div>
       </div>
-      <div class="text-slate-500 text-[11px]">Kişi başı toplam <strong>1.800 TL</strong> (1. Dönem <strong>900 TL</strong> + 2. Dönem <strong>900 TL</strong>) olarak uygulanmaktadır.</div>
+      <div class="text-slate-500 text-[11px]">Kişi başı yıllık toplam <strong>1.800 TL</strong> (1. Dönem <strong>900 TL</strong> + 2. Dönem <strong>900 TL</strong>) olarak uygulanmaktadır.</div>
     </div>
 
     <!-- IBAN & ALICI ADI ÖDEME BİLGİSİ (İKİSİ DE KOPYALANABİLİR) -->
@@ -282,7 +281,7 @@
             <option value="katiliyor">☕ Sadece Katılanlar</option>
             <option value="katilmiyor">❌ Sadece Katılmayanlar</option>
             <option value="bekliyor">⏳ Yanıt Bekleyenler</option>
-            <option value="borclu">⚠️ Taksit Borcu Olanlar</option>
+            <option value="borclu">⚠️ Ödeme Eksiği Olanlar</option>
           </select>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -319,7 +318,7 @@
         <div class="space-y-1">
           <div class="font-bold text-amber-900 text-sm">Öğretmen Katılımını Onaylama:</div>
           <p class="leading-relaxed">
-            Öğretmenlerin form yanıtları anında <strong>Gmail</strong> gelen kutunuza düşer. Tabloda ilgili öğretmenin katılım durumunu güncellemek için adının yanındaki <strong>"Yanıt Bekliyor"</strong> butonuna dokununuz (Tek tıkla yeşil <strong>"☕ Katılıyor"</strong> olur). Taksit ödemesini işaretlemek için de ilgili taksit butonuna dokunabilirsiniz.
+            Öğretmenlerin form yanıtları anında <strong>Gmail</strong> gelen kutunuza düşer. Tabloda ilgili öğretmenin katılım durumunu güncellemek için adının yanındaki <strong>"Yanıt Bekliyor"</strong> butonuna dokununuz (Tek tıkla yeşil <strong>"☕ Katılıyor"</strong> olur). Dönem ödemesini işaretlemek veya 900 TL'ye tamamlamak için ilgili dönem butonuna dokunabilirsiniz.
           </p>
         </div>
       </div>
@@ -483,7 +482,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_2"></script>
+  <script src="app.js?v=20261103_3"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {

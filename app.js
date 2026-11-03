@@ -429,24 +429,50 @@ function renderTable() {
       statusBadge = `<button type="button" onclick="cycleStatus(${t.id})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 active:scale-95 shadow-xs transition cursor-pointer" title="Katılıyor yapmak için dokunun"><span>⏳</span><span>Yanıt Bekliyor</span><span class="text-[10px] text-amber-600 underline font-normal ml-0.5">Değiştir</span></button>`;
     }
 
-    // Taksit Butonları HTML Helper
-    const taksitBtn = (field, label, donem) => {
-      const isPaid = t[field];
+    // Dönem Ödeme Butonu HTML Helper (Taksitsiz - Dönem Bazlı 900 TL)
+    const renderDonemCell = (donemNo, odenenMiktar, donemHedef) => {
       const disabled = t.status !== 'katiliyor';
-      const bgClass = disabled 
-        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' 
-        : isPaid 
-          ? 'bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm border-emerald-700' 
-          : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300';
-      
-      const checkIcon = isPaid ? '✓ ' : '';
+      const kalanMiktar = Math.max(0, donemHedef - odenenMiktar);
+      const isFullPaid = odenenMiktar >= donemHedef;
+      const isPartial = odenenMiktar > 0 && odenenMiktar < donemHedef;
+
+      if (disabled) {
+        return `<span class="inline-block px-2.5 py-1 text-xs rounded border bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed">900 ₺</span>`;
+      }
+
+      if (isFullPaid) {
+        return `
+          <button 
+            class="taksit-btn px-3 py-1 text-xs rounded-lg border transition duration-150 bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-xs border-emerald-700 cursor-pointer" 
+            onclick="toggleDonemOdeme(${t.id}, ${donemNo})"
+            title="${donemNo}. Dönem (900 ₺) Tam Ödendi - Sıfırlamak için tıklayın">
+            ✓ 900 ₺ Ödendi
+          </button>
+        `;
+      }
+
+      if (isPartial) {
+        return `
+          <div class="flex flex-wrap items-center justify-center gap-1">
+            <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-amber-100 text-amber-900 border border-amber-300" title="Daha önce ödenen tutar">
+              ${odenenMiktar} ₺ Ödendi
+            </span>
+            <button 
+              class="taksit-btn px-2 py-1 text-xs rounded-lg border transition duration-150 bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-xs border-blue-700 cursor-pointer" 
+              onclick="toggleDonemOdeme(${t.id}, ${donemNo})"
+              title="Kalan ${kalanMiktar} ₺'yi tamamlayıp ${donemNo}. Dönemi 900 ₺ Ödendi yap">
+              +${kalanMiktar} ₺ Tamamla (900 ₺)
+            </button>
+          </div>
+        `;
+      }
+
       return `
         <button 
-          class="taksit-btn px-2 py-1 text-xs rounded border transition duration-150 ${bgClass}" 
-          ${disabled ? 'disabled' : ''} 
-          onclick="toggleTaksit(${t.id}, '${field}')"
-          title="${donem} - ${label}: Tıklayarak Ödendi/Bekliyor yapın">
-          ${checkIcon}${label}
+          class="taksit-btn px-3 py-1 text-xs rounded-lg border transition duration-150 bg-white text-gray-700 hover:bg-gray-100 border-gray-300 cursor-pointer" 
+          onclick="toggleDonemOdeme(${t.id}, ${donemNo})"
+          title="${donemNo}. Dönem 900 ₺ Ödendi olarak işaretle">
+          900 ₺
         </button>
       `;
     };
@@ -464,19 +490,12 @@ function renderTable() {
       
       <!-- 1. DÖNEM (900 TL) -->
       <td class="py-3 px-2 text-center bg-blue-50/30">
-        <div class="flex flex-wrap items-center justify-center gap-1">
-          ${taksitBtn('t1', '300₺', '1. Dönem 1. Taksit (300 ₺)')}
-          ${taksitBtn('t2', '300₺', '1. Dönem 2. Taksit (300 ₺)')}
-          ${taksitBtn('t3', '+300₺ (900₺ Tamamlama)', '1. Dönem 900 ₺ Tamamlama (300 ₺)')}
-        </div>
+        ${renderDonemCell(1, donem1Odenen, DONEM1_UCRET)}
       </td>
 
       <!-- 2. DÖNEM (900 TL) -->
       <td class="py-3 px-2 text-center bg-amber-50/30">
-        <div class="flex flex-wrap items-center justify-center gap-1">
-          ${taksitBtn('t4', '300₺', '2. Dönem 1. Ödeme (300 ₺)')}
-          ${taksitBtn('t5', '600₺', '2. Dönem Tamamlama (600 ₺ - Toplam 900 ₺)')}
-        </div>
+        ${renderDonemCell(2, donem2Odenen, DONEM2_UCRET)}
       </td>
 
       <td class="py-3 px-3 text-right font-medium text-xs">
@@ -503,14 +522,11 @@ function renderTable() {
         <td><strong>${t.name}</strong></td>
         <td>${t.branch || ''}</td>
         <td style="text-align:center;">
-          <span class="print-box ${t.t1 ? 'checked' : ''}"></span>
-          <span class="print-box ${t.t2 ? 'checked' : ''}"></span>
-          <span class="print-box ${t.t3 ? 'checked' : ''}"></span>
+          <span class="print-box ${donem1Odenen >= DONEM1_UCRET ? 'checked' : ''}"></span>
           <span style="font-size:10px;">(${donem1Odenen}/900₺)</span>
         </td>
         <td style="text-align:center;">
-          <span class="print-box ${t.t4 ? 'checked' : ''}"></span>
-          <span class="print-box ${t.t5 ? 'checked' : ''}"></span>
+          <span class="print-box ${donem2Odenen >= DONEM2_UCRET ? 'checked' : ''}"></span>
           <span style="font-size:10px;">(${donem2Odenen}/900₺)</span>
         </td>
         <td style="text-align:right;">${odenenTutar} ₺</td>
@@ -545,7 +561,36 @@ function cycleStatus(id) {
   saveState();
 }
 
-// Taksit Ödeme Durumunu Değiştir
+// Dönem Ödeme Durumunu Değiştir (1. Dönem 900 TL / 2. Dönem 900 TL)
+function toggleDonemOdeme(id, donemNo) {
+  const teacher = state.teachers.find(t => t.id === id);
+  if (!teacher) return;
+
+  if (donemNo === 1) {
+    const odenen = getTeacherDonem1Paid(teacher);
+    if (odenen < DONEM1_UCRET) {
+      teacher.t1 = true;
+      teacher.t2 = true;
+      teacher.t3 = true;
+    } else {
+      teacher.t1 = false;
+      teacher.t2 = false;
+      teacher.t3 = false;
+    }
+  } else if (donemNo === 2) {
+    const odenen = getTeacherDonem2Paid(teacher);
+    if (odenen < DONEM2_UCRET) {
+      teacher.t4 = true;
+      teacher.t5 = true;
+    } else {
+      teacher.t4 = false;
+      teacher.t5 = false;
+    }
+  }
+  saveState();
+}
+
+// Eski fonksiyon uyumluluğu
 function toggleTaksit(id, field) {
   const teacher = state.teachers.find(t => t.id === id);
   if (!teacher) return;
@@ -1258,15 +1303,18 @@ async function syncFromFormSubmit(apiKey, silent = false) {
 
 // Excel / CSV Olarak İndir
 function exportToCSV() {
-  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem T1 (300 TL);1.Dönem T2 (300 TL);1.Dönem Tamamlama T3 (300 TL);2.Dönem T4 (300 TL);2.Dönem T5 (600 TL);1.Dönem Ödenen;Toplam Ödenen;Kalan Borç;Not\n";
+  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem (900 TL);2.Dönem (900 TL);Toplam Ödenen;Kalan Borç;Not\n";
   
   state.teachers.forEach(t => {
     const donem1Odenen = getTeacherDonem1Paid(t);
+    const donem2Odenen = getTeacherDonem2Paid(t);
     const odenen = getTeacherTotalPaid(t);
     const kalan = t.status === 'katiliyor' ? Math.max(0, YILLIK_UCRET - odenen) : 0;
     const durumText = t.status === 'katiliyor' ? 'Katılıyor' : (t.status === 'katilmiyor' ? 'Katılmıyor' : 'Bekliyor');
+    const d1Text = donem1Odenen >= DONEM1_UCRET ? '900 TL (TAM)' : (donem1Odenen > 0 ? `${donem1Odenen} TL (${DONEM1_UCRET - donem1Odenen} TL Eksik)` : '-');
+    const d2Text = donem2Odenen >= DONEM2_UCRET ? '900 TL (TAM)' : (donem2Odenen > 0 ? `${donem2Odenen} TL (${DONEM2_UCRET - donem2Odenen} TL Eksik)` : '-');
     
-    csv += `${t.id};"${t.name}";"${t.branch || ''}";"${durumText}";"${t.t1?'ÖDENDİ':'-'}";"${t.t2?'ÖDENDİ':'-'}";"${t.t3?'ÖDENDİ':'-'}";"${t.t4?'ÖDENDİ':'-'}";"${t.t5?'ÖDENDİ':'-'}";${donem1Odenen};${odenen};${kalan};"${t.note || ''}"\n`;
+    csv += `${t.id};"${t.name}";"${t.branch || ''}";"${durumText}";"${d1Text}";"${d2Text}";${odenen};${kalan};"${t.note || ''}"\n`;
   });
 
   const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
