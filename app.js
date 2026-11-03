@@ -33,7 +33,7 @@ const DEFAULT_TEACHERS = [
   { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
   { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
-  { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, ek1: 200, note: "200 TL ödendi (1. Dönem 900 TL için +700 TL kalan)" },
   { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, t5: false, note: "1.200 TL ödendi (1. Dönem 900 TL tam + 2. Dönem 300 TL)" },
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
@@ -54,7 +54,7 @@ const DEFAULT_TEACHERS = [
   { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan katıldı" },
   { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: true, t4: false, t5: false, note: "900 TL ödendi (1. Dönem Tam)" },
   { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
   { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
@@ -135,7 +135,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_v2";
+const CANONICAL_DATA_VERSION = "2026.11.03_v5";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
@@ -159,14 +159,22 @@ const DONEM2_UCRET = 900;
 const YILLIK_UCRET = DONEM1_UCRET + DONEM2_UCRET; // 1.800 TL
 
 function getTeacherDonem1Paid(t) {
+  if (typeof t.customDonem1 === 'number' && !isNaN(t.customDonem1)) {
+    return t.customDonem1;
+  }
   return (t.t1 ? TAKSIT_TUTARLARI.t1 : 0) +
          (t.t2 ? TAKSIT_TUTARLARI.t2 : 0) +
-         (t.t3 ? TAKSIT_TUTARLARI.t3 : 0);
+         (t.t3 ? TAKSIT_TUTARLARI.t3 : 0) +
+         (Number(t.ek1) || 0);
 }
 
 function getTeacherDonem2Paid(t) {
+  if (typeof t.customDonem2 === 'number' && !isNaN(t.customDonem2)) {
+    return t.customDonem2;
+  }
   return (t.t4 ? TAKSIT_TUTARLARI.t4 : 0) +
-         (t.t5 ? TAKSIT_TUTARLARI.t5 : 0);
+         (t.t5 ? TAKSIT_TUTARLARI.t5 : 0) +
+         (Number(t.ek2) || 0);
 }
 
 function getTeacherTotalPaid(t) {
@@ -222,12 +230,16 @@ function loadState() {
       if (!lt) return;
       if (teacherMap.has(lt.id)) {
         const base = teacherMap.get(lt.id);
-        // Taksitler: Resmi liste VEYA yerel seçimde ödendi ise DAİMA true kalır:
+        // Taksitler ve ek ödemeler: Resmi liste VEYA yerel seçimde ödendi ise DAİMA korunur:
         base.t1 = Boolean(base.t1 || lt.t1);
         base.t2 = Boolean(base.t2 || lt.t2);
         base.t3 = Boolean(base.t3 || lt.t3);
         base.t4 = Boolean(base.t4 || lt.t4);
         base.t5 = Boolean(base.t5 || lt.t5);
+        base.ek1 = Math.max(Number(base.ek1) || 0, Number(lt.ek1) || 0);
+        base.ek2 = Math.max(Number(base.ek2) || 0, Number(lt.ek2) || 0);
+        if (typeof lt.customDonem1 === 'number') base.customDonem1 = lt.customDonem1;
+        if (typeof lt.customDonem2 === 'number') base.customDonem2 = lt.customDonem2;
 
         // Katılım durumu: Kullanıcı 'katiliyor' veya 'katilmiyor' dediyse koru:
         if (lt.status && lt.status !== 'bekliyor') {
@@ -468,6 +480,7 @@ function renderTable() {
           ${taksitBtn('t1', '300₺', '1. Dönem 1. Ödeme (300 ₺)')}
           ${taksitBtn('t2', '300₺', '1. Dönem 2. Ödeme (300 ₺)')}
           ${taksitBtn('t3', '+300₺', '1. Dönem 900 ₺ Tamamlama (300 ₺)')}
+          ${t.ek1 ? `<span class="px-2 py-1 text-xs rounded border bg-emerald-600 text-white font-bold shadow-sm border-emerald-700" title="Ek Ödeme: ${t.ek1} ₺">✓ ${t.ek1}₺</span>` : ''}
         </div>
         ${donem1Odenen > 0 ? `<div class="text-[11px] font-bold mt-1 ${donem1Odenen >= 900 ? 'text-emerald-700' : 'text-blue-800'}">Yatırdığı: ${donem1Odenen} ₺ ${donem1Kalan > 0 ? `(Eksik: ${donem1Kalan} ₺)` : '(Tam)'}</div>` : ''}
       </td>
