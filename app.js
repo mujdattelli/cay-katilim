@@ -429,50 +429,24 @@ function renderTable() {
       statusBadge = `<button type="button" onclick="cycleStatus(${t.id})" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 active:scale-95 shadow-xs transition cursor-pointer" title="Katılıyor yapmak için dokunun"><span>⏳</span><span>Yanıt Bekliyor</span><span class="text-[10px] text-amber-600 underline font-normal ml-0.5">Değiştir</span></button>`;
     }
 
-    // Dönem Ödeme Butonu HTML Helper (Taksitsiz - Dönem Bazlı 900 TL)
-    const renderDonemCell = (donemNo, odenenMiktar, donemHedef) => {
+    // Taksit / Ödeme Kutucukları HTML Helper (Yönetim Panelinde ne kadar yatırıldığı net görünsün)
+    const taksitBtn = (field, label, donem) => {
+      const isPaid = t[field];
       const disabled = t.status !== 'katiliyor';
-      const kalanMiktar = Math.max(0, donemHedef - odenenMiktar);
-      const isFullPaid = odenenMiktar >= donemHedef;
-      const isPartial = odenenMiktar > 0 && odenenMiktar < donemHedef;
-
-      if (disabled) {
-        return `<span class="inline-block px-2.5 py-1 text-xs rounded border bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed">900 ₺</span>`;
-      }
-
-      if (isFullPaid) {
-        return `
-          <button 
-            class="taksit-btn px-3 py-1 text-xs rounded-lg border transition duration-150 bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-xs border-emerald-700 cursor-pointer" 
-            onclick="toggleDonemOdeme(${t.id}, ${donemNo})"
-            title="${donemNo}. Dönem (900 ₺) Tam Ödendi - Sıfırlamak için tıklayın">
-            ✓ 900 ₺ Ödendi
-          </button>
-        `;
-      }
-
-      if (isPartial) {
-        return `
-          <div class="flex flex-wrap items-center justify-center gap-1">
-            <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-amber-100 text-amber-900 border border-amber-300" title="Daha önce ödenen tutar">
-              ${odenenMiktar} ₺ Ödendi
-            </span>
-            <button 
-              class="taksit-btn px-2 py-1 text-xs rounded-lg border transition duration-150 bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-xs border-blue-700 cursor-pointer" 
-              onclick="toggleDonemOdeme(${t.id}, ${donemNo})"
-              title="Kalan ${kalanMiktar} ₺'yi tamamlayıp ${donemNo}. Dönemi 900 ₺ Ödendi yap">
-              +${kalanMiktar} ₺ Tamamla (900 ₺)
-            </button>
-          </div>
-        `;
-      }
-
+      const bgClass = disabled 
+        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' 
+        : isPaid 
+          ? 'bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm border-emerald-700' 
+          : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300';
+      
+      const checkIcon = isPaid ? '✓ ' : '';
       return `
         <button 
-          class="taksit-btn px-3 py-1 text-xs rounded-lg border transition duration-150 bg-white text-gray-700 hover:bg-gray-100 border-gray-300 cursor-pointer" 
-          onclick="toggleDonemOdeme(${t.id}, ${donemNo})"
-          title="${donemNo}. Dönem 900 ₺ Ödendi olarak işaretle">
-          900 ₺
+          class="taksit-btn px-2 py-1 text-xs rounded border transition duration-150 ${bgClass}" 
+          ${disabled ? 'disabled' : ''} 
+          onclick="toggleTaksit(${t.id}, '${field}')"
+          title="${donem} - ${label}: Tıklayarak Ödendi/Bekliyor yapın">
+          ${checkIcon}${label}
         </button>
       `;
     };
@@ -490,16 +464,25 @@ function renderTable() {
       
       <!-- 1. DÖNEM (900 TL) -->
       <td class="py-3 px-2 text-center bg-blue-50/30">
-        ${renderDonemCell(1, donem1Odenen, DONEM1_UCRET)}
+        <div class="flex flex-wrap items-center justify-center gap-1">
+          ${taksitBtn('t1', '300₺', '1. Dönem 1. Ödeme (300 ₺)')}
+          ${taksitBtn('t2', '300₺', '1. Dönem 2. Ödeme (300 ₺)')}
+          ${taksitBtn('t3', '+300₺', '1. Dönem 900 ₺ Tamamlama (300 ₺)')}
+        </div>
+        ${donem1Odenen > 0 ? `<div class="text-[11px] font-bold mt-1 ${donem1Odenen >= 900 ? 'text-emerald-700' : 'text-blue-800'}">Yatırdığı: ${donem1Odenen} ₺ ${donem1Kalan > 0 ? `(Eksik: ${donem1Kalan} ₺)` : '(Tam)'}</div>` : ''}
       </td>
 
       <!-- 2. DÖNEM (900 TL) -->
       <td class="py-3 px-2 text-center bg-amber-50/30">
-        ${renderDonemCell(2, donem2Odenen, DONEM2_UCRET)}
+        <div class="flex flex-wrap items-center justify-center gap-1">
+          ${taksitBtn('t4', '300₺', '2. Dönem 1. Ödeme (300 ₺)')}
+          ${taksitBtn('t5', '600₺', '2. Dönem Tamamlama (600 ₺ - Toplam 900 ₺)')}
+        </div>
+        ${donem2Odenen > 0 ? `<div class="text-[11px] font-bold mt-1 ${donem2Odenen >= 900 ? 'text-emerald-700' : 'text-amber-800'}">Yatırdığı: ${donem2Odenen} ₺</div>` : ''}
       </td>
 
       <td class="py-3 px-3 text-right font-medium text-xs">
-        <span class="${odenenTutar >= YILLIK_UCRET ? 'text-emerald-600 font-bold' : 'text-gray-800'}">
+        <span class="${odenenTutar >= YILLIK_UCRET ? 'text-emerald-600 font-bold' : (odenenTutar > 0 ? 'text-emerald-700 font-extrabold text-sm' : 'text-gray-800')}">
           ${odenenTutar} ₺
         </span>
         ${t.status === 'katiliyor' && donem1Kalan > 0 ? `<div class="text-[11px] text-amber-700 font-semibold">1.Dönem Kalan: ${donem1Kalan}₺</div>` : ''}
@@ -522,11 +505,14 @@ function renderTable() {
         <td><strong>${t.name}</strong></td>
         <td>${t.branch || ''}</td>
         <td style="text-align:center;">
-          <span class="print-box ${donem1Odenen >= DONEM1_UCRET ? 'checked' : ''}"></span>
+          <span class="print-box ${t.t1 ? 'checked' : ''}"></span>
+          <span class="print-box ${t.t2 ? 'checked' : ''}"></span>
+          <span class="print-box ${t.t3 ? 'checked' : ''}"></span>
           <span style="font-size:10px;">(${donem1Odenen}/900₺)</span>
         </td>
         <td style="text-align:center;">
-          <span class="print-box ${donem2Odenen >= DONEM2_UCRET ? 'checked' : ''}"></span>
+          <span class="print-box ${t.t4 ? 'checked' : ''}"></span>
+          <span class="print-box ${t.t5 ? 'checked' : ''}"></span>
           <span style="font-size:10px;">(${donem2Odenen}/900₺)</span>
         </td>
         <td style="text-align:right;">${odenenTutar} ₺</td>
