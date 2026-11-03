@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.03_LOCKED_v16",
-  "exportDate": "2026-11-03T17:40:58.880Z",
+  "version": "2026.11.03_LOCKED_v17",
+  "exportDate": "2026-11-03T17:50:16.184Z",
   "state": {
-    "version": "2026.11.03_LOCKED_v16",
+    "version": "2026.11.03_LOCKED_v17",
     "teachers": [
       {
         "id": 1,
@@ -171,7 +171,7 @@
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": ""
+        "note": "Haldun Hoca'ya verecek"
       },
       {
         "id": 17,

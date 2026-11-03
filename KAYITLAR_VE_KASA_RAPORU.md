@@ -1,7 +1,7 @@
 # ☕ 2026-2027 Eğitim-Öğretim Yılı Çay Ocağı Tam Kayıt ve Kasa Raporu
 
 > [!IMPORTANT]
-> **Son Güncelleme ve Kilitleme Tarihi:** `03.11.2026` (`2026.11.03_LOCKED_v16`)  
+> **Son Güncelleme ve Kilitleme Tarihi:** `03.11.2026` (`2026.11.03_LOCKED_v17`)  
 > **Sorumlu:** Müjdat TELLİ (`TR830001200986200001021145` — Halkbank *Okul Çay P*)  
 > **Ücret Tarifesi:** Yıllık **1.800 ₺** (*1. Dönem: 900 ₺* + *2. Dönem: 900 ₺*)
 
@@ -126,7 +126,7 @@
 | 11 | **DEVRİM YILDIZ** | Felsefe | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
 | 12 | **DİĞDEM ACAR** | Biyoloji | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (15.09.2026) |
 | 13 | **DURMUŞ KIZILKAYA** | Bilişim Teknolojileri | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 14 | **EBRU ELMAS** | İngilizce | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 14 | **EBRU ELMAS** | İngilizce | ⏳ Bekliyor | — | — | 0 ₺ | — | — | Haldun Hoca'ya verecek |
 | 15 | **EBRU KÜÇÜKALİ TURGUT** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
 | 16 | **EDİP TAŞDEMİR** | Beden Eğitimi | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
 | 17 | **ERDİNÇ SİTRAVA** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 300 ₺ | — | **300 ₺** | 600 ₺ | 1.500 ₺ | 300 TL ödendi (1. Dönem 900 TL için +600 TL kalan) |
@@ -180,4 +180,4 @@
 * **Canlı Web Adresi:** https://mujdattelli.github.io/cay-katilim/ *(Yönetim Şifresi: `2026`)*
 * **GitHub Deposu:** https://github.com/mujdattelli/cay-katilim
 * **Tam JSON Yedeği:** `canonical_backup_2026_11_03.json`
-* **Kilitli Veri Sürümü:** `2026.11.03_LOCKED_v16`
+* **Kilitli Veri Sürümü:** `2026.11.03_LOCKED_v17`
