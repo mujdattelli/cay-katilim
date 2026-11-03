@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.03_LOCKED_v12",
-  "exportDate": "2026-11-03T15:22:31.012Z",
+  "version": "2026.11.03_LOCKED_v13",
+  "exportDate": "2026-11-03T15:36:33.183Z",
   "state": {
-    "version": "2026.11.03_LOCKED_v12",
+    "version": "2026.11.03_LOCKED_v13",
     "teachers": [
       {
         "id": 1,
@@ -21,13 +21,13 @@
         "id": 2,
         "name": "ASLI GÜREL",
         "branch": "Bilişim Teknolojileri",
-        "status": "katiliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Formdan bildirildi: Katılmıyor (15.09.2026)"
       },
       {
         "id": 3,
@@ -165,13 +165,13 @@
         "id": 14,
         "name": "DİĞDEM ACAR",
         "branch": "Biyoloji",
-        "status": "katiliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Formdan bildirildi: Katılmıyor (15.09.2026)"
       },
       {
         "id": 15,
@@ -237,13 +237,13 @@
         "id": 20,
         "name": "FATMA NUR SIVAR",
         "branch": "Rehberlik",
-        "status": "katiliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Formdan bildirildi: Katılmıyor (15.09.2026)"
       },
       {
         "id": 21,
@@ -273,13 +273,13 @@
         "id": 23,
         "name": "GÖKHAN GÜREL",
         "branch": "Bilişim Teknolojileri",
-        "status": "katiliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Formdan bildirildi: Katılmıyor (15.09.2026)"
       },
       {
         "id": 24,
