@@ -33,7 +33,7 @@ const DEFAULT_TEACHERS = [
   { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
   { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
-  { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, ek1: 200, note: "200 TL ödendi (1. Dönem 900 TL için +700 TL kalan)" },
+  { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, ek1: 200, note: "800 TL ödendi (Önceki 600 TL + 200 TL ek | 1. Dönem 900 TL için +100 TL kalan)" },
   { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, t5: false, note: "1.200 TL ödendi (1. Dönem 900 TL tam + 2. Dönem 300 TL)" },
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
@@ -135,7 +135,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_v5";
+const CANONICAL_DATA_VERSION = "2026.11.03_v6";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
