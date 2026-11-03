@@ -1421,7 +1421,7 @@ Okulumuz çay ocağında *ayda neredeyse 10 paket (10 kilo) çay* tüketilmekted
 • *2. Dönem:* *800 TL*
 
 🔹 *1. Dönem İçin Ödeme Yapan Arkadaşlarımız:*
-Daha önce 1. dönem için 600 TL (veya 300 TL) gönderen öğretmen arkadaşlarımızın, 1. dönem ödemelerini *900 TL'ye tamamlamalarını* rica ederiz. (2. dönem için 800 TL alınacaktır).
+1. dönem için eksik ödeme yatıran öğretmen arkadaşlarımızın, 1. dönem ödemelerini *900 TL'ye tamamlamalarını* rica ederiz. (2. dönem için 800 TL alınacaktır).
 
 ⚠️ *ÖNEMLİ HATIRLATMA:*
 Hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da en kısa sürede aşağıdaki linkten katılım durumlarını (*Katılıyorum / Katılmıyorum*) işaretlemeleri ve ödemelerini göndermeleri önemle rica olunur.
