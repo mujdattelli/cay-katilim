@@ -482,7 +482,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_6"></script>
+  <script src="app.js?v=20261103_7"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -634,7 +634,7 @@
             name: teacherName || selectedRadio.value,
             branch: teacherBranch,
             status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
-            note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı',
+            note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : (isKatiliyor ? 'Formdan katıldı' : 'Formdan bildirildi: Katılmıyor'),
             time: Date.now()
           };
 
@@ -658,7 +658,7 @@
               body: JSON.stringify({
                 key: teacherKey,
                 status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
-                note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan katıldı',
+                note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : (isKatiliyor ? 'Formdan katıldı' : 'Formdan bildirildi: Katılmıyor'),
                 name: selectedRadio.value,
                 branch: ''
               })
