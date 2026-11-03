@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.03_LOCKED_v11",
-  "exportDate": "2026-11-03T14:40:44.448Z",
+  "version": "2026.11.03_LOCKED_v12",
+  "exportDate": "2026-11-03T15:22:31.012Z",
   "state": {
-    "version": "2026.11.03_LOCKED_v11",
+    "version": "2026.11.03_LOCKED_v12",
     "teachers": [
       {
         "id": 1,
@@ -33,13 +33,13 @@
         "id": 3,
         "name": "AYÇA ÇIKAR",
         "branch": "Elektrik-Elektronik Teknolojisi / Elektronik",
-        "status": "katiliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Formdan bildirildi: Katılmıyor (15.09.2026)"
       },
       {
         "id": 4,
@@ -412,7 +412,7 @@
         "t4": false,
         "t5": false,
         "ek1": 200,
-        "note": "800 TL ödendi (Önceki 600 TL + 200 TL ek | 1. Dönem 900 TL için +100 TL kalan)"
+        "note": "800 TL ödendi (Elden: 600 TL + 200 TL | 1. Dönem 900 TL için +100 TL kalan)"
       },
       {
         "id": 35,
@@ -502,13 +502,13 @@
         "id": 42,
         "name": "NURHAN CAN",
         "branch": "Türk Dili ve Edebiyatı",
-        "status": "katiliyor",
+        "status": "katilmiyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Formdan bildirildi: Katılmıyor (08.09.2026)"
       },
       {
         "id": 43,
@@ -628,7 +628,7 @@
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "note": "Onaylandı: Katılıyor"
       },
       {
         "id": 53,
@@ -664,7 +664,7 @@
         "t3": true,
         "t4": false,
         "t5": false,
-        "note": "900 TL ödendi (1. Dönem Tam)"
+        "note": "900 TL ödendi (1. Dönem Tam - 600 TL Banka + 300 TL Elden)"
       },
       {
         "id": 56,
