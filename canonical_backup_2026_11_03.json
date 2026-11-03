@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.03_LOCKED_v13",
-  "exportDate": "2026-11-03T15:36:33.183Z",
+  "version": "2026.11.03_LOCKED_v15",
+  "exportDate": "2026-11-03T17:23:55.134Z",
   "state": {
-    "version": "2026.11.03_LOCKED_v13",
+    "version": "2026.11.03_LOCKED_v15",
     "teachers": [
       {
         "id": 1,
@@ -294,18 +294,6 @@
         "note": "Dışarı tüp alıyor"
       },
       {
-        "id": 25,
-        "name": "HANDAN YASA",
-        "branch": "Kimya / Kimya Teknolojisi",
-        "status": "bekliyor",
-        "t1": false,
-        "t2": false,
-        "t3": false,
-        "t4": false,
-        "t5": false,
-        "note": ""
-      },
-      {
         "id": 26,
         "name": "HATİCE AĞAN",
         "branch": "Kimya / Kimya Teknolojisi",
@@ -467,12 +455,12 @@
         "name": "MÜJDAT TELLİ",
         "branch": "Bilişim Teknolojileri",
         "status": "katiliyor",
-        "t1": false,
-        "t2": false,
-        "t3": false,
+        "t1": true,
+        "t2": true,
+        "t3": true,
         "t4": false,
         "t5": false,
-        "note": "Çay Ocağı Sorumlusu"
+        "note": "Çay Ocağı Sorumlusu | 900 TL ödendi (1. Dönem Tam - Elden)"
       },
       {
         "id": 40,

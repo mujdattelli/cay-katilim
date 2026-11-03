@@ -252,8 +252,8 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Katılım Durumu</div>
-          <div class="text-xl font-extrabold text-emerald-600 mt-1"><span id="statKatilanSayisi">0</span> <span class="text-xs text-slate-400 font-normal">/ <span id="statToplamKisi">56</span></span></div>
-          <div class="text-[10px] text-slate-500 mt-1"><span id="statKatilmayanSayisi" class="text-red-500 font-bold">0</span> Red, <span id="statBekleyenSayisi" class="text-amber-500 font-bold">56</span> Bekliyor</div>
+          <div class="text-xl font-extrabold text-emerald-600 mt-1"><span id="statKatilanSayisi">26</span> <span class="text-xs text-slate-400 font-normal">/ <span id="statToplamKisi">60</span></span></div>
+          <div class="text-[10px] text-slate-500 mt-1"><span id="statKatilmayanSayisi" class="text-red-500 font-bold">13</span> Red, <span id="statBekleyenSayisi" class="text-amber-500 font-bold">21</span> Bekliyor</div>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-blue-500 shadow-xs">
           <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">1. Dönem (900 ₺)</div>
@@ -277,25 +277,41 @@
         <div class="flex flex-wrap items-center gap-2 flex-1 w-full sm:w-auto min-w-0 sm:min-w-[280px]">
           <input type="text" id="searchInput" placeholder="Öğretmen ara..." class="px-3 py-2 text-xs border border-slate-300 rounded-lg flex-1 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-amber-500">
           <select id="filterStatusSelect" class="px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
-            <option value="all">Tüm Öğretmenler / Personel</option>
-            <option value="katiliyor">☕ Sadece Katılanlar</option>
-            <option value="katilmiyor">❌ Sadece Katılmayanlar</option>
-            <option value="bekliyor">⏳ Yanıt Bekleyenler</option>
-            <option value="borclu">⚠️ Ödeme Eksiği Olanlar</option>
+            <option value="all">Tüm Öğretmenler / Personel (60 Kişi)</option>
+            <option value="katiliyor">☕ Sadece Katılanlar (26)</option>
+            <option value="odeme_yapan">💳 Ödeme Yapanlar (24)</option>
+            <option value="borclu_d1">⚠️ 1. Dönem Eksiği Olanlar</option>
+            <option value="borclu">📌 Yıllık &lt; 1.800 ₺ Olanlar</option>
+            <option value="katilmiyor">❌ Katılmayanlar (13)</option>
+            <option value="bekliyor">⏳ Yanıt Bekleyenler (21)</option>
           </select>
+          <!-- Kutucuk Ödeme Modu Seçici (Banka EFT vs Elden Nakit) -->
+          <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200" title="Tabloda kutucuklara tıkladığınızda ödemenin Banka mı Elden mi yazılacağını seçin">
+            <span class="text-[10px] font-bold text-slate-500 px-1">Kutucuk Modu:</span>
+            <button type="button" id="payModeBtnBanka" onclick="setCheckPayMode('banka')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-600 text-white shadow-2xs transition cursor-pointer">🏦 Banka EFT</button>
+            <button type="button" id="payModeBtnElden" onclick="setCheckPayMode('elden')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition cursor-pointer">💵 Elden Nakit</button>
+          </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="manualRefreshList()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer" title="Listeyi ve durumları hemen yenile">
             <span>🔄</span>
             <span>Listeyi Yenile</span>
           </button>
-          <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1">
-            <span>🖨️</span>
-            <span>Panoya Yazdır (A4)</span>
+          <button onclick="exportMarkdownReport()" class="bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer" title="Kapsamlı Markdown (.md) Kasa Raporunu İndir">
+            <span>📄</span>
+            <span>MD Rapor İndir</span>
           </button>
           <button onclick="exportToCSV()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1">
             <span>📊</span>
             <span>Excel İndir</span>
+          </button>
+          <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-1">
+            <span>🖨️</span>
+            <span>Panoya Yazdır (A4)</span>
+          </button>
+          <button onclick="openModal('modalImport')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer" title="WhatsApp veya e-posta metninden hızlı yanıt yapıştır">
+            <span>📋</span>
+            <span>Yanıt Yapıştır</span>
           </button>
           <button onclick="exportFullBackupJSON()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer" title="Tüm öğretmen seçimleri, notlar ve faturaları JSON yedeği olarak indir">
             <span>💾</span>
@@ -322,41 +338,17 @@
               <span id="vaultSyncStatusBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-[11px] border border-emerald-300">✅ Çift Bulut + Cihaz Kasası Aktif</span>
             </div>
             <p class="leading-relaxed text-slate-700">
-              Banka EFT kayıtları (<strong>🏦 Banka: 14.700 ₺</strong>) ile sizin işaretlediğiniz nakit ödemeler (<strong>💵 Elden</strong>) ayrı takip edilir; <strong>kesinlikle çift kayıt oluşmaz</strong>. İşaretlediğiniz her kutucuk otomatik olarak <strong>2 ayrı bulut sunucusuna + cihaz kasasına</strong> kilitlenir.
+              Banka EFT kayıtları ile sizin işaretlediğiniz nakit ödemeler ayrı takip edilir; <strong>kesinlikle çift kayıt oluşmaz</strong>. İşaretlediğiniz her kutucuk otomatik olarak <strong>2 ayrı bulut sunucusuna + cihaz kasasına</strong> kilitlenir.
             </p>
+            <div id="vaultBreakdownSummary" class="text-[11px] font-bold text-emerald-900 bg-white/70 p-2 rounded-lg border border-emerald-200 mt-1">
+              🏦 Banka EFT: 14.700 ₺  +  💵 Elden Nakit: 2.000 ₺  =  Toplam Gelir: 16.700 ₺  |  🧾 Gider: 6.082 ₺  |  ✅ Net Kasa: 10.618 ₺
+            </div>
           </div>
         </div>
         <button type="button" onclick="forceFullVaultSync()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap">
           <span>🔒</span>
           <span>Şimdi Buluta Kilitle & Doğrula</span>
         </button>
-      </div>
-
-      <!-- Canlı Takip ve Hızlı İşlem Çubuğu -->
-      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-        <div class="text-xs text-emerald-950">
-          <span class="font-bold flex items-center gap-1.5 text-emerald-900">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <span>Katılım & Ödeme Takip Paneli</span>
-          </span>
-          <span class="text-[11px] text-slate-600 block mt-0.5">
-            İstediğiniz zaman <strong>"Listeyi Yenile"</strong> butonuna basarak güncel durumu görebilirsiniz.
-          </span>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="manualRefreshList()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer" title="Listeyi Yenile">
-            <span>🔄</span>
-            <span>Listeyi Yenile</span>
-          </button>
-          <button type="button" onclick="openModal('modalImport')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-xs cursor-pointer">
-            <span>📋</span>
-            <span>Hızlı Yanıt Yapıştır</span>
-          </button>
-          <button type="button" onclick="openModal('modalCloudConfig')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-xs cursor-pointer">
-            <span>☁️</span>
-            <span>E-Tablo Ayarı</span>
-          </button>
-        </div>
       </div>
 
       <!-- Tablo -->
@@ -491,7 +483,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_13"></script>
+  <script src="app.js?v=20261103_15"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -817,6 +809,88 @@ veya gelen e-posta bildirim metni..." class="w-full p-3 text-xs border border-sl
         <button type="button" onclick="saveExpense()" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5">
           <span>💾</span>
           <span>Faturayı Kaydet</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ÖĞRETMEN ÖDEME VE DURUM DÜZENLEME MODALI ================= -->
+  <div id="modalPayment" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <div>
+          <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
+            <span>💰</span>
+            <span>Ödeme & Durum Düzenle</span>
+          </h3>
+          <p id="payModalTeacherName" class="text-xs font-semibold text-emerald-800 mt-0.5">-</p>
+        </div>
+        <button type="button" onclick="closeModal('modalPayment')" class="text-slate-400 hover:text-slate-600 text-lg font-bold cursor-pointer">✕</button>
+      </div>
+
+      <!-- Katılım Durumu -->
+      <div>
+        <label class="block text-[11px] font-bold text-slate-700 mb-1">Katılım Tercihi:</label>
+        <select id="payModalStatusSelect" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold">
+          <option value="katiliyor">☕ Katılıyor</option>
+          <option value="katilmiyor">❌ Katılmıyor</option>
+          <option value="bekliyor">⏳ Yanıt Bekliyor</option>
+        </select>
+      </div>
+
+      <!-- Banka ve Elden Tutarları -->
+      <div class="space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+        <!-- Banka Tutarı -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-[11px] font-bold text-blue-900 flex items-center gap-1">
+              <span>🏦</span>
+              <span>Banka EFT / Havale (₺):</span>
+            </label>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="setPaymentModalPreset('bank', 300, true)" class="px-1.5 py-0.5 text-[10px] bg-blue-100 hover:bg-blue-200 text-blue-800 rounded font-bold cursor-pointer">+300₺</button>
+              <button type="button" onclick="setPaymentModalPreset('bank', 600, true)" class="px-1.5 py-0.5 text-[10px] bg-blue-100 hover:bg-blue-200 text-blue-800 rounded font-bold cursor-pointer">+600₺</button>
+              <button type="button" onclick="setPaymentModalPreset('bank', 0, false)" class="px-1.5 py-0.5 text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-bold cursor-pointer">Sıfırla</button>
+            </div>
+          </div>
+          <input type="number" id="payModalBankInput" min="0" step="1" oninput="updatePaymentModalPreview()" class="w-full p-2 text-xs bg-white border border-blue-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-blue-900">
+        </div>
+
+        <!-- Elden Tutarı -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-[11px] font-bold text-emerald-900 flex items-center gap-1">
+              <span>💵</span>
+              <span>Elden Nakit Ödeme (₺):</span>
+            </label>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="setPaymentModalPreset('elden', 300, true)" class="px-1.5 py-0.5 text-[10px] bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded font-bold cursor-pointer">+300₺</button>
+              <button type="button" onclick="setPaymentModalPreset('elden', 600, true)" class="px-1.5 py-0.5 text-[10px] bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded font-bold cursor-pointer">+600₺</button>
+              <button type="button" onclick="setPaymentModalPreset('elden', 900, false)" class="px-1.5 py-0.5 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold cursor-pointer">900₺ Tam</button>
+              <button type="button" onclick="setPaymentModalPreset('elden', 0, false)" class="px-1.5 py-0.5 text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-bold cursor-pointer">Sıfırla</button>
+            </div>
+          </div>
+          <input type="number" id="payModalEldenInput" min="0" step="1" oninput="updatePaymentModalPreview()" class="w-full p-2 text-xs bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900">
+        </div>
+
+        <!-- Önizleme Özeti -->
+        <div id="payModalSummaryText" class="p-2.5 bg-white rounded-xl border border-slate-200 text-xs text-slate-800 leading-snug">
+          Toplam Ödenen: 0 ₺
+        </div>
+      </div>
+
+      <!-- Not / Açıklama -->
+      <div>
+        <label class="block text-[11px] font-bold text-slate-700 mb-1">Öğretmen Notu / Açıklama:</label>
+        <input type="text" id="payModalNoteInput" placeholder="Örn: 1. Dönem elden teslim alındı" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+      </div>
+
+      <!-- Butonlar -->
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeModal('modalPayment')" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">Vazgeç</button>
+        <button type="button" onclick="savePaymentModal()" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5">
+          <span>💾</span>
+          <span>Kaydet ve Buluta Kilitle</span>
         </button>
       </div>
     </div>

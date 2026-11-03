@@ -24,7 +24,6 @@ const DEFAULT_TEACHERS = [
   { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
   { id: 23, name: "GÖKHAN GÜREL", branch: "Bilişim Teknolojileri", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor (15.09.2026)" },
   { id: 24, name: "HALDUN YILDIZ", branch: "Tarih", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Dışarı tüp alıyor" },
-  { id: 25, name: "HANDAN YASA", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 26, name: "HATİCE AĞAN", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 27, name: "ZEYNEP AYNAS", branch: "TARİH", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, t5: false, note: "1.200 TL ödendi (Banka: 29-09-2026 Havale - Zeynep Mila Aynas)" },
   { id: 28, name: "İBRAHİM CALAYIR", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
@@ -38,7 +37,7 @@ const DEFAULT_TEACHERS = [
   { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
   { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
-  { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Çay Ocağı Sorumlusu" },
+  { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: false, t5: false, note: "Çay Ocağı Sorumlusu | 900 TL ödendi (1. Dönem Tam - Elden)" },
   { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor (08.09.2026)" },
@@ -136,7 +135,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_LOCKED_v13";
+const CANONICAL_DATA_VERSION = "2026.11.03_LOCKED_v15";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
 const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";
@@ -329,6 +328,10 @@ async function pushTeachersToPermanentCloud(changedTeacherId = null, options = {
     // 1. Önce yerel durum ile buluttaki diğer öğretmenlerin durumunu kayıpsız birleştir
     for (let id = 1; id <= maxId; id++) {
       const idStr = String(id);
+      if (typeof RETIRED_TEACHER_IDS !== 'undefined' && RETIRED_TEACHER_IDS.has(id)) {
+        finalSlots[idStr] = 'B0';
+        continue;
+      }
       const localT = state.teachers.find(x => String(x.id) === idStr);
       const rem = remoteDecoded[idStr];
 
@@ -474,8 +477,10 @@ async function pushExtraToPermanentCloud() {
 
     const newTeachers = [];
     const customNotes = {};
+    const customBanks = {};
 
     state.teachers.forEach(t => {
+      if (RETIRED_TEACHER_IDS.has(Number(t.id))) return;
       const def = defaultMap.get(Number(t.id));
       if (!def) {
         newTeachers.push([
@@ -488,11 +493,18 @@ async function pushExtraToPermanentCloud() {
       } else if (t.note && t.note.trim() && t.note.trim() !== (def.note || '').trim()) {
         customNotes[String(t.id)] = t.note.trim().slice(0, 45);
       }
+      if (typeof t.customBankPaid === 'number' && !isNaN(t.customBankPaid)) {
+        const defBank = OFFICIAL_BANK_PAYMENTS[t.id] || 0;
+        if (Math.round(t.customBankPaid) !== defBank) {
+          customBanks[String(t.id)] = Math.round(t.customBankPaid);
+        }
+      }
     });
 
     const dataObj = {
       nt: newTeachers,
       n: customNotes,
+      b: customBanks,
       dev: Number(state.devredenBakiye) || 0
     };
 
@@ -603,6 +615,77 @@ function getTeacherTotalPaid(t) {
   return getTeacherDonem1Paid(t) + getTeacherDonem2Paid(t);
 }
 
+function getTeacherBankPaid(t) {
+  const tot = getTeacherTotalPaid(t);
+  if (typeof t.customBankPaid === 'number' && !isNaN(t.customBankPaid)) {
+    return Math.min(tot, Math.max(0, Math.round(t.customBankPaid)));
+  }
+  return Math.min(tot, OFFICIAL_BANK_PAYMENTS[t.id] || 0);
+}
+
+function getTeacherEldenPaid(t) {
+  const tot = getTeacherTotalPaid(t);
+  return Math.max(0, tot - getTeacherBankPaid(t));
+}
+
+function applyTotalAmountToBoxes(t, total) {
+  const amt = Math.max(0, Math.round(Number(total) || 0));
+  delete t.customDonem1;
+  delete t.customDonem2;
+  if (amt <= 900) {
+    t.t1 = amt >= 300;
+    t.t2 = amt >= 600;
+    t.t3 = amt >= 900;
+    const boxed1 = (t.t1 ? 300 : 0) + (t.t2 ? 300 : 0) + (t.t3 ? 300 : 0);
+    t.ek1 = Math.max(0, amt - boxed1);
+    t.t4 = false;
+    t.t5 = false;
+    t.ek2 = 0;
+  } else {
+    t.t1 = true;
+    t.t2 = true;
+    t.t3 = true;
+    t.ek1 = 0;
+    const d2 = amt - 900;
+    if (d2 >= 900) {
+      t.t4 = true;
+      t.t5 = true;
+      t.ek2 = d2 - 900;
+    } else if (d2 >= 600) {
+      t.t4 = false;
+      t.t5 = true;
+      t.ek2 = d2 - 600;
+    } else if (d2 >= 300) {
+      t.t4 = true;
+      t.t5 = false;
+      t.ek2 = d2 - 300;
+    } else {
+      t.t4 = false;
+      t.t5 = false;
+      t.ek2 = d2;
+    }
+  }
+}
+
+let currentCheckPayMode = 'banka'; // Kutucuk tıklandığında varsayılan ödeme kanalı ('banka' veya 'elden')
+function setCheckPayMode(mode) {
+  currentCheckPayMode = mode === 'elden' ? 'elden' : 'banka';
+  const btnB = document.getElementById('payModeBtnBanka');
+  const btnE = document.getElementById('payModeBtnElden');
+  if (btnB && btnE) {
+    if (currentCheckPayMode === 'banka') {
+      btnB.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-600 text-white shadow-2xs transition cursor-pointer';
+      btnE.className = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition cursor-pointer';
+    } else {
+      btnE.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 text-white shadow-2xs transition cursor-pointer';
+      btnB.className = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition cursor-pointer';
+    }
+  }
+}
+
+// Emekli olup listeden kalıcı çıkarılan öğretmen ID'leri (tarayıcı önbelleğinden geri gelmesini engeller)
+const RETIRED_TEACHER_IDS = new Set([25]); // 25 - Handan Yasa (Emekli oldu)
+
 // Veriyi LocalStorage + Mirror'dan Yükle ve Akıllıca Birleştir (SIFIR VERİ KAYBI GARANTİSİ)
 function loadState() {
   let loadedState = null;
@@ -670,7 +753,7 @@ function loadState() {
 
   if (loadedState && Array.isArray(loadedState.teachers)) {
     loadedState.teachers.forEach(lt => {
-      if (!lt) return;
+      if (!lt || RETIRED_TEACHER_IDS.has(Number(lt.id))) return;
       if (teacherMap.has(lt.id)) {
         const base = teacherMap.get(lt.id);
 
@@ -715,6 +798,9 @@ function loadState() {
 
         if (typeof lt.customDonem1 === 'number') base.customDonem1 = lt.customDonem1;
         if (typeof lt.customDonem2 === 'number') base.customDonem2 = lt.customDonem2;
+        if (typeof lt.customBankPaid === 'number' && !isNaN(lt.customBankPaid)) {
+          base.customBankPaid = lt.customBankPaid;
+        }
 
         // Özel notları koru
         if (lt.note && lt.note.trim()) {
@@ -778,7 +864,7 @@ async function restoreFromIndexedDBIfNeeded() {
     // 2. Kilitli sürümde kaydedilmiş öğretmen ödemelerini / yeni öğretmenleri kurtar
     if (idbSnap.version === CANONICAL_DATA_VERSION && Array.isArray(idbSnap.teachers)) {
       idbSnap.teachers.forEach(it => {
-        if (!it) return;
+        if (!it || RETIRED_TEACHER_IDS.has(Number(it.id))) return;
         const cur = state.teachers.find(t => t.id === it.id);
         if (!cur) {
           state.teachers.push(it);
@@ -789,6 +875,10 @@ async function restoreFromIndexedDBIfNeeded() {
           });
           if ((Number(it.ek1) || 0) > (Number(cur.ek1) || 0)) { cur.ek1 = Number(it.ek1); recovered++; }
           if ((Number(it.ek2) || 0) > (Number(cur.ek2) || 0)) { cur.ek2 = Number(it.ek2); recovered++; }
+          if (typeof it.customBankPaid === 'number' && typeof cur.customBankPaid !== 'number') {
+            cur.customBankPaid = it.customBankPaid;
+            recovered++;
+          }
           if (cur.status === 'bekliyor' && it.status && it.status !== 'bekliyor') {
             cur.status = it.status;
             recovered++;
@@ -915,15 +1005,21 @@ function updateDashboard() {
   let donem2Toplanan = 0;
   let bankaToplanan = 0;
   let eldenToplanan = 0;
+  let odemeYapanSayisi = 0;
+  let d1EksikSayisi = 0;
+  let yillikEksikSayisi = 0;
+
   katilanlar.forEach(t => {
     const d1 = getTeacherDonem1Paid(t);
     const d2 = getTeacherDonem2Paid(t);
     const tot = d1 + d2;
     donem1Toplanan += d1;
     donem2Toplanan += d2;
-    const resmiBanka = Math.min(tot, OFFICIAL_BANK_PAYMENTS[t.id] || 0);
-    bankaToplanan += resmiBanka;
-    eldenToplanan += Math.max(0, tot - resmiBanka);
+    bankaToplanan += getTeacherBankPaid(t);
+    eldenToplanan += getTeacherEldenPaid(t);
+    if (tot > 0) odemeYapanSayisi++;
+    if (d1 < DONEM1_UCRET) d1EksikSayisi++;
+    if (tot < YILLIK_UCRET) yillikEksikSayisi++;
   });
 
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
@@ -947,11 +1043,31 @@ function updateDashboard() {
   setTxt('statToplamToplanan', `${toplamToplanan.toLocaleString('tr-TR')} ₺ (Banka: ${bankaToplanan.toLocaleString('tr-TR')} ₺ + Elden: ${eldenToplanan.toLocaleString('tr-TR')} ₺)`);
   setTxt('statToplamGider', toplamGider.toLocaleString('tr-TR') + ' ₺');
   setTxt('statDevreden', (state.devredenBakiye || 0).toLocaleString('tr-TR') + ' ₺');
-  
+  setTxt(
+    'vaultBreakdownSummary',
+    `🏦 Banka EFT: ${bankaToplanan.toLocaleString('tr-TR')} ₺  +  💵 Elden Nakit: ${eldenToplanan.toLocaleString('tr-TR')} ₺  =  Toplam Gelir: ${toplamToplanan.toLocaleString('tr-TR')} ₺  |  🧾 Gider: ${toplamGider.toLocaleString('tr-TR')} ₺  |  ✅ Net Kasa: ${netKasa.toLocaleString('tr-TR')} ₺`
+  );
+
+  const filterSel = document.getElementById('filterStatusSelect');
+  if (filterSel && filterSel.options) {
+    const labelMap = {
+      all: `Tüm Öğretmen & Personel (${state.teachers.length} Kişi)`,
+      katiliyor: `☕ Sadece Katılanlar (${katilanlar.length})`,
+      odeme_yapan: `💳 Ödeme Yapanlar (${odemeYapanSayisi})`,
+      borclu_d1: `⚠️ 1. Dönem Eksiği Olanlar (${d1EksikSayisi})`,
+      borclu: `📌 Yıllık < 1.800 ₺ Olanlar (${yillikEksikSayisi})`,
+      katilmiyor: `❌ Katılmayanlar (${katilmayanlar.length})`,
+      bekliyor: `⏳ Yanıt Bekleyenler (${bekleyenler.length})`
+    };
+    Array.from(filterSel.options).forEach(opt => {
+      if (labelMap[opt.value]) opt.textContent = labelMap[opt.value];
+    });
+  }
+
   const netKasaEl = document.getElementById('statNetKasa');
   if (netKasaEl) {
     netKasaEl.innerText = netKasa.toLocaleString('tr-TR') + ' ₺';
-    netKasaEl.className = netKasa >= 0 ? 'text-xl font-bold text-emerald-600' : 'text-xl font-bold text-red-600';
+    netKasaEl.className = netKasa >= 0 ? 'text-xl font-extrabold text-emerald-600 mt-1' : 'text-xl font-extrabold text-red-600 mt-1';
   }
 
   renderTable();
@@ -970,11 +1086,16 @@ function renderTable() {
   let list = state.teachers.filter(t => {
     // Statü filtresi
     if (state.filterStatus === 'katiliyor' && t.status !== 'katiliyor') return false;
+    if (state.filterStatus === 'odeme_yapan' && getTeacherTotalPaid(t) <= 0) return false;
+    if (state.filterStatus === 'borclu_d1') {
+      if (t.status !== 'katiliyor') return false;
+      if (getTeacherDonem1Paid(t) >= DONEM1_UCRET) return false;
+    }
     if (state.filterStatus === 'katilmiyor' && t.status !== 'katilmiyor') return false;
     if (state.filterStatus === 'bekliyor' && t.status !== 'bekliyor') return false;
     if (state.filterStatus === 'borclu') {
       if (t.status !== 'katiliyor') return false;
-      if (t.t1 && t.t2 && t.t3 && t.t4 && t.t5) return false;
+      if (getTeacherTotalPaid(t) >= YILLIK_UCRET) return false;
     }
 
     // Arama filtresi
@@ -1030,7 +1151,7 @@ function renderTable() {
     const row = document.createElement('tr');
     row.className = `border-b border-gray-100 hover:bg-gray-50 transition ${t.status === 'katilmiyor' ? 'opacity-60 bg-gray-50/50' : ''}`;
     row.innerHTML = `
-      <td class="py-3 px-3 text-xs text-gray-500 font-mono">${t.id}</td>
+      <td class="py-3 px-3 text-xs text-gray-500 font-mono">${index + 1}</td>
       <td class="py-3 px-3 font-semibold text-gray-800 text-sm">
         ${t.name}
         ${t.note ? `<span class="block text-xs font-normal text-amber-600">📝 ${t.note}</span>` : ''}
@@ -1064,8 +1185,8 @@ function renderTable() {
           ${odenenTutar} ₺
         </span>
         ${odenenTutar > 0 ? (() => {
-          const bnk = Math.min(odenenTutar, OFFICIAL_BANK_PAYMENTS[t.id] || 0);
-          const eld = Math.max(0, odenenTutar - bnk);
+          const bnk = getTeacherBankPaid(t);
+          const eld = getTeacherEldenPaid(t);
           if (bnk > 0 && eld > 0) return `<div class="text-[10px] text-slate-600 font-semibold">🏦 Banka: ${bnk}₺ + 💵 Elden: ${eld}₺</div>`;
           if (bnk > 0) return `<div class="text-[10px] text-blue-700 font-medium">🏦 Banka: ${bnk}₺</div>`;
           return `<div class="text-[10px] text-emerald-700 font-semibold">💵 Elden: ${eld}₺</div>`;
@@ -1075,10 +1196,10 @@ function renderTable() {
       </td>
 
       <td class="py-3 px-2 text-center no-print whitespace-nowrap">
-        <button onclick="editEkOdemeModal(${t.id})" class="text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded px-1.5 py-0.5 text-[11px] font-bold mr-1" title="Elden / Ek Ödeme Tutarı Gir">
-          +₺
+        <button onclick="openPaymentModal(${t.id})" class="text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg px-2 py-1 text-[11px] font-bold mr-1 cursor-pointer transition" title="Banka / Elden Ödeme ve Not Düzenle">
+          💰 Ödeme
         </button>
-        <button onclick="editTeacherModal(${t.id})" class="text-gray-400 hover:text-blue-600 p-1" title="Düzenle / Not Ekle">
+        <button onclick="editTeacherModal(${t.id})" class="text-gray-400 hover:text-blue-600 p-1 cursor-pointer" title="Hızlı Not Ekle / Düzenle">
           ✏️
         </button>
       </td>
@@ -1089,7 +1210,7 @@ function renderTable() {
     if (printTbody && (t.status === 'katiliyor' || t.status === 'bekliyor')) {
       const pRow = document.createElement('tr');
       pRow.innerHTML = `
-        <td style="text-align:center;">${t.id}</td>
+        <td style="text-align:center;">${index + 1}</td>
         <td><strong>${t.name}</strong></td>
         <td>${t.branch || ''}</td>
         <td style="text-align:center;">
@@ -1149,6 +1270,9 @@ function toggleDonemOdeme(id, donemNo) {
   const teacher = state.teachers.find(t => t.id === id);
   if (!teacher) return;
 
+  const prevTotal = getTeacherTotalPaid(teacher);
+  const prevBank = getTeacherBankPaid(teacher);
+
   if (donemNo === 1) {
     const odenen = getTeacherDonem1Paid(teacher);
     if (odenen < DONEM1_UCRET) {
@@ -1174,15 +1298,30 @@ function toggleDonemOdeme(id, donemNo) {
       teacher.t5 = false;
     }
   }
+
+  const newTotal = getTeacherTotalPaid(teacher);
+  const delta = newTotal - prevTotal;
+  if (delta > 0) {
+    teacher.customBankPaid = currentCheckPayMode === 'banka' ? (prevBank + delta) : prevBank;
+  } else if (delta < 0) {
+    teacher.customBankPaid = currentCheckPayMode === 'banka'
+      ? Math.min(newTotal, Math.max(0, prevBank + delta))
+      : Math.min(newTotal, prevBank);
+  }
+
   teacher.adminModified = true;
   saveState();
   pushTeachersToPermanentCloud(id);
+  pushExtraToPermanentCloud();
 }
 
-// Ödeme Kutucuğu Değiştir (Kazara Silme Korumalı!)
+// Ödeme Kutucuğu Değiştir (Kazara Silme Korumalı + Banka/Elden Moduna Duyarlı!)
 function toggleTaksit(id, field) {
   const teacher = state.teachers.find(t => t.id === id);
   if (!teacher) return;
+
+  const prevTotal = getTeacherTotalPaid(teacher);
+  const prevBank = getTeacherBankPaid(teacher);
 
   if (teacher[field]) {
     const tutar = TAKSIT_TUTARLARI[field] || 300;
@@ -1194,32 +1333,108 @@ function toggleTaksit(id, field) {
     teacher[field] = true;
     teacher.status = 'katiliyor';
   }
+
+  const newTotal = getTeacherTotalPaid(teacher);
+  const delta = newTotal - prevTotal;
+  if (delta > 0) {
+    teacher.customBankPaid = currentCheckPayMode === 'banka' ? (prevBank + delta) : prevBank;
+  } else if (delta < 0) {
+    teacher.customBankPaid = currentCheckPayMode === 'banka'
+      ? Math.min(newTotal, Math.max(0, prevBank + delta))
+      : Math.min(newTotal, prevBank);
+  }
+
   teacher.adminModified = true;
   saveState();
   pushTeachersToPermanentCloud(id);
+  pushExtraToPermanentCloud();
 }
 
-// Elden / Küsuratlı Ek Ödeme Girişi (Örn: +200 TL, +400 TL vb.)
-function editEkOdemeModal(id) {
+// Banka EFT ve Elden (Nakit) Ödemeleri Net Ayıran Ödeme Düzenleme Modalı
+let currentPaymentModalTeacherId = null;
+
+function openPaymentModal(id) {
   const t = state.teachers.find(x => x.id === id);
   if (!t) return;
+  currentPaymentModalTeacherId = t.id;
 
-  const mevcutEk = Number(t.ek1) || 0;
-  const giris = prompt(
-    `${t.name} için 300 ₺ kutucukları dışındaki EK / ELDEN ödeme tutarını girin (₺):\n(Kutucuklarla işaretli tutarın üzerine eklenir. Sıfırlamak için 0 yazın)`,
-    mevcutEk
-  );
-  if (giris === null) return;
-  const num = Math.max(0, Math.round(parseFloat(String(giris).replace(',', '.')) || 0));
-  t.ek1 = num;
-  if (getTeacherTotalPaid(t) > 0) {
-    t.status = 'katiliyor';
+  const modalEl = document.getElementById('modalPayment');
+  if (!modalEl) {
+    // Yedek emniyet (Modal DOM'da yoksa)
+    const mevcut = getTeacherEldenPaid(t);
+    const giris = prompt(`${t.name} için ELDEN ödeme tutarını girin (₺):`, mevcut);
+    if (giris === null) return;
+    const eldenVal = Math.max(0, Math.round(parseFloat(String(giris).replace(',', '.')) || 0));
+    const bankVal = getTeacherBankPaid(t);
+    applyTotalAmountToBoxes(t, bankVal + eldenVal);
+    t.customBankPaid = bankVal;
+    if (bankVal + eldenVal > 0) t.status = 'katiliyor';
+    t.adminModified = true;
+    saveState();
+    pushTeachersToPermanentCloud(t.id);
+    pushExtraToPermanentCloud();
+    return;
   }
-  t.adminModified = true;
-  saveState();
-  pushTeachersToPermanentCloud(id);
-  showToast(`✅ ${t.name} ek ödeme tutarı (${num} ₺) kaydedildi ve buluta kilitlendi!`);
+
+  document.getElementById('payModalTeacherName').innerText = `${t.name} (${t.branch || '-'})`;
+  document.getElementById('payModalStatusSelect').value = t.status || 'katiliyor';
+  document.getElementById('payModalBankInput').value = getTeacherBankPaid(t);
+  document.getElementById('payModalEldenInput').value = getTeacherEldenPaid(t);
+  document.getElementById('payModalNoteInput').value = t.note || '';
+  updatePaymentModalPreview();
+  openModal('modalPayment');
 }
+
+function setPaymentModalPreset(target, val, isAdd = false) {
+  const inputId = target === 'bank' ? 'payModalBankInput' : 'payModalEldenInput';
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  const cur = Math.max(0, Math.round(parseFloat(el.value) || 0));
+  el.value = isAdd ? (cur + val) : val;
+  updatePaymentModalPreview();
+}
+
+function updatePaymentModalPreview() {
+  const bEl = document.getElementById('payModalBankInput');
+  const eEl = document.getElementById('payModalEldenInput');
+  const sumEl = document.getElementById('payModalSummaryText');
+  if (!bEl || !eEl || !sumEl) return;
+
+  const b = Math.max(0, Math.round(parseFloat(bEl.value) || 0));
+  const e = Math.max(0, Math.round(parseFloat(eEl.value) || 0));
+  const tot = b + e;
+  const d1 = Math.min(DONEM1_UCRET, tot);
+  const d2 = Math.max(0, tot - DONEM1_UCRET);
+  const kalan = Math.max(0, YILLIK_UCRET - tot);
+
+  sumEl.innerHTML = `Toplam Ödenen: <strong>${tot.toLocaleString('tr-TR')} ₺</strong> (🏦 Banka: ${b.toLocaleString('tr-TR')} ₺ + 💵 Elden: ${e.toLocaleString('tr-TR')} ₺)<br><span class="text-[11px] text-slate-600">1. Dönem: ${d1} ₺ / 900 ₺  |  2. Dönem: ${d2} ₺ / 900 ₺  |  Yıllık Kalan: ${kalan} ₺</span>`;
+}
+
+function savePaymentModal() {
+  const t = state.teachers.find(x => x.id === currentPaymentModalTeacherId);
+  if (!t) return;
+
+  const bankVal = Math.max(0, Math.round(parseFloat(document.getElementById('payModalBankInput').value) || 0));
+  const eldenVal = Math.max(0, Math.round(parseFloat(document.getElementById('payModalEldenInput').value) || 0));
+  const totalVal = bankVal + eldenVal;
+  const selectedStatus = document.getElementById('payModalStatusSelect').value;
+  const noteVal = document.getElementById('payModalNoteInput').value.trim();
+
+  applyTotalAmountToBoxes(t, totalVal);
+  t.customBankPaid = bankVal;
+  t.status = totalVal > 0 ? 'katiliyor' : selectedStatus;
+  t.note = noteVal;
+  t.noteEditedByAdmin = true;
+  t.adminModified = true;
+
+  closeModal('modalPayment');
+  saveState();
+  pushTeachersToPermanentCloud(t.id);
+  pushExtraToPermanentCloud();
+  showToast(`✅ ${t.name}: Toplam ${totalVal} ₺ (Banka: ${bankVal} ₺, Elden: ${eldenVal} ₺) kaydedildi!`);
+}
+
+const editEkOdemeModal = openPaymentModal;
 
 // ================= HARCAMA & FATURA YÖNETİMİ =================
 let currentExpenseReceiptImg = null;
@@ -1731,7 +1946,7 @@ async function fetchFromCloudSync(silent = true) {
 
   const norm = (s) => (s || '').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/i/g, 'I').replace(/ğ/g, 'G').replace(/Ğ/g, 'G').replace(/ş/g, 'S').replace(/Ş/g, 'S').replace(/ç/g, 'C').replace(/Ç/g, 'C').replace(/ö/g, 'O').replace(/Ö/g, 'O').replace(/ü/g, 'U').replace(/Ü/g, 'U').toUpperCase().trim();
 
-  // 0-A. Ekstra Bulut Veritabanından Yeni Eklenen Öğretmenler & Özel Notları Çek
+  // 0-A. Ekstra Bulut Veritabanından Yeni Eklenen Öğretmenler, Banka Tutarları & Özel Notları Çek
   try {
     const extraJson = await safeCloudGet(CLOUD_EXTRA_DB_URL);
     if (extraJson && extraJson.data) {
@@ -1739,6 +1954,7 @@ async function fetchFromCloudSync(silent = true) {
         extraJson.data.nt.forEach(arr => {
           if (!Array.isArray(arr) || !arr[0] || !arr[1]) return;
           const [id, name, branch, slotStr, note] = arr;
+          if (RETIRED_TEACHER_IDS.has(Number(id)) || norm(name).includes('HANDAN YASA')) return;
           let existing = state.teachers.find(t => Number(t.id) === Number(id) || norm(t.name) === norm(name));
           const parsed = decodeSingleTeacherSlot(slotStr) || { status: 'katiliyor', mask: 0, ek1: 0, ek2: 0 };
           if (!existing) {
@@ -1765,6 +1981,16 @@ async function fetchFromCloudSync(silent = true) {
           const t = state.teachers.find(x => String(x.id) === String(idStr));
           if (t && noteVal && !t.noteEditedByAdmin && t.note !== noteVal) {
             t.note = String(noteVal);
+            updatedCount++;
+          }
+        }
+      }
+      if (extraJson.data.b && typeof extraJson.data.b === 'object') {
+        for (const [idStr, bankVal] of Object.entries(extraJson.data.b)) {
+          const t = state.teachers.find(x => String(x.id) === String(idStr));
+          const numBank = Number(bankVal);
+          if (t && !isNaN(numBank) && typeof t.customBankPaid !== 'number') {
+            t.customBankPaid = numBank;
             updatedCount++;
           }
         }
@@ -1874,8 +2100,9 @@ async function fetchFromCloudSync(silent = true) {
     }
   } catch (expCloudErr) {}
 
-  // 1. Canlı Veri Kanalından Çek (ntfy.sh - Anlık Form Yanıtları, Ödemeli Kayıtları Ezmez!)
+  // 1. Canlı Veri Kanalından Çek (ntfy.sh - Sadece Kilit Tarihi Sonrası Yeni Form Yanıtları, Ödemeli Kayıtları Ezmez!)
   try {
+    const NTFY_FLOOR_MS = 1793722000000; // 03.11.2026 kilit öncesi eski bildirimlerin tekrar işlenmesini engeller
     const res = await fetch('https://ntfy.sh/cay_mujdattelli_2026_okul/json?poll=1&since=all', { cache: 'no-store' });
     if (res.ok) {
       const text = await res.text();
@@ -1886,6 +2113,7 @@ async function fetchFromCloudSync(silent = true) {
           if (item.event === 'message' && item.message) {
             let data = null;
             try { data = JSON.parse(item.message); } catch(e) {}
+            const msgTimeMs = (data && Number(data.time)) || ((Number(item.time) || 0) * 1000);
             if (data && data.type === 'expense_event') {
               if (!state.expenses) state.expenses = [];
               if (data.action === 'save' && data.expense && data.expense.id) {
@@ -1895,7 +2123,9 @@ async function fetchFromCloudSync(silent = true) {
                   updatedCount++;
                 }
               }
-            } else if (data && (data.id || data.name) && (data.status === 'katiliyor' || data.status === 'katilmiyor')) {
+            } else if (data && msgTimeMs >= NTFY_FLOOR_MS && (data.id || data.name) && (data.status === 'katiliyor' || data.status === 'katilmiyor')) {
+              if (data.id && !isNaN(data.id) && RETIRED_TEACHER_IDS.has(Number(data.id))) return;
+              if (data.name && norm(data.name).includes('HANDAN YASA')) return;
               let teacher = null;
               if (data.id && !isNaN(data.id)) {
                 teacher = state.teachers.find(t => t.id === Number(data.id));
@@ -2082,21 +2312,33 @@ async function syncFromFormSubmit(apiKey, silent = false) {
   }
 }
 
-// Excel / CSV Olarak İndir
+// Excel / CSV Olarak İndir (Banka ve Elden Ayrımı ile Birlikte)
 function exportToCSV() {
-  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem (900 TL);2.Dönem (900 TL);Toplam Ödenen;Kalan Borç;Not\n";
-  
-  state.teachers.forEach(t => {
+  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem (900 TL);2.Dönem (900 TL);Banka EFT (TL);Elden Nakit (TL);Toplam Ödenen (TL);1.Dönem Kalan (TL);Yıllık Kalan (TL);Not\n";
+  let sumBank = 0;
+  let sumElden = 0;
+  let sumTot = 0;
+
+  state.teachers.forEach((t, idx) => {
     const donem1Odenen = getTeacherDonem1Paid(t);
     const donem2Odenen = getTeacherDonem2Paid(t);
     const odenen = getTeacherTotalPaid(t);
+    const bnk = getTeacherBankPaid(t);
+    const eld = getTeacherEldenPaid(t);
+    sumBank += bnk;
+    sumElden += eld;
+    sumTot += odenen;
+
+    const d1Kalan = t.status === 'katiliyor' ? Math.max(0, DONEM1_UCRET - donem1Odenen) : 0;
     const kalan = t.status === 'katiliyor' ? Math.max(0, YILLIK_UCRET - odenen) : 0;
     const durumText = t.status === 'katiliyor' ? 'Katılıyor' : (t.status === 'katilmiyor' ? 'Katılmıyor' : 'Bekliyor');
     const d1Text = donem1Odenen >= DONEM1_UCRET ? '900 TL (TAM)' : (donem1Odenen > 0 ? `${donem1Odenen} TL (${DONEM1_UCRET - donem1Odenen} TL Eksik)` : '-');
     const d2Text = donem2Odenen >= DONEM2_UCRET ? '900 TL (TAM)' : (donem2Odenen > 0 ? `${donem2Odenen} TL (${DONEM2_UCRET - donem2Odenen} TL Eksik)` : '-');
-    
-    csv += `${t.id};"${t.name}";"${t.branch || ''}";"${durumText}";"${d1Text}";"${d2Text}";${odenen};${kalan};"${t.note || ''}"\n`;
+
+    csv += `${idx + 1};"${t.name}";"${t.branch || ''}";"${durumText}";"${d1Text}";"${d2Text}";${bnk};${eld};${odenen};${d1Kalan};${kalan};"${(t.note || '').replace(/"/g, '""')}"\n`;
   });
+
+  csv += `\n"";"GENEL TOPLAM";"";"";"";"";${sumBank};${sumElden};${sumTot};"";"";""\n`;
 
   const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -2104,6 +2346,82 @@ function exportToCSV() {
   a.href = url;
   a.download = `Okul_Cay_Takip_Listesi_${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
+}
+
+// Markdown (.md) Tam Rapor İndir
+function exportMarkdownReport() {
+  const katilanlar = state.teachers.filter(t => t.status === 'katiliyor');
+  const katilmayanlar = state.teachers.filter(t => t.status === 'katilmiyor');
+  const bekleyenler = state.teachers.filter(t => t.status === 'bekliyor');
+
+  let sumBank = 0;
+  let sumElden = 0;
+  let sumTot = 0;
+  let odemeYapanSayisi = 0;
+
+  state.teachers.forEach(t => {
+    const tot = getTeacherTotalPaid(t);
+    const b = getTeacherBankPaid(t);
+    const el = getTeacherEldenPaid(t);
+    sumBank += b;
+    sumElden += el;
+    sumTot += tot;
+    if (tot > 0) odemeYapanSayisi++;
+  });
+
+  const toplamGider = (state.expenses || []).reduce((s, e) => s + (Number(e.amount) || 0), 0);
+  const netKasa = sumTot - toplamGider;
+  const fmt = (n) => Number(n).toLocaleString('tr-TR') + ' ₺';
+
+  let md = `# ☕ 2026-2027 Eğitim-Öğretim Yılı Çay Ocağı Tam Kayıt ve Kasa Raporu\n\n`;
+  md += `> **Rapor Tarihi:** ${new Date().toLocaleDateString('tr-TR')} ${new Date().toLocaleTimeString('tr-TR')}\n`;
+  md += `> **Sorumlu:** Müjdat TELLİ (TR830001200986200001021145 — Halkbank Okul Çay P)\n`;
+  md += `> **Ücret Tarifesi:** Yıllık 1.800 ₺ (1. Dönem: 900 ₺ + 2. Dönem: 900 ₺)\n\n---\n\n`;
+
+  md += `## 1. 💰 Genel Kasa ve Katılım Özeti\n\n`;
+  md += `| Kalem | Kişi / Adet | Tutar / Detay |\n|---|---|---|\n`;
+  md += `| **🏦 Bankadan Gelen (EFT / Havale)** | 22 Kişi (25 banka işlemi) | **${fmt(sumBank)}** |\n`;
+  md += `| **💵 Elden Alınan (Nakit)** | 3 Kişi (Müjdat Telli 900 ₺ + Miray Tekay 800 ₺ + Zehra Genç 300 ₺) | **${fmt(sumElden)}** |\n`;
+  md += `| **📊 Toplam Toplanan Gelir** | **${odemeYapanSayisi} Ödeme Yapan Kişi** | **${fmt(sumTot)}** |\n`;
+  md += `| **🧾 Toplam Harcama / Fatura Gideri** | **${(state.expenses || []).length} Kayıt** | **${fmt(toplamGider)}** |\n`;
+  md += `| **✅ NET KASA BAKİYESİ** | Gelir (${fmt(sumTot)}) − Gider (${fmt(toplamGider)}) | **${fmt(netKasa)}** |\n`;
+  md += `| **☕ Katılıyor** | **${katilanlar.length} Kişi** | ${odemeYapanSayisi} ödeme yapan + ${katilanlar.length - odemeYapanSayisi} henüz ödeme görünmeyen |\n`;
+  md += `| **❌ Katılmıyor** | **${katilmayanlar.length} Kişi** | Tamamı doğrulandı |\n`;
+  md += `| **⏳ Yanıt Bekliyor** | **${bekleyenler.length} Kişi** | Form/ödeme bekleyenler |\n`;
+  md += `| **👥 Toplam Aktif Öğretmen / Personel** | **${state.teachers.length} Kişi** | Handan Yasa emeklilik nedeniyle çıkarıldı |\n\n---\n\n`;
+
+  md += `## 2. 🧾 Harcama ve Faturalar (${fmt(toplamGider)})\n\n`;
+  md += `| # | Tarih | Açıklama | Tutar |\n|---|---|---|---|\n`;
+  (state.expenses || []).forEach((e, i) => {
+    md += `| ${i + 1} | ${e.date || '-'} | ${e.desc || '-'} | **${fmt(e.amount || 0)}** |\n`;
+  });
+  md += `| **TOPLAM** | — | **${(state.expenses || []).length} Fatura / Alım** | **${fmt(toplamGider)}** |\n\n---\n\n`;
+
+  md += `## 3. 👥 Tüm Öğretmen ve Personel Durum Listesi (${state.teachers.length} Kişi)\n\n`;
+  md += `| Sıra | Ad Soyad | Branş | Durum | Banka | Elden | Toplam Ödenen | 1. Dönem Kalan | Yıllık Kalan | Not / Açıklama |\n`;
+  md += `|---|---|---|---|---|---|---|---|---|---|\n`;
+
+  state.teachers.forEach((t, idx) => {
+    const d1 = getTeacherDonem1Paid(t);
+    const tot = getTeacherTotalPaid(t);
+    const bank = getTeacherBankPaid(t);
+    const elden = getTeacherEldenPaid(t);
+    const d1Rem = t.status === 'katiliyor' ? Math.max(0, DONEM1_UCRET - d1) : 0;
+    const yrRem = t.status === 'katiliyor' ? Math.max(0, YILLIK_UCRET - tot) : 0;
+    const stText = t.status === 'katiliyor' ? '☕ Katılıyor' : (t.status === 'katilmiyor' ? '❌ Katılmıyor' : '⏳ Bekliyor');
+
+    md += `| ${idx + 1} | **${t.name}** | ${t.branch || '-'} | ${stText} | ${bank > 0 ? fmt(bank) : '—'} | ${elden > 0 ? fmt(elden) : '—'} | ${tot > 0 ? '**' + fmt(tot) + '**' : '0 ₺'} | ${t.status === 'katiliyor' ? fmt(d1Rem) : '—'} | ${t.status === 'katiliyor' ? fmt(yrRem) : '—'} | ${t.note || ''} |\n`;
+  });
+
+  md += `| — | **GENEL TOPLAM (${state.teachers.length} KİŞİ)** | — | **${katilanlar.length} ☕ / ${katilmayanlar.length} ❌ / ${bekleyenler.length} ⏳** | **${fmt(sumBank)}** | **${fmt(sumElden)}** | **${fmt(sumTot)}** | — | — | — |\n\n`;
+
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Okul_Cay_Kasa_Raporu_${new Date().toISOString().split('T')[0]}.md`;
+  a.click();
+  showToast("📄 Markdown (.md) kasa raporu indirildi!");
 }
 
 // Tüm Veriyi JSON Yedeği Olarak İndir (Sıfır Veri Kaybı Garantisi)
@@ -2160,7 +2478,7 @@ function importFullBackupJSON(event) {
         const tMap = new Map();
         state.teachers.forEach(t => tMap.set(t.id, t));
         importedState.teachers.forEach(it => {
-          if (!it) return;
+          if (!it || RETIRED_TEACHER_IDS.has(Number(it.id))) return;
           if (tMap.has(it.id)) {
             const cur = tMap.get(it.id);
             cur.t1 = Boolean(cur.t1 || it.t1);
@@ -2168,6 +2486,7 @@ function importFullBackupJSON(event) {
             cur.t3 = Boolean(cur.t3 || it.t3);
             cur.t4 = Boolean(cur.t4 || it.t4);
             cur.t5 = Boolean(cur.t5 || it.t5);
+            if (typeof it.customBankPaid === 'number') cur.customBankPaid = it.customBankPaid;
             if (it.status && it.status !== 'bekliyor') cur.status = it.status;
             if (it.note && it.note.trim() && (!cur.note || !cur.note.includes(it.note.trim()))) {
               cur.note = cur.note ? (cur.note + ' | ' + it.note.trim()) : it.note.trim();
@@ -2335,11 +2654,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   updateDashboard();
 
-  // 1. Ortak Çift Bulut Veritabanından yanıtları çek ve tarayıcıdaki elden ödemelerle kayıpsız birleştir
+  // 1. Ortak Çift Bulut Veritabanından yanıtları çek ve tarayıcıdaki güncel durumla birleştir
   await fetchFromCloudSync(true);
-
-  // 2. Tarayıcıda işaretlenmiş elden ödemeler / faturalar varsa anında Çift Bulut Kasasına da yedekle!
-  pushTeachersToPermanentCloud(null);
-  pushExpensesToPermanentCloud();
-  pushExtraToPermanentCloud();
 });
