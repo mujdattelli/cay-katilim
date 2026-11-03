@@ -136,61 +136,398 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_v10";
+const CANONICAL_DATA_VERSION = "2026.11.03_LOCKED_v11";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
+const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";
+const CLOUD_EXTRA_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccdade216d";
 
-// Kalıcı Bulut Veritabanına Öğretmen Yanıt ve Ödemelerini Kaydet (Gmail'e Gerek Kalmadan Süresiz Saklar)
-async function pushTeachersToPermanentCloud(changedTeacherId = null) {
-  try {
-    let remoteMap = {};
-    try {
-      const getRes = await fetch(CLOUD_TEACHERS_DB_URL, { cache: 'no-store' });
-      if (getRes.ok) {
-        const getJson = await getRes.json();
-        if (getJson && getJson.data && getJson.data.t) {
-          remoteMap = { ...getJson.data.t };
-        }
+// ================= INDEXEDDB TARAYICI KASASI (100+ MB KALICI YEDEK) =================
+function openVaultIDB() {
+  return new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined') return reject(new Error('IndexedDB desteklenmiyor'));
+    const req = indexedDB.open('CayTakipVaultDB', 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('snapshots')) {
+        db.createObjectStore('snapshots');
       }
-    } catch (ge) {}
-
-    const encodeTeacher = (t) => {
-      const mask = (t.t1 ? 1 : 0) | (t.t2 ? 2 : 0) | (t.t3 ? 4 : 0) | (t.t4 ? 8 : 0) | (t.t5 ? 16 : 0);
-      const ek1 = Number(t.ek1) || 0;
-      const ek2 = Number(t.ek2) || 0;
-      const stCode = t.status === 'katiliyor' ? '1' : (t.status === 'katilmiyor' ? '0' : '2');
-      let val = `${stCode}:${mask}`;
-      if (ek1 > 0 || ek2 > 0) val += `:${ek1}`;
-      if (ek2 > 0) val += `:${ek2}`;
-      return { val, isDefault: (t.status === 'bekliyor' && mask === 0 && ek1 === 0 && ek2 === 0) };
     };
+    req.onsuccess = (e) => resolve(e.target.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
 
-    if (changedTeacherId !== null) {
-      const t = state.teachers.find(x => String(x.id) === String(changedTeacherId));
-      if (t) {
-        const { val, isDefault } = encodeTeacher(t);
-        if (isDefault) {
-          delete remoteMap[String(t.id)];
-        } else {
-          remoteMap[String(t.id)] = val;
-        }
-      }
-    } else {
-      state.teachers.forEach(t => {
-        const { val, isDefault } = encodeTeacher(t);
-        if (!isDefault) {
-          remoteMap[String(t.id)] = val;
-        }
+async function idbSaveSnapshot(stateObj) {
+  try {
+    const db = await openVaultIDB();
+    const copy = JSON.parse(JSON.stringify(stateObj));
+    copy.savedAt = Date.now();
+    const dayKey = 'backup_' + new Date().toISOString().split('T')[0];
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('snapshots', 'readwrite');
+      const store = tx.objectStore('snapshots');
+      store.put(copy, 'latest');
+      store.put(copy, dayKey);
+      tx.oncomplete = () => resolve();
+      tx.onerror = (e) => reject(e.target.error);
+    });
+    db.close();
+  } catch (e) {
+    console.warn("IndexedDB kayıt uyarısı:", e);
+  }
+}
+
+async function idbLoadLatestSnapshot() {
+  try {
+    const db = await openVaultIDB();
+    const res = await new Promise((resolve, reject) => {
+      const tx = db.transaction('snapshots', 'readonly');
+      const store = tx.objectStore('snapshots');
+      const getReq = store.get('latest');
+      getReq.onsuccess = () => resolve(getReq.result || null);
+      getReq.onerror = (e) => reject(e.target.error);
+    });
+    db.close();
+    return res;
+  } catch (e) {
+    return null;
+  }
+}
+
+function updateVaultStatusUI(statusText, isOk = true) {
+  try {
+    const nowStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    localStorage.setItem('cay_last_vault_sync', nowStr);
+    const el = document.getElementById('vaultSyncStatusBadge');
+    if (el) {
+      el.innerText = statusText || `✅ Son Koruma Kaydı: ${nowStr} (Çift Bulut + Cihaz Kasası Aktif)`;
+      el.className = isOk
+        ? 'inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-[11px] border border-emerald-300'
+        : 'inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 font-bold text-[11px] border border-amber-300';
+    }
+  } catch (e) {}
+}
+
+// Güvenli Bulut Yazma (Boyut Sınırı + Yeniden Deneme Korumalı)
+async function safeCloudPut(url, bodyObj) {
+  const jsonBody = JSON.stringify(bodyObj);
+  if (jsonBody.length > 970) {
+    console.warn("Bulut paket boyutu sınırı aşıldı, özetleniyor:", jsonBody.length);
+    return false;
+  }
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonBody
       });
+      if (r.ok) return true;
+    } catch (err) {}
+  }
+  return false;
+}
+
+async function safeCloudGet(url) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetch(url, { cache: 'no-store' });
+      if (r.ok) return await r.json();
+    } catch (err) {}
+  }
+  return null;
+}
+
+// Öğretmen dizisini ultra-kompakt (~190 byte) metne kodlar (1000 byte limitine asla takılmaz)
+function encodeSingleTeacherSlot(t) {
+  const mask = (t.t1 ? 1 : 0) | (t.t2 ? 2 : 0) | (t.t3 ? 4 : 0) | (t.t4 ? 8 : 0) | (t.t5 ? 16 : 0);
+  const ek1 = Math.round(Number(t.ek1) || 0);
+  const ek2 = Math.round(Number(t.ek2) || 0);
+  const hasPaid = mask > 0 || ek1 > 0 || ek2 > 0;
+  const effectiveStatus = (hasPaid && !t.adminModified) ? 'katiliyor' : (t.status || 'bekliyor');
+  const stChar = effectiveStatus === 'katiliyor' ? 'K' : (effectiveStatus === 'katilmiyor' ? 'R' : 'B');
+  let slot = stChar + mask.toString(36) + (t.adminModified ? '!' : '');
+  if (ek1 > 0 || ek2 > 0) {
+    slot += '+' + ek1 + (ek2 > 0 ? '.' + ek2 : '');
+  }
+  return slot;
+}
+
+function decodeSingleTeacherSlot(slotStr) {
+  if (!slotStr || typeof slotStr !== 'string') return null;
+  const m = slotStr.match(/^([KRB])([0-9a-v])(!?)(?:\+(\d+)(?:\.(\d+))?)?$/);
+  if (!m) return null;
+  return {
+    status: m[1] === 'K' ? 'katiliyor' : (m[1] === 'R' ? 'katilmiyor' : 'bekliyor'),
+    mask: parseInt(m[2], 36),
+    adminModified: m[3] === '!',
+    ek1: m[4] ? parseInt(m[4], 10) : 0,
+    ek2: m[5] ? parseInt(m[5], 10) : 0
+  };
+}
+
+// Buluttan gelen veriyi (hem yeni kompakt v formatı hem eski t harita formatı) çözer
+function parseRemoteTeachersData(dataObj) {
+  const decodedMap = {}; // idStr -> { status, mask, adminModified, ek1, ek2 }
+  if (!dataObj) return decodedMap;
+
+  if (typeof dataObj.v === 'string' && dataObj.v.length > 0) {
+    const slots = dataObj.v.split(',');
+    slots.forEach((slot, idx) => {
+      const parsed = decodeSingleTeacherSlot(slot);
+      if (parsed) decodedMap[String(idx + 1)] = parsed;
+    });
+  } else if (dataObj.t && typeof dataObj.t === 'object') {
+    for (const [idStr, codeStr] of Object.entries(dataObj.t)) {
+      if (typeof codeStr === 'string') {
+        const parts = codeStr.split(':');
+        const stCode = parts[0];
+        decodedMap[String(idStr)] = {
+          status: stCode === '1' ? 'katiliyor' : (stCode === '0' ? 'katilmiyor' : 'bekliyor'),
+          mask: parseInt(parts[1] || '0', 10),
+          adminModified: false,
+          ek1: parseInt(parts[2] || '0', 10),
+          ek2: parseInt(parts[3] || '0', 10)
+        };
+      }
+    }
+  }
+  return decodedMap;
+}
+
+function buildCompactTeachersStringFromMap(slotMap, maxId) {
+  const arr = [];
+  for (let id = 1; id <= maxId; id++) {
+    arr.push(slotMap[String(id)] || 'B0');
+  }
+  return arr.join(',');
+}
+
+// Kalıcı Çift Bulut Veritabanına Öğretmen Yanıt ve Ödemelerini Güvenle Kaydet
+// options.fromPublicForm = true ise öğretmenin mevcut ödemelerine ASLA dokunmaz, sadece katılım durumunu işler!
+async function pushTeachersToPermanentCloud(changedTeacherId = null, options = {}) {
+  try {
+    const fromPublicForm = Boolean(options.fromPublicForm);
+    let remoteJson = await safeCloudGet(CLOUD_TEACHERS_DB_URL);
+    if (!remoteJson || !remoteJson.data) {
+      remoteJson = await safeCloudGet(CLOUD_TEACHERS_MIRROR_DB_URL);
     }
 
-    await fetch(CLOUD_TEACHERS_DB_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'cay_db', data: { t: remoteMap } })
-    });
+    // Eğer halka açık formdan gönderiliyorsa ve buluta hiç ulaşılamadıysa kısmi veriyle üzerine yazma!
+    if (fromPublicForm && (!remoteJson || !remoteJson.data)) {
+      return false;
+    }
+
+    const remoteDecoded = (remoteJson && remoteJson.data) ? parseRemoteTeachersData(remoteJson.data) : {};
+    const maxLocalId = state.teachers.reduce((m, x) => Math.max(m, Number(x.id) || 0), 61);
+    const maxRemoteId = Object.keys(remoteDecoded).reduce((m, k) => Math.max(m, Number(k) || 0), 0);
+    const maxId = Math.min(200, Math.max(maxLocalId, maxRemoteId, 61));
+
+    const finalSlots = {};
+
+    // 1. Önce yerel durum ile buluttaki diğer öğretmenlerin durumunu kayıpsız birleştir
+    for (let id = 1; id <= maxId; id++) {
+      const idStr = String(id);
+      const localT = state.teachers.find(x => String(x.id) === idStr);
+      const rem = remoteDecoded[idStr];
+
+      if (fromPublicForm && String(changedTeacherId) !== idStr) {
+        // Halka açık formda diğer öğretmenlerin buluttaki kaydını aynen koru
+        if (rem) {
+          finalSlots[idStr] = encodeSingleTeacherSlot({
+            status: rem.status,
+            t1: Boolean(rem.mask & 1), t2: Boolean(rem.mask & 2), t3: Boolean(rem.mask & 4),
+            t4: Boolean(rem.mask & 8), t5: Boolean(rem.mask & 16),
+            ek1: rem.ek1, ek2: rem.ek2, adminModified: rem.adminModified
+          });
+        } else if (localT) {
+          finalSlots[idStr] = encodeSingleTeacherSlot(localT);
+        } else {
+          finalSlots[idStr] = 'B0';
+        }
+      } else if (fromPublicForm && String(changedTeacherId) === idStr && localT) {
+        // Halka açık formdan gelen öğretmen: Buluttaki ÖDEMELERİNİ (mask, ek1, ek2) ASLA SİLME!
+        const rMask = rem ? rem.mask : 0;
+        const rEk1 = rem ? rem.ek1 : 0;
+        const rEk2 = rem ? rem.ek2 : 0;
+        const mergedT = {
+          status: (rMask > 0 || rEk1 > 0 || rEk2 > 0) ? 'katiliyor' : localT.status,
+          t1: Boolean(localT.t1 || (rMask & 1)),
+          t2: Boolean(localT.t2 || (rMask & 2)),
+          t3: Boolean(localT.t3 || (rMask & 4)),
+          t4: Boolean(localT.t4 || (rMask & 8)),
+          t5: Boolean(localT.t5 || (rMask & 16)),
+          ek1: Math.max(Number(localT.ek1) || 0, rEk1),
+          ek2: Math.max(Number(localT.ek2) || 0, rEk2),
+          adminModified: rem ? rem.adminModified : false
+        };
+        finalSlots[idStr] = encodeSingleTeacherSlot(mergedT);
+      } else if (localT) {
+        // Yönetici panelinden kayıt: Değişen öğretmen için yöneticinin son kararını yaz,
+        // diğer öğretmenler için bulutta yeni gelmiş yanıt varsa birleştirerek koru!
+        if (changedTeacherId !== null && String(changedTeacherId) === idStr) {
+          finalSlots[idStr] = encodeSingleTeacherSlot(localT);
+        } else if (rem && !localT.adminModified) {
+          const mergedOther = {
+            status: (rem.status !== 'bekliyor' && localT.status === 'bekliyor') ? rem.status : localT.status,
+            t1: Boolean(localT.t1 || (rem.mask & 1)),
+            t2: Boolean(localT.t2 || (rem.mask & 2)),
+            t3: Boolean(localT.t3 || (rem.mask & 4)),
+            t4: Boolean(localT.t4 || (rem.mask & 8)),
+            t5: Boolean(localT.t5 || (rem.mask & 16)),
+            ek1: Math.max(Number(localT.ek1) || 0, rem.ek1),
+            ek2: Math.max(Number(localT.ek2) || 0, rem.ek2),
+            adminModified: Boolean(localT.adminModified || rem.adminModified)
+          };
+          finalSlots[idStr] = encodeSingleTeacherSlot(mergedOther);
+        } else {
+          finalSlots[idStr] = encodeSingleTeacherSlot(localT);
+        }
+      } else if (rem) {
+        finalSlots[idStr] = encodeSingleTeacherSlot({
+          status: rem.status,
+          t1: Boolean(rem.mask & 1), t2: Boolean(rem.mask & 2), t3: Boolean(rem.mask & 4),
+          t4: Boolean(rem.mask & 8), t5: Boolean(rem.mask & 16),
+          ek1: rem.ek1, ek2: rem.ek2, adminModified: rem.adminModified
+        });
+      }
+    }
+
+    const compactStr = buildCompactTeachersStringFromMap(finalSlots, maxId);
+    const payloadPrimary = { name: 'cay_db', data: { v: compactStr } };
+    const payloadMirror = { name: 'cay_db_mirror', data: { v: compactStr } };
+
+    const [ok1, ok2] = await Promise.all([
+      safeCloudPut(CLOUD_TEACHERS_DB_URL, payloadPrimary),
+      safeCloudPut(CLOUD_TEACHERS_MIRROR_DB_URL, payloadMirror)
+    ]);
+
+    if (ok1 || ok2) {
+      updateVaultStatusUI();
+    }
+    return ok1 || ok2;
   } catch (e) {
-    console.warn("Kalıcı bulut kayıt uyarısı:", e);
+    console.warn("Kalıcı bulut öğretmen kayıt uyarısı:", e);
+    return false;
+  }
+}
+
+// Faturaları Kalıcı Buluta Kaydet (Varsayılan 5 fatura dışındaki ek/düzenlenmiş faturaları saklar)
+async function pushExpensesToPermanentCloud() {
+  try {
+    const defaultMap = new Map();
+    DEFAULT_EXPENSES.forEach(de => defaultMap.set(String(de.id), de));
+
+    const currentIds = new Set((state.expenses || []).map(e => String(e.id)));
+    const deletedDefaultIds = [];
+    defaultMap.forEach((_, idStr) => {
+      if (!currentIds.has(idStr)) deletedDefaultIds.push(idStr);
+    });
+
+    const customList = [];
+    (state.expenses || []).forEach(exp => {
+      if (!exp || !exp.id) return;
+      const def = defaultMap.get(String(exp.id));
+      const itemsStr = exp.items
+        ? [exp.items.cay || '', exp.items.seker || '', exp.items.deterjan || '', exp.items.bardak || '', exp.items.diger || ''].join('|')
+        : '||||';
+      if (def) {
+        const defItemsStr = def.items
+          ? [def.items.cay || '', def.items.seker || '', def.items.deterjan || '', def.items.bardak || '', def.items.diger || ''].join('|')
+          : '||||';
+        if (def.amount === exp.amount && def.desc === exp.desc && def.date === exp.date && defItemsStr === itemsStr) {
+          return; // Varsayılan faturayla birebir aynı, bulutta yer kaplamasına gerek yok
+        }
+      }
+      customList.push([
+        exp.id,
+        (exp.date || '').slice(0, 10),
+        (exp.desc || '').slice(0, 36),
+        Number(exp.amount) || 0,
+        itemsStr.slice(0, 45)
+      ]);
+    });
+
+    // 1000 byte limitini aşmamak için en güncel faturaları tut (tamamı zaten IndexedDB ve LocalStorage'da)
+    while (customList.length > 0 && JSON.stringify({ name: 'cay_exp_db', data: { e: customList, d: deletedDefaultIds } }).length > 940) {
+      customList.shift();
+    }
+
+    const ok = await safeCloudPut(CLOUD_EXPENSES_DB_URL, {
+      name: 'cay_exp_db',
+      data: { e: customList, d: deletedDefaultIds }
+    });
+    if (ok) updateVaultStatusUI();
+    return ok;
+  } catch (e) {
+    console.warn("Kalıcı bulut fatura kayıt uyarısı:", e);
+    return false;
+  }
+}
+
+// Yeni Eklenen Öğretmenler (ID > 61), Özel Notlar ve Devreden Bakiyeyi Buluta Kaydet
+async function pushExtraToPermanentCloud() {
+  try {
+    const defaultMap = new Map();
+    DEFAULT_TEACHERS.forEach(dt => defaultMap.set(Number(dt.id), dt));
+
+    const newTeachers = [];
+    const customNotes = {};
+
+    state.teachers.forEach(t => {
+      const def = defaultMap.get(Number(t.id));
+      if (!def) {
+        newTeachers.push([
+          t.id,
+          (t.name || '').slice(0, 28),
+          (t.branch || '').slice(0, 20),
+          encodeSingleTeacherSlot(t),
+          (t.note || '').slice(0, 35)
+        ]);
+      } else if (t.note && t.note.trim() && t.note.trim() !== (def.note || '').trim()) {
+        customNotes[String(t.id)] = t.note.trim().slice(0, 45);
+      }
+    });
+
+    const dataObj = {
+      nt: newTeachers,
+      n: customNotes,
+      dev: Number(state.devredenBakiye) || 0
+    };
+
+    // Boyut kontrolü (940 byte sınırı)
+    const noteKeys = Object.keys(dataObj.n);
+    while (noteKeys.length > 0 && JSON.stringify({ name: 'cay_extra_db', data: dataObj }).length > 940) {
+      delete dataObj.n[noteKeys.shift()];
+    }
+
+    const ok = await safeCloudPut(CLOUD_EXTRA_DB_URL, { name: 'cay_extra_db', data: dataObj });
+    if (ok) updateVaultStatusUI();
+    return ok;
+  } catch (e) {
+    console.warn("Kalıcı bulut ek veri uyarısı:", e);
+    return false;
+  }
+}
+
+// Tek Tıkla Tüm Kasayı (Öğretmenler + Ödemeler + Faturalar + Notlar) Buluta ve Cihaza Kilitle
+async function forceFullVaultSync() {
+  showToast("🔒 Tüm veriler çift bulut sunucusuna ve cihaz kasasına kilitleniyor...");
+  saveState();
+  await fetchFromCloudSync(true);
+  const [okT, okE, okX] = await Promise.all([
+    pushTeachersToPermanentCloud(null),
+    pushExpensesToPermanentCloud(),
+    pushExtraToPermanentCloud()
+  ]);
+  await idbSaveSnapshot(state);
+  if (okT) {
+    const katilan = state.teachers.filter(t => t.status === 'katiliyor').length;
+    const toplamTahsilat = state.teachers.filter(t => t.status === 'katiliyor').reduce((s, t) => s + getTeacherTotalPaid(t), 0);
+    showToast(`🛡️ Güvence Altına Alındı! (${katilan} Katılan, ${toplamTahsilat.toLocaleString('tr-TR')} ₺ Tahsilat Çift Buluta Kilitlendi)`);
+  } else {
+    showToast("💾 Cihaz kasasına kaydedildi (İnternet bağlantısı kontrol ediliyor).");
   }
 }
 
@@ -198,6 +535,7 @@ let state = {
   version: CANONICAL_DATA_VERSION,
   teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
   expenses: JSON.parse(JSON.stringify(DEFAULT_EXPENSES)),
+  deletedDefaultExpenseIds: [],
   devredenBakiye: 0,
   filterStatus: 'all',
   searchQuery: ''
@@ -214,6 +552,33 @@ const TAKSIT_TUTARLARI = {
 const DONEM1_UCRET = 900;
 const DONEM2_UCRET = 900;
 const YILLIK_UCRET = DONEM1_UCRET + DONEM2_UCRET; // 1.800 TL
+
+// 01.09.2026 - 03.11.2026 Halkbank Hesap Özetinden Doğrulanmış Resmi EFT/Havale Toplamları (22 Kişi = 14.700 TL)
+// Bu tablo sayesinde banka ödemeleri ile elden (nakit) ödemeler birbirine ASLA karışmaz ve çift kayıt oluşmaz!
+const OFFICIAL_BANK_PAYMENTS = {
+  10: 300,  // Demet Kesen (07.10)
+  11: 300,  // Demet Savruk (17.09)
+  12: 300,  // Derya Yıldız (15.09)
+  13: 300,  // Devrim Yıldız (15.09)
+  17: 600,  // Ebru Küçükali Turgut (15.09)
+  19: 300,  // Erdinç Sitrava (08.09)
+  22: 300,  // Gökçe Şen (15.09)
+  27: 1200, // Zeynep Aynas (29.09)
+  31: 600,  // Meral Hızal (09.09)
+  33: 300,  // Meryem Demirtaş (22.09)
+  35: 1200, // Muhammet Şeker (09.09)
+  38: 600,  // Murat Kantarcı (15.09)
+  43: 900,  // Rabia Sultan Çelik (08.09: 300 + 03.11: 600)
+  44: 600,  // Serap Kar Ataseven (08.09)
+  49: 600,  // Sinan Rençberoğlu (15.09)
+  50: 1800, // Sinan Can Yücel (10.09: 1200 + 03.11: 600)
+  55: 600,  // Zehra Genç (08.09: 300 + 15.09: 300 banka; üstü elden)
+  57: 900,  // Sema Kandemir (08.09: 300 + 03.11: 600)
+  58: 600,  // Zeynep Bozdemir (10.09)
+  59: 600,  // Demet Türkmen (15.09)
+  60: 600,  // Elif Cansu Keskin (15.09)
+  61: 1200  // Şule Erguvan (17.09)
+};
 
 function getTeacherDonem1Paid(t) {
   if (typeof t.customDonem1 === 'number' && !isNaN(t.customDonem1)) {
@@ -238,17 +603,25 @@ function getTeacherTotalPaid(t) {
   return getTeacherDonem1Paid(t) + getTeacherDonem2Paid(t);
 }
 
-// Veriyi LocalStorage'dan Yükle ve Akıllıca Birleştir (SIFIR VERİ KAYBI GARANTİSİ)
+// Veriyi LocalStorage + Mirror'dan Yükle ve Akıllıca Birleştir (SIFIR VERİ KAYBI GARANTİSİ)
 function loadState() {
-  const saved = localStorage.getItem('cay_takip_state_v1');
   let loadedState = null;
-  if (saved) {
-    try {
-      loadedState = JSON.parse(saved);
-    } catch (e) {
-      loadedState = null;
-    }
+  const savedPrimary = localStorage.getItem('cay_takip_state_v1');
+  const savedMirror = localStorage.getItem('cay_takip_state_mirror_v1');
+
+  if (savedPrimary) {
+    try { loadedState = JSON.parse(savedPrimary); } catch (e) { loadedState = null; }
   }
+  if (!loadedState && savedMirror) {
+    try { loadedState = JSON.parse(savedMirror); } catch (e) { loadedState = null; }
+  }
+
+  const isCurrentLockedVersion = Boolean(loadedState && loadedState.version === CANONICAL_DATA_VERSION);
+  const deletedDefaultSet = new Set(
+    (isCurrentLockedVersion && loadedState && Array.isArray(loadedState.deletedDefaultExpenseIds))
+      ? loadedState.deletedDefaultExpenseIds.map(String)
+      : []
+  );
 
   // İkincil acil durum fatura yedeği kontrolü
   let expensesBackup = [];
@@ -258,60 +631,99 @@ function loadState() {
       const parsed = JSON.parse(rawExp);
       if (Array.isArray(parsed)) expensesBackup = parsed;
     }
-  } catch(e) {}
+  } catch (e) {}
 
   // 1. FATURALARI BİRLEŞTİR (ASLA SİLİNMEZ):
-  // - loadedState.expenses
-  // - expensesBackup
-  // - DEFAULT_EXPENSES
   const mergedExpensesMap = new Map();
   if (Array.isArray(DEFAULT_EXPENSES)) {
-    DEFAULT_EXPENSES.forEach(e => { if (e && e.id) mergedExpensesMap.set(String(e.id), JSON.parse(JSON.stringify(e))); });
+    DEFAULT_EXPENSES.forEach(e => {
+      if (e && e.id && !deletedDefaultSet.has(String(e.id))) {
+        mergedExpensesMap.set(String(e.id), JSON.parse(JSON.stringify(e)));
+      }
+    });
   }
-  expensesBackup.forEach(e => { if (e && e.id) mergedExpensesMap.set(String(e.id), JSON.parse(JSON.stringify(e))); });
+  expensesBackup.forEach(e => {
+    if (e && e.id && !deletedDefaultSet.has(String(e.id))) {
+      mergedExpensesMap.set(String(e.id), JSON.parse(JSON.stringify(e)));
+    }
+  });
   if (loadedState && Array.isArray(loadedState.expenses)) {
-    loadedState.expenses.forEach(e => { if (e && e.id) mergedExpensesMap.set(String(e.id), JSON.parse(JSON.stringify(e))); });
+    loadedState.expenses.forEach(e => {
+      if (e && e.id && !deletedDefaultSet.has(String(e.id))) {
+        const prev = mergedExpensesMap.get(String(e.id));
+        const merged = JSON.parse(JSON.stringify(e));
+        // Mirror'dan gelip görseli boş olan kayıtta yedekteki görseli koru
+        if (!merged.receiptImg && prev && prev.receiptImg) {
+          merged.receiptImg = prev.receiptImg;
+        }
+        mergedExpensesMap.set(String(e.id), merged);
+      }
+    });
   }
   const finalExpenses = Array.from(mergedExpensesMap.values());
 
   // 2. ÖĞRETMEN VE KİŞİ SEÇİMLERİNİ BİRLEŞTİR (ASLA SİLİNMEZ):
-  // Resmi banka listesi (DEFAULT_TEACHERS) temel alınır:
   const teacherMap = new Map();
   DEFAULT_TEACHERS.forEach(dt => {
     teacherMap.set(dt.id, JSON.parse(JSON.stringify(dt)));
   });
 
-  // Kullanıcının daha önce yaptığı seçimleri ve ödemeleri asla ezmeden koru:
   if (loadedState && Array.isArray(loadedState.teachers)) {
     loadedState.teachers.forEach(lt => {
       if (!lt) return;
       if (teacherMap.has(lt.id)) {
         const base = teacherMap.get(lt.id);
-        // Taksitler ve ek ödemeler: Resmi liste VEYA yerel seçimde ödendi ise DAİMA korunur:
-        base.t1 = Boolean(base.t1 || lt.t1);
-        base.t2 = Boolean(base.t2 || lt.t2);
-        base.t3 = Boolean(base.t3 || lt.t3);
-        base.t4 = Boolean(base.t4 || lt.t4);
-        base.t5 = Boolean(base.t5 || lt.t5);
-        base.ek1 = Math.max(Number(base.ek1) || 0, Number(lt.ek1) || 0);
-        base.ek2 = Math.max(Number(base.ek2) || 0, Number(lt.ek2) || 0);
+
+        if (isCurrentLockedVersion && lt.adminModified) {
+          // Yöneticinin bu kilitli sürümde bizzat onaylayarak yaptığı değişiklik
+          base.t1 = Boolean(lt.t1);
+          base.t2 = Boolean(lt.t2);
+          base.t3 = Boolean(lt.t3);
+          base.t4 = Boolean(lt.t4);
+          base.t5 = Boolean(lt.t5);
+          base.ek1 = Number(lt.ek1) || 0;
+          base.ek2 = Number(lt.ek2) || 0;
+          base.status = lt.status || base.status;
+          base.adminModified = true;
+        } else {
+          // Koruma modu: Banka/resmi listedeki ödemeler ve yerel ek ödemeler DAİMA birleşir, asla eksilmez
+          base.t1 = Boolean(base.t1 || lt.t1);
+          base.t2 = Boolean(base.t2 || lt.t2);
+          base.t3 = Boolean(base.t3 || lt.t3);
+          base.t4 = Boolean(base.t4 || lt.t4);
+          base.t5 = Boolean(base.t5 || lt.t5);
+          base.ek1 = Math.max(Number(base.ek1) || 0, Number(lt.ek1) || 0);
+          base.ek2 = Math.max(Number(base.ek2) || 0, Number(lt.ek2) || 0);
+
+          // Eski sürümlerde FormSubmit hatasıyla 'katilmiyor' olmuş kayıtların resmi 'katiliyor' kaydını ezmesini engelle!
+          if (isCurrentLockedVersion) {
+            if (lt.status && lt.status !== 'bekliyor') {
+              base.status = lt.status;
+            }
+          } else {
+            // Eski sürümden geçişte: Eğer resmi listede 'bekliyor' ise yerel yanıtı koru; resmi listede zaten yanıt varsa resmi listeyi esas al
+            if (base.status === 'bekliyor' && lt.status && lt.status !== 'bekliyor') {
+              base.status = lt.status;
+            }
+          }
+
+          // Ödemesi olan bir öğretmen ASLA 'bekliyor' veya 'katilmiyor' kalamaz!
+          if (getTeacherTotalPaid(base) > 0) {
+            base.status = 'katiliyor';
+          }
+        }
+
         if (typeof lt.customDonem1 === 'number') base.customDonem1 = lt.customDonem1;
         if (typeof lt.customDonem2 === 'number') base.customDonem2 = lt.customDonem2;
 
-        // Katılım durumu: Kullanıcı 'katiliyor' veya 'katilmiyor' dediyse koru:
-        if (lt.status && lt.status !== 'bekliyor') {
-          base.status = lt.status;
-        } else if (base.status && base.status !== 'bekliyor') {
-          // base zaten resmi olarak katılıyor
-        } else {
-          base.status = lt.status || base.status || 'bekliyor';
-        }
-
-        // Not: Kullanıcı veya form notunu koru (eski otomatik ödeme notlarını tekrarlama):
+        // Özel notları koru
         if (lt.note && lt.note.trim()) {
-          const isOldAutoPaymentNote = lt.note.includes('ödendi');
-          if (!isOldAutoPaymentNote && (!base.note || !base.note.includes(lt.note.trim()))) {
+          const isOldAutoNote = lt.note.includes('ödendi') || lt.note === 'Formdan katıldı' || lt.note === 'Formdan bildirildi: Katılmıyor';
+          if (!isOldAutoNote && (!base.note || !base.note.includes(lt.note.trim()))) {
             base.note = base.note ? (base.note + ' | ' + lt.note.trim()) : lt.note.trim();
+          } else if (isCurrentLockedVersion && lt.noteEditedByAdmin) {
+            base.note = lt.note;
+            base.noteEditedByAdmin = true;
           }
         }
       } else {
@@ -329,6 +741,7 @@ function loadState() {
     version: CANONICAL_DATA_VERSION,
     teachers: finalTeachers,
     expenses: finalExpenses,
+    deletedDefaultExpenseIds: Array.from(deletedDefaultSet),
     devredenBakiye: (loadedState && loadedState.devredenBakiye !== undefined) ? loadedState.devredenBakiye : 0,
     filterStatus: (loadedState && loadedState.filterStatus) || 'all',
     searchQuery: (loadedState && loadedState.searchQuery) || ''
@@ -337,9 +750,65 @@ function loadState() {
   saveState();
 }
 
+// Tarayıcı geçmişi/LocalStorage silinmişse IndexedDB Kasasından Otomatik Kurtar
+async function restoreFromIndexedDBIfNeeded() {
+  try {
+    const idbSnap = await idbLoadLatestSnapshot();
+    if (!idbSnap) return;
+    let recovered = 0;
+
+    // 1. Fatura ve özellikle dekont görsellerini kurtar
+    if (Array.isArray(idbSnap.expenses)) {
+      const expMap = new Map();
+      (state.expenses || []).forEach(e => { if (e && e.id) expMap.set(String(e.id), e); });
+      const deletedSet = new Set((state.deletedDefaultExpenseIds || []).map(String));
+      idbSnap.expenses.forEach(ie => {
+        if (!ie || !ie.id || deletedSet.has(String(ie.id))) return;
+        const cur = expMap.get(String(ie.id));
+        if (!cur) {
+          state.expenses.push(ie);
+          recovered++;
+        } else if (!cur.receiptImg && ie.receiptImg) {
+          cur.receiptImg = ie.receiptImg;
+          recovered++;
+        }
+      });
+    }
+
+    // 2. Kilitli sürümde kaydedilmiş öğretmen ödemelerini / yeni öğretmenleri kurtar
+    if (idbSnap.version === CANONICAL_DATA_VERSION && Array.isArray(idbSnap.teachers)) {
+      idbSnap.teachers.forEach(it => {
+        if (!it) return;
+        const cur = state.teachers.find(t => t.id === it.id);
+        if (!cur) {
+          state.teachers.push(it);
+          recovered++;
+        } else if (!cur.adminModified) {
+          ['t1', 't2', 't3', 't4', 't5'].forEach(k => {
+            if (it[k] && !cur[k]) { cur[k] = true; recovered++; }
+          });
+          if ((Number(it.ek1) || 0) > (Number(cur.ek1) || 0)) { cur.ek1 = Number(it.ek1); recovered++; }
+          if ((Number(it.ek2) || 0) > (Number(cur.ek2) || 0)) { cur.ek2 = Number(it.ek2); recovered++; }
+          if (cur.status === 'bekliyor' && it.status && it.status !== 'bekliyor') {
+            cur.status = it.status;
+            recovered++;
+          }
+          if (getTeacherTotalPaid(cur) > 0) cur.status = 'katiliyor';
+        }
+      });
+      state.teachers.sort((a, b) => a.id - b.id);
+    }
+
+    if (recovered > 0) {
+      saveState();
+    }
+  } catch (e) {}
+}
+
 // Listeyi ve Durumları Manuel Yenile
 async function manualRefreshList() {
   loadState();
+  await restoreFromIndexedDBIfNeeded();
   updateDashboard();
   renderTable();
   if (typeof fetchFromCloudSync === 'function') {
@@ -349,25 +818,52 @@ async function manualRefreshList() {
   }
 }
 
-// Varsayılan Öğretmen Listesini Sıfırla (Fabrika Ayarlarına Dön - Faturalar Korunur)
+// Varsayılan Öğretmen Listesini Sıfırla (Şifre Korumalı - Kazara Tıklamaya Karşı Kilitli!)
 function resetToDefaults() {
-  if (confirm("⚠️ DİKKAT: Bu işlem öğretmenlerin ödeme ve yanıtlarını resmi banka dekontundaki duruma eşitler.\n(Faturalarınız ve harcama kayıtlarınız ASLA silinmez).\n\nOnaylıyor musunuz?")) {
+  const pin = prompt("🔐 GÜVENLİK KİLİDİ:\nKazara veri sıfırlamayı önlemek için Yönetici Şifresini (2026) giriniz:");
+  if (pin !== "2026") {
+    if (pin !== null) alert("❌ Şifre yanlış! Verileriniz korundu, hiçbir değişiklik yapılmadı.");
+    return;
+  }
+  if (confirm("⚠️ DİKKAT: Bu işlem öğretmenlerin ödeme ve yanıtlarını 03.11.2026 tarihli doğrulanmış banka/form kaydına eşitler.\n(Faturalarınız ve harcama kayıtlarınız ASLA silinmez).\n\nOnaylıyor musunuz?")) {
     state = {
       version: CANONICAL_DATA_VERSION,
       teachers: JSON.parse(JSON.stringify(DEFAULT_TEACHERS)),
       expenses: (state && state.expenses && state.expenses.length > 0) ? state.expenses : JSON.parse(JSON.stringify(DEFAULT_EXPENSES)),
-      devredenBakiye: 0,
+      deletedDefaultExpenseIds: [],
+      devredenBakiye: state.devredenBakiye || 0,
       filterStatus: 'all',
       searchQuery: ''
     };
     saveState();
-    showToast("✅ Liste resmi dekont durumuna eşitlendi (Faturalar korundu)!");
+    pushTeachersToPermanentCloud(null);
+    showToast("✅ Liste doğrulanmış resmi kayıtlara eşitlendi (Faturalar korundu)!");
   }
 }
 
-// Veriyi Kaydet (Çift Yedekleme ve Kota Korumalı)
+// Veriyi Kaydet (3'lü LocalStorage + IndexedDB Kasa Yedeklemesi)
 function saveState() {
   state.version = CANONICAL_DATA_VERSION;
+
+  // 1. Hafif metin ikizi (Görselsiz olduğu için kota sınırına ASLA takılmaz!)
+  try {
+    const mirrorState = {
+      version: state.version,
+      teachers: state.teachers,
+      expenses: (state.expenses || []).map(exp => {
+        const c = { ...exp };
+        delete c.receiptImg;
+        return c;
+      }),
+      deletedDefaultExpenseIds: state.deletedDefaultExpenseIds || [],
+      devredenBakiye: state.devredenBakiye || 0,
+      filterStatus: state.filterStatus || 'all',
+      searchQuery: state.searchQuery || ''
+    };
+    localStorage.setItem('cay_takip_state_mirror_v1', JSON.stringify(mirrorState));
+  } catch (mErr) {}
+
+  // 2. Ana LocalStorage kaydı (Görseller dahil)
   try {
     localStorage.setItem('cay_takip_state_v1', JSON.stringify(state));
   } catch (err) {
@@ -382,17 +878,17 @@ function saveState() {
         });
       }
       localStorage.setItem('cay_takip_state_v1', JSON.stringify(safeState));
-    } catch(e2) {
+    } catch (e2) {
       console.error("Yerel kayıt hatası:", e2);
     }
   }
 
-  // İkincil bağımsız fatura yedeği (Fatura asla kaybolmasın - Kota korumalı):
+  // 3. Bağımsız fatura yedeği
   try {
     if (state.expenses && state.expenses.length > 0) {
       try {
         localStorage.setItem('cay_expenses_backup', JSON.stringify(state.expenses));
-      } catch(qErr) {
+      } catch (qErr) {
         const lightweightExpenses = state.expenses.map(exp => {
           const c = { ...exp };
           delete c.receiptImg;
@@ -401,7 +897,10 @@ function saveState() {
         localStorage.setItem('cay_expenses_backup', JSON.stringify(lightweightExpenses));
       }
     }
-  } catch(e) {}
+  } catch (e) {}
+
+  // 4. IndexedDB Tarayıcı Kasasına Tam Yedek (Dekont fotoğrafları dahil 100+ MB kapasite)
+  idbSaveSnapshot(state);
 
   updateDashboard();
 }
@@ -414,9 +913,17 @@ function updateDashboard() {
 
   let donem1Toplanan = 0;
   let donem2Toplanan = 0;
+  let bankaToplanan = 0;
+  let eldenToplanan = 0;
   katilanlar.forEach(t => {
-    donem1Toplanan += getTeacherDonem1Paid(t);
-    donem2Toplanan += getTeacherDonem2Paid(t);
+    const d1 = getTeacherDonem1Paid(t);
+    const d2 = getTeacherDonem2Paid(t);
+    const tot = d1 + d2;
+    donem1Toplanan += d1;
+    donem2Toplanan += d2;
+    const resmiBanka = Math.min(tot, OFFICIAL_BANK_PAYMENTS[t.id] || 0);
+    bankaToplanan += resmiBanka;
+    eldenToplanan += Math.max(0, tot - resmiBanka);
   });
 
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
@@ -437,7 +944,7 @@ function updateDashboard() {
   setTxt('statDonem1Hedef', (katilanlar.length * DONEM1_UCRET).toLocaleString('tr-TR') + ' ₺');
   setTxt('statDonem2Toplanan', donem2Toplanan.toLocaleString('tr-TR') + ' ₺');
   setTxt('statDonem2Hedef', (katilanlar.length * DONEM2_UCRET).toLocaleString('tr-TR') + ' ₺');
-  setTxt('statToplamToplanan', toplamToplanan.toLocaleString('tr-TR') + ' ₺');
+  setTxt('statToplamToplanan', `${toplamToplanan.toLocaleString('tr-TR')} ₺ (Banka: ${bankaToplanan.toLocaleString('tr-TR')} ₺ + Elden: ${eldenToplanan.toLocaleString('tr-TR')} ₺)`);
   setTxt('statToplamGider', toplamGider.toLocaleString('tr-TR') + ' ₺');
   setTxt('statDevreden', (state.devredenBakiye || 0).toLocaleString('tr-TR') + ' ₺');
   
@@ -547,6 +1054,7 @@ function renderTable() {
         <div class="flex flex-wrap items-center justify-center gap-1">
           ${taksitBtn('t4', '300₺', '2. Dönem 1. Ödeme (300 ₺)')}
           ${taksitBtn('t5', '600₺', '2. Dönem Tamamlama (600 ₺ - Toplam 900 ₺)')}
+          ${t.ek2 ? `<span class="px-2 py-1 text-xs rounded border bg-emerald-600 text-white font-bold shadow-sm border-emerald-700" title="2. Dönem Ek Ödeme: ${t.ek2} ₺">✓ ${t.ek2}₺</span>` : ''}
         </div>
         ${donem2Odenen > 0 ? `<div class="text-[11px] font-bold mt-1 ${donem2Odenen >= 900 ? 'text-emerald-700' : 'text-amber-800'}">Yatırdığı: ${donem2Odenen} ₺</div>` : ''}
       </td>
@@ -555,11 +1063,21 @@ function renderTable() {
         <span class="${odenenTutar >= YILLIK_UCRET ? 'text-emerald-600 font-bold' : (odenenTutar > 0 ? 'text-emerald-700 font-extrabold text-sm' : 'text-gray-800')}">
           ${odenenTutar} ₺
         </span>
+        ${odenenTutar > 0 ? (() => {
+          const bnk = Math.min(odenenTutar, OFFICIAL_BANK_PAYMENTS[t.id] || 0);
+          const eld = Math.max(0, odenenTutar - bnk);
+          if (bnk > 0 && eld > 0) return `<div class="text-[10px] text-slate-600 font-semibold">🏦 Banka: ${bnk}₺ + 💵 Elden: ${eld}₺</div>`;
+          if (bnk > 0) return `<div class="text-[10px] text-blue-700 font-medium">🏦 Banka: ${bnk}₺</div>`;
+          return `<div class="text-[10px] text-emerald-700 font-semibold">💵 Elden: ${eld}₺</div>`;
+        })() : ''}
         ${t.status === 'katiliyor' && donem1Kalan > 0 ? `<div class="text-[11px] text-amber-700 font-semibold">1.Dönem Kalan: ${donem1Kalan}₺</div>` : ''}
         ${t.status === 'katiliyor' && kalanBorc > 0 ? `<div class="text-[11px] text-red-500 font-normal">Toplam Kalan: ${kalanBorc}₺</div>` : ''}
       </td>
 
-      <td class="py-3 px-2 text-center no-print">
+      <td class="py-3 px-2 text-center no-print whitespace-nowrap">
+        <button onclick="editEkOdemeModal(${t.id})" class="text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded px-1.5 py-0.5 text-[11px] font-bold mr-1" title="Elden / Ek Ödeme Tutarı Gir">
+          +₺
+        </button>
         <button onclick="editTeacherModal(${t.id})" class="text-gray-400 hover:text-blue-600 p-1" title="Düzenle / Not Ekle">
           ✏️
         </button>
@@ -607,6 +1125,13 @@ function cycleStatus(id) {
   const teacher = state.teachers.find(t => t.id === id);
   if (!teacher) return;
 
+  const paid = getTeacherTotalPaid(teacher);
+  if (teacher.status === 'katiliyor' && paid > 0) {
+    if (!confirm(`⚠️ DİKKAT: ${teacher.name} için kayıtlı ${paid} ₺ ödeme bulunuyor!\n\nDurumunu "Katılmıyor" yaparsanız bu ödeme kasa toplamından düşer.\nYine de değiştirmek istiyor musunuz?`)) {
+      return;
+    }
+  }
+
   if (teacher.status === 'katiliyor') {
     teacher.status = 'katilmiyor';
   } else if (teacher.status === 'katilmiyor') {
@@ -614,6 +1139,7 @@ function cycleStatus(id) {
   } else {
     teacher.status = 'katiliyor';
   }
+  teacher.adminModified = true;
   saveState();
   pushTeachersToPermanentCloud(id);
 }
@@ -629,7 +1155,9 @@ function toggleDonemOdeme(id, donemNo) {
       teacher.t1 = true;
       teacher.t2 = true;
       teacher.t3 = true;
+      teacher.status = 'katiliyor';
     } else {
+      if (!confirm(`${teacher.name} için 1. Dönem ödemesini kaldırmak istediğinize emin misiniz?`)) return;
       teacher.t1 = false;
       teacher.t2 = false;
       teacher.t3 = false;
@@ -639,22 +1167,58 @@ function toggleDonemOdeme(id, donemNo) {
     if (odenen < DONEM2_UCRET) {
       teacher.t4 = true;
       teacher.t5 = true;
+      teacher.status = 'katiliyor';
     } else {
+      if (!confirm(`${teacher.name} için 2. Dönem ödemesini kaldırmak istediğinize emin misiniz?`)) return;
       teacher.t4 = false;
       teacher.t5 = false;
     }
   }
+  teacher.adminModified = true;
   saveState();
   pushTeachersToPermanentCloud(id);
 }
 
-// Eski fonksiyon uyumluluğu
+// Ödeme Kutucuğu Değiştir (Kazara Silme Korumalı!)
 function toggleTaksit(id, field) {
   const teacher = state.teachers.find(t => t.id === id);
   if (!teacher) return;
-  teacher[field] = !teacher[field];
+
+  if (teacher[field]) {
+    const tutar = TAKSIT_TUTARLARI[field] || 300;
+    if (!confirm(`⚠️ ${teacher.name} için işaretli ${tutar} ₺ ödemeyi kaldırmak istiyor musunuz?`)) {
+      return;
+    }
+    teacher[field] = false;
+  } else {
+    teacher[field] = true;
+    teacher.status = 'katiliyor';
+  }
+  teacher.adminModified = true;
   saveState();
   pushTeachersToPermanentCloud(id);
+}
+
+// Elden / Küsuratlı Ek Ödeme Girişi (Örn: +200 TL, +400 TL vb.)
+function editEkOdemeModal(id) {
+  const t = state.teachers.find(x => x.id === id);
+  if (!t) return;
+
+  const mevcutEk = Number(t.ek1) || 0;
+  const giris = prompt(
+    `${t.name} için 300 ₺ kutucukları dışındaki EK / ELDEN ödeme tutarını girin (₺):\n(Kutucuklarla işaretli tutarın üzerine eklenir. Sıfırlamak için 0 yazın)`,
+    mevcutEk
+  );
+  if (giris === null) return;
+  const num = Math.max(0, Math.round(parseFloat(String(giris).replace(',', '.')) || 0));
+  t.ek1 = num;
+  if (getTeacherTotalPaid(t) > 0) {
+    t.status = 'katiliyor';
+  }
+  t.adminModified = true;
+  saveState();
+  pushTeachersToPermanentCloud(id);
+  showToast(`✅ ${t.name} ek ödeme tutarı (${num} ₺) kaydedildi ve buluta kilitlendi!`);
 }
 
 // ================= HARCAMA & FATURA YÖNETİMİ =================
@@ -950,7 +1514,8 @@ function saveExpense() {
 
   closeModal('modalExpense');
   saveState();
-  showToast("✅ Fatura başarıyla kaydedildi!");
+  pushExpensesToPermanentCloud();
+  showToast("✅ Fatura başarıyla kaydedildi ve bulut kasasına kilitlendi!");
 
   // Cihazlar arası anında bulut yayını (telefon/bilgisayar senkronizasyonu)
   if (savedExpenseObj) {
@@ -980,7 +1545,12 @@ function deleteExpense(id) {
   const desc = exp ? exp.desc : 'Bu faturayı';
   if (confirm(`"${desc}" faturasını silmek istediğinizden emin misiniz?`)) {
     state.expenses = state.expenses.filter(e => String(e.id) !== String(id));
+    if (!Array.isArray(state.deletedDefaultExpenseIds)) state.deletedDefaultExpenseIds = [];
+    if (DEFAULT_EXPENSES.some(de => String(de.id) === String(id)) && !state.deletedDefaultExpenseIds.includes(String(id))) {
+      state.deletedDefaultExpenseIds.push(String(id));
+    }
     saveState();
+    pushExpensesToPermanentCloud();
     showToast("🗑️ Fatura silindi!");
 
     // Cihazlar arası silme yayını
@@ -1023,6 +1593,7 @@ function updateDevreden() {
     if (!isNaN(num)) {
       state.devredenBakiye = num;
       saveState();
+      pushExtraToPermanentCloud();
     }
   }
 }
@@ -1056,6 +1627,8 @@ function addTeacher() {
   document.getElementById('newTeacherBranch').value = '';
   closeModal('modalYeniHoca');
   saveState();
+  pushTeachersToPermanentCloud(nextId);
+  pushExtraToPermanentCloud();
 }
 
 // Öğretmen Düzenleme / Not
@@ -1066,15 +1639,17 @@ function editTeacherModal(id) {
   const newNote = prompt(`${t.name} için not / açıklama girin:`, t.note || '');
   if (newNote !== null) {
     t.note = newNote;
+    t.noteEditedByAdmin = true;
     saveState();
+    pushExtraToPermanentCloud();
   }
 }
 
-// Google Form Yanıtlarını Akıllı İçe Aktarma
+// Google Form / Metin Yanıtlarını Akıllı İçe Aktarma (Ödemesi olanları ASLA bozmaz!)
 function importGoogleFormResponses() {
   const text = document.getElementById('importText').value.trim();
   if (!text) {
-    alert("Lütfen Google Form E-Tablosundan kopyaladığınız veriyi buraya yapıştırın.");
+    alert("Lütfen kopyaladığınız yanıt metnini buraya yapıştırın.");
     return;
   }
 
@@ -1086,13 +1661,14 @@ function importGoogleFormResponses() {
     if (!line.trim()) return;
     const lowerLine = line.toLowerCase('tr');
 
-    // Katılım tespit
-    let status = 'bekliyor';
-    if (lowerLine.includes('evet') || lowerLine.includes('istiyorum') || lowerLine.includes('katılmak istiyorum')) {
-      status = 'katiliyor';
-    } else if (lowerLine.includes('hayır') || lowerLine.includes('istemiyorum') || lowerLine.includes('katılmak istemiyorum')) {
+    // Katılım tespit (Sadece açık EVET veya HAYIR varsa işlem yap; belirsiz satırları RASTGELE atama!)
+    let status = null;
+    if (lowerLine.includes('katılmıyor') || lowerLine.includes('istemiyorum') || lowerLine.includes('hayır')) {
       status = 'katilmiyor';
+    } else if (lowerLine.includes('katılıyor') || lowerLine.includes('istiyorum') || lowerLine.includes('evet')) {
+      status = 'katiliyor';
     }
+    if (!status) return;
 
     // Mevcut öğretmenler arasında eşleşme ara
     let matched = false;
@@ -1102,7 +1678,13 @@ function importGoogleFormResponses() {
       const ad = parts[0];
 
       if (lowerLine.includes(t.name.toLowerCase('tr')) || (lowerLine.includes(ad) && lowerLine.includes(soyad))) {
+        // Ödemesi olan öğretmeni kazara katılmıyor yapma!
+        if (getTeacherTotalPaid(t) > 0 && status === 'katilmiyor') {
+          matched = true;
+          break;
+        }
         t.status = status;
+        t.adminModified = true;
         matched = true;
         matchedCount++;
         break;
@@ -1111,7 +1693,6 @@ function importGoogleFormResponses() {
 
     // Eğer listede yoksa yeni hoca olarak ekle
     if (!matched && status !== 'bekliyor') {
-      // Satırdan isim çıkarmaya çalış
       const cols = line.split('\t');
       let candidateName = cols[1] || cols[0];
       candidateName = candidateName.replace(/\d+/g, '').replace(/[-–()]/g, '').trim();
@@ -1121,7 +1702,7 @@ function importGoogleFormResponses() {
         state.teachers.push({
           id: nextId,
           name: candidateName.toUpperCase('tr'),
-          branch: "Google Formdan Eklendi",
+          branch: "Formdan Eklendi",
           status: status,
           t1: false,
           t2: false,
@@ -1139,55 +1720,161 @@ function importGoogleFormResponses() {
   closeModal('modalImport');
   document.getElementById('importText').value = '';
   saveState();
+  pushTeachersToPermanentCloud(null);
+  pushExtraToPermanentCloud();
 }
 
-// Canlı Bulut Senkronizasyon (Tam Otomatik & Canlı)
+// Canlı Çift Bulut Senkronizasyon (Tam Otomatik & Yedekli)
 async function fetchFromCloudSync(silent = true) {
-  if (!silent) showToast("⏳ Bulut veritabanından yanıtlar eşitleniyor...");
+  if (!silent) showToast("⏳ Bulut kasasından yanıtlar ve ödemeler eşitleniyor...");
   let updatedCount = 0;
 
   const norm = (s) => (s || '').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/i/g, 'I').replace(/ğ/g, 'G').replace(/Ğ/g, 'G').replace(/ş/g, 'S').replace(/Ş/g, 'S').replace(/ç/g, 'C').replace(/Ç/g, 'C').replace(/ö/g, 'O').replace(/Ö/g, 'O').replace(/ü/g, 'U').replace(/Ü/g, 'U').toUpperCase().trim();
 
-  // 0. Kalıcı Bulut Veritabanından Çek (Süresiz saklanan ana bulut kayıtları - Gmail'e gerek bırakmaz)
+  // 0-A. Ekstra Bulut Veritabanından Yeni Eklenen Öğretmenler & Özel Notları Çek
   try {
-    const permRes = await fetch(CLOUD_TEACHERS_DB_URL, { cache: 'no-store' });
-    if (permRes.ok) {
-      const permJson = await permRes.json();
-      if (permJson && permJson.data && permJson.data.t) {
-        const tMap = permJson.data.t;
-        for (const [idStr, codeStr] of Object.entries(tMap)) {
-          const teacher = state.teachers.find(t => String(t.id) === String(idStr));
-          if (teacher && typeof codeStr === 'string') {
-            const parts = codeStr.split(':');
-            const stCode = parts[0];
-            const mask = parseInt(parts[1] || '0', 10);
-            const ek1 = parseInt(parts[2] || '0', 10);
-            const ek2 = parseInt(parts[3] || '0', 10);
-
-            const newStatus = stCode === '1' ? 'katiliyor' : (stCode === '0' ? 'katilmiyor' : 'bekliyor');
-            if (newStatus !== 'bekliyor' && teacher.status !== newStatus) {
-              teacher.status = newStatus;
-              if (!teacher.note) {
-                teacher.note = newStatus === 'katiliyor' ? 'Formdan katıldı' : 'Formdan bildirildi: Katılmıyor';
-              }
-              updatedCount++;
-            }
-            if ((mask & 1) && !teacher.t1) { teacher.t1 = true; updatedCount++; }
-            if ((mask & 2) && !teacher.t2) { teacher.t2 = true; updatedCount++; }
-            if ((mask & 4) && !teacher.t3) { teacher.t3 = true; updatedCount++; }
-            if ((mask & 8) && !teacher.t4) { teacher.t4 = true; updatedCount++; }
-            if ((mask & 16) && !teacher.t5) { teacher.t5 = true; updatedCount++; }
-            if (ek1 > (Number(teacher.ek1) || 0)) { teacher.ek1 = ek1; updatedCount++; }
-            if (ek2 > (Number(teacher.ek2) || 0)) { teacher.ek2 = ek2; updatedCount++; }
+    const extraJson = await safeCloudGet(CLOUD_EXTRA_DB_URL);
+    if (extraJson && extraJson.data) {
+      if (Array.isArray(extraJson.data.nt)) {
+        extraJson.data.nt.forEach(arr => {
+          if (!Array.isArray(arr) || !arr[0] || !arr[1]) return;
+          const [id, name, branch, slotStr, note] = arr;
+          let existing = state.teachers.find(t => Number(t.id) === Number(id) || norm(t.name) === norm(name));
+          const parsed = decodeSingleTeacherSlot(slotStr) || { status: 'katiliyor', mask: 0, ek1: 0, ek2: 0 };
+          if (!existing) {
+            state.teachers.push({
+              id: Number(id),
+              name: String(name),
+              branch: branch || 'Yeni Öğretmen',
+              status: parsed.status,
+              t1: Boolean(parsed.mask & 1),
+              t2: Boolean(parsed.mask & 2),
+              t3: Boolean(parsed.mask & 4),
+              t4: Boolean(parsed.mask & 8),
+              t5: Boolean(parsed.mask & 16),
+              ek1: parsed.ek1 || 0,
+              ek2: parsed.ek2 || 0,
+              note: note || ''
+            });
+            updatedCount++;
+          }
+        });
+      }
+      if (extraJson.data.n && typeof extraJson.data.n === 'object') {
+        for (const [idStr, noteVal] of Object.entries(extraJson.data.n)) {
+          const t = state.teachers.find(x => String(x.id) === String(idStr));
+          if (t && noteVal && !t.noteEditedByAdmin && t.note !== noteVal) {
+            t.note = String(noteVal);
+            updatedCount++;
           }
         }
       }
+      if (typeof extraJson.data.dev === 'number' && extraJson.data.dev > 0 && !state.devredenBakiye) {
+        state.devredenBakiye = extraJson.data.dev;
+        updatedCount++;
+      }
+    }
+  } catch (exErr) {}
+
+  // 0-B. Kalıcı Ana ve İkiz Bulut Veritabanından Öğretmen Yanıt & Ödemelerini Çek
+  try {
+    let permJson = await safeCloudGet(CLOUD_TEACHERS_DB_URL);
+    if (!permJson || !permJson.data) {
+      permJson = await safeCloudGet(CLOUD_TEACHERS_MIRROR_DB_URL);
+    }
+    if (permJson && permJson.data) {
+      const decodedMap = parseRemoteTeachersData(permJson.data);
+      for (const [idStr, rem] of Object.entries(decodedMap)) {
+        const teacher = state.teachers.find(t => String(t.id) === String(idStr));
+        if (!teacher || !rem) continue;
+
+        if (rem.adminModified && !teacher.adminModified) {
+          teacher.status = rem.status;
+          teacher.t1 = Boolean(rem.mask & 1);
+          teacher.t2 = Boolean(rem.mask & 2);
+          teacher.t3 = Boolean(rem.mask & 4);
+          teacher.t4 = Boolean(rem.mask & 8);
+          teacher.t5 = Boolean(rem.mask & 16);
+          teacher.ek1 = rem.ek1 || 0;
+          teacher.ek2 = rem.ek2 || 0;
+          teacher.adminModified = true;
+          updatedCount++;
+        } else if (!teacher.adminModified) {
+          // Koruma modu: Sadece yanıt bekleyenleri güncelle veya ek ödemeleri birleştir; mevcut ödemeleri ASLA silme!
+          if ((rem.mask & 1) && !teacher.t1) { teacher.t1 = true; updatedCount++; }
+          if ((rem.mask & 2) && !teacher.t2) { teacher.t2 = true; updatedCount++; }
+          if ((rem.mask & 4) && !teacher.t3) { teacher.t3 = true; updatedCount++; }
+          if ((rem.mask & 8) && !teacher.t4) { teacher.t4 = true; updatedCount++; }
+          if ((rem.mask & 16) && !teacher.t5) { teacher.t5 = true; updatedCount++; }
+          if (rem.ek1 > (Number(teacher.ek1) || 0)) { teacher.ek1 = rem.ek1; updatedCount++; }
+          if (rem.ek2 > (Number(teacher.ek2) || 0)) { teacher.ek2 = rem.ek2; updatedCount++; }
+
+          if (getTeacherTotalPaid(teacher) > 0) {
+            if (teacher.status !== 'katiliyor') {
+              teacher.status = 'katiliyor';
+              updatedCount++;
+            }
+          } else if (rem.status !== 'bekliyor' && teacher.status === 'bekliyor') {
+            teacher.status = rem.status;
+            if (!teacher.note) {
+              teacher.note = rem.status === 'katiliyor' ? 'Formdan katıldı' : 'Formdan bildirildi: Katılmıyor';
+            }
+            updatedCount++;
+          }
+        }
+      }
+      updateVaultStatusUI();
     }
   } catch (permErr) {
     console.warn("Kalıcı bulut okuma uyarısı:", permErr);
   }
 
-  // 1. Canlı Veri Kanalından Çek (ntfy.sh - Sıfır Kurulum, Anında Eşitleme)
+  // 0-C. Kalıcı Bulut Fatura Kasasından Faturaları Çek
+  try {
+    const expJson = await safeCloudGet(CLOUD_EXPENSES_DB_URL);
+    if (expJson && expJson.data) {
+      if (Array.isArray(expJson.data.d) && expJson.data.d.length > 0) {
+        if (!Array.isArray(state.deletedDefaultExpenseIds)) state.deletedDefaultExpenseIds = [];
+        expJson.data.d.forEach(dId => {
+          const sId = String(dId);
+          if (!state.deletedDefaultExpenseIds.includes(sId)) {
+            state.deletedDefaultExpenseIds.push(sId);
+            state.expenses = (state.expenses || []).filter(e => String(e.id) !== sId);
+            updatedCount++;
+          }
+        });
+      }
+      if (Array.isArray(expJson.data.e)) {
+        if (!state.expenses) state.expenses = [];
+        expJson.data.e.forEach(arr => {
+          if (!Array.isArray(arr) || !arr[0]) return;
+          const [id, date, desc, amount, itemsStr] = arr;
+          const parts = String(itemsStr || '').split('|');
+          const itemsObj = {
+            cay: parts[0] || '',
+            seker: parts[1] || '',
+            deterjan: parts[2] || '',
+            bardak: parts[3] || '',
+            diger: parts[4] || ''
+          };
+          const idx = state.expenses.findIndex(x => String(x.id) === String(id));
+          if (idx < 0) {
+            state.expenses.push({
+              id: id,
+              date: date || '',
+              desc: desc || 'Harcama',
+              amount: Number(amount) || 0,
+              items: itemsObj,
+              receiptImg: null
+            });
+            updatedCount++;
+          }
+        });
+      }
+    }
+  } catch (expCloudErr) {}
+
+  // 1. Canlı Veri Kanalından Çek (ntfy.sh - Anlık Form Yanıtları, Ödemeli Kayıtları Ezmez!)
   try {
     const res = await fetch('https://ntfy.sh/cay_mujdattelli_2026_okul/json?poll=1&since=all', { cache: 'no-store' });
     if (res.ok) {
@@ -1203,21 +1890,12 @@ async function fetchFromCloudSync(silent = true) {
               if (!state.expenses) state.expenses = [];
               if (data.action === 'save' && data.expense && data.expense.id) {
                 const existingIdx = state.expenses.findIndex(e => String(e.id) === String(data.expense.id));
-                if (existingIdx >= 0) {
-                  state.expenses[existingIdx].date = data.expense.date || state.expenses[existingIdx].date;
-                  state.expenses[existingIdx].desc = data.expense.desc || state.expenses[existingIdx].desc;
-                  state.expenses[existingIdx].amount = Number(data.expense.amount) || state.expenses[existingIdx].amount;
-                  if (data.expense.items) state.expenses[existingIdx].items = data.expense.items;
-                } else {
+                if (existingIdx < 0) {
                   state.expenses.push(data.expense);
+                  updatedCount++;
                 }
-                updatedCount++;
-              } else if (data.action === 'delete' && data.id) {
-                const prevLen = state.expenses.length;
-                state.expenses = state.expenses.filter(e => String(e.id) !== String(data.id));
-                if (state.expenses.length !== prevLen) updatedCount++;
               }
-            } else if (data && (data.id || data.name)) {
+            } else if (data && (data.id || data.name) && (data.status === 'katiliyor' || data.status === 'katilmiyor')) {
               let teacher = null;
               if (data.id && !isNaN(data.id)) {
                 teacher = state.teachers.find(t => t.id === Number(data.id));
@@ -1226,14 +1904,11 @@ async function fetchFromCloudSync(silent = true) {
                 teacher = state.teachers.find(t => norm(t.name) === norm(data.name));
               }
               if (teacher) {
-                const noteIsGeneric = !data.note || data.note === 'Formdan katıldı' || data.note === 'Formdan eklendi';
-                const hasPaymentNote = teacher.note && teacher.note.includes('ödendi');
-                if (teacher.status !== data.status || (!hasPaymentNote && data.note && teacher.note !== data.note)) {
+                // Yalnızca henüz yanıt bekleyen öğretmeni güncelle; ödemesi olan veya yönetici kilitli kaydı ASLA ezme!
+                if (teacher.status === 'bekliyor' && !teacher.adminModified && getTeacherTotalPaid(teacher) === 0) {
                   teacher.status = data.status;
-                  if (data.note && !hasPaymentNote && !noteIsGeneric) teacher.note = data.note;
-                  if (data.branch && (!teacher.branch || teacher.branch === 'Yeni Öğretmen')) {
-                    teacher.branch = data.branch;
-                  }
+                  const noteIsGeneric = !data.note || data.note === 'Formdan katıldı' || data.note === 'Formdan eklendi';
+                  if (data.note && !noteIsGeneric) teacher.note = data.note;
                   updatedCount++;
                 }
               } else if (data.name) {
@@ -1271,6 +1946,7 @@ async function fetchFromCloudSync(silent = true) {
             const note = parts[1] || '';
             const customName = parts[2] || '';
             const customBranch = parts[3] || 'Yeni Öğretmen';
+            if (status !== 'katiliyor' && status !== 'katilmiyor') continue;
 
             let teacher = null;
             if (!isNaN(key) && Number(key) > 0) {
@@ -1284,12 +1960,12 @@ async function fetchFromCloudSync(silent = true) {
             }
 
             if (teacher) {
-              if (teacher.status !== status || (note && teacher.note !== note)) {
+              if (teacher.status === 'bekliyor' && !teacher.adminModified && getTeacherTotalPaid(teacher) === 0) {
                 teacher.status = status;
                 if (note) teacher.note = note;
                 updatedCount++;
               }
-            } else {
+            } else if (customName || isNaN(key)) {
               const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
               state.teachers.push({
                 id: nextId,
@@ -1309,29 +1985,29 @@ async function fetchFromCloudSync(silent = true) {
     }
   }
 
+  state.teachers.sort((a, b) => a.id - b.id);
+
   if (updatedCount > 0) {
     saveState();
-    pushTeachersToPermanentCloud();
+    pushTeachersToPermanentCloud(null);
+    pushExtraToPermanentCloud();
     updateDashboard();
     renderTable();
-    if (!silent) showToast(`✅ Buluttan ${updatedCount} öğretmen yanıtı güncellendi!`);
+    if (!silent) showToast(`✅ Bulut kasasından ${updatedCount} kayıt güncellendi!`);
   } else {
-    if (!silent) showToast("✅ Liste zaten en güncel durumda.");
+    if (!silent) showToast("🛡️ Liste en güncel durumda ve çift bulut kasasında kilitli.");
   }
 }
 
-// FormSubmit Otomatik Senkronizasyon (API Key İle Tüm Yanıtları Çeker)
+// FormSubmit Senkronizasyon (Güvenli: Boş durumları ASLA 'katılmıyor' yapmaz, ödemeli kişilere dokunmaz!)
 async function syncFromFormSubmit(apiKey, silent = false) {
   if (!apiKey) {
     const inputEl = document.getElementById('apiKeyInput');
     apiKey = inputEl ? inputEl.value.trim() : '';
   }
   if (!apiKey) {
-    apiKey = localStorage.getItem('formsubmit_api_key') || '';
-  }
-  if (!apiKey) {
-    if (silent) return; // Arka planda sessiz çalışırken sorma
-    const promptKey = prompt("Lütfen Gmail kutunuza ('tellimujdat@gmail.com') FormSubmit tarafından gönderilen API Key'i yapıştırınız:\n(Bu işlem bir defalıktır, bir kez girince sistem hep otomatik çeker)");
+    if (silent) return;
+    const promptKey = prompt("FormSubmit API Key giriniz:");
     if (promptKey && promptKey.trim()) {
       apiKey = promptKey.trim();
     } else {
@@ -1339,47 +2015,55 @@ async function syncFromFormSubmit(apiKey, silent = false) {
     }
   }
 
-  if (!silent) showToast("⏳ FormSubmit yanıtları çekiliyor...");
+  if (!silent) showToast("⏳ FormSubmit yanıtları kontrol ediliyor...");
   try {
     const res = await fetch(`https://formsubmit.co/api/get-submissions/${apiKey}`);
     const json = await res.json();
     if (json && json.success && Array.isArray(json.submissions)) {
-      localStorage.setItem('formsubmit_api_key', apiKey);
       loadState();
-
       let guncellenenSayisi = 0;
       json.submissions.forEach(sub => {
         const d = sub.form_data || {};
         const secilen = d.Secilen_Ogretmen || '';
-        const durum = d.Katilim_Durumu || '';
+        const durum = (d.Katilim_Durumu || '').toUpperCase('tr');
         const yeniOgretmen = d.Yeni_Ogretmen_Bilgisi || '';
         const not = d.Ogretmen_Notu || '';
-        const isKatiliyor = durum.includes('EVET');
+
+        // KRİTİK KORUMA: Sadece açıkça EVET veya HAYIR seçilmişse işle! Boş olanlara dokunma!
+        let parsedStatus = null;
+        if (durum.includes('EVET')) parsedStatus = 'katiliyor';
+        else if (durum.includes('HAYIR')) parsedStatus = 'katilmiyor';
+        if (!parsedStatus) return;
 
         if (secilen.includes('LİSTEDE ADIM YOK') && yeniOgretmen && yeniOgretmen.trim()) {
           const uName = yeniOgretmen.trim().toUpperCase('tr');
           const existing = state.teachers.find(t => t.name.toUpperCase('tr') === uName);
           if (existing) {
-            existing.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
-            if (not) existing.note = not;
+            if (existing.status === 'bekliyor' && getTeacherTotalPaid(existing) === 0) {
+              existing.status = parsedStatus;
+              if (not) existing.note = not;
+              guncellenenSayisi++;
+            }
           } else {
             const nextId = state.teachers.reduce((max, t) => Math.max(max, t.id), 0) + 1;
             state.teachers.push({
               id: nextId,
               name: uName,
               branch: 'Yeni Öğretmen',
-              status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
+              status: parsedStatus,
               t1: false, t2: false, t3: false, t4: false, t5: false,
               note: not || 'Formdan eklendi'
             });
+            guncellenenSayisi++;
           }
-          guncellenenSayisi++;
         } else if (secilen) {
           for (let t of state.teachers) {
             if (secilen.includes(t.name)) {
-              t.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
-              if (not) t.note = not;
-              guncellenenSayisi++;
+              if (t.status === 'bekliyor' && getTeacherTotalPaid(t) === 0) {
+                t.status = parsedStatus;
+                if (not) t.note = not;
+                guncellenenSayisi++;
+              }
               break;
             }
           }
@@ -1387,16 +2071,14 @@ async function syncFromFormSubmit(apiKey, silent = false) {
       });
 
       saveState();
+      pushTeachersToPermanentCloud(null);
       updateDashboard();
       if (!silent) {
-        showToast(`✅ ${guncellenenSayisi} öğretmen yanıtı başarıyla eşitlendi!`);
+        showToast(`✅ ${guncellenenSayisi} yeni yanıt güvenle eklendi!`);
       }
-    } else {
-      if (!silent) alert("❌ FormSubmit yanıtları alınamadı. Lütfen API Key'inizi kontrol ediniz.");
     }
   } catch (err) {
     console.error("FormSubmit senkronizasyon hatası:", err);
-    if (!silent) alert("❌ Bağlantı hatası: " + err.message);
   }
 }
 
@@ -1626,8 +2308,9 @@ function showToast(message) {
 }
 
 // Arama ve Filtre Event Dinleyicileri
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   loadState();
+  await restoreFromIndexedDBIfNeeded();
 
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
@@ -1645,14 +2328,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const lastSync = localStorage.getItem('cay_last_vault_sync');
+  if (lastSync) {
+    updateVaultStatusUI(`✅ Son Koruma Kaydı: ${lastSync} (Çift Bulut + Cihaz Kasası Aktif)`);
+  }
+
   updateDashboard();
 
-  // 1. Ortak Bulut Veritabanından yanıtları ilk açılışta çek (varsa)
-  fetchFromCloudSync(true);
+  // 1. Ortak Çift Bulut Veritabanından yanıtları çek ve tarayıcıdaki elden ödemelerle kayıpsız birleştir
+  await fetchFromCloudSync(true);
 
-  // Eğer kayıtlı FormSubmit API Key varsa arka planda onu da çalıştır
-  const savedApiKey = localStorage.getItem('formsubmit_api_key');
-  if (savedApiKey) {
-    syncFromFormSubmit(savedApiKey, true);
-  }
+  // 2. Tarayıcıda işaretlenmiş elden ödemeler / faturalar varsa anında Çift Bulut Kasasına da yedekle!
+  pushTeachersToPermanentCloud(null);
+  pushExpensesToPermanentCloud();
+  pushExtraToPermanentCloud();
 });

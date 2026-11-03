@@ -312,15 +312,24 @@
         </div>
       </div>
 
-      <!-- Kullanım Rehberi / Bilgi Kutusu -->
-      <div class="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-xs text-emerald-950 shadow-xs flex items-start gap-3">
-        <span class="text-xl">☁️</span>
-        <div class="space-y-1">
-          <div class="font-bold text-emerald-900 text-sm">Otomatik Kalıcı Bulut Sistemi Aktif (Gmail'e Gerek Yok!):</div>
-          <p class="leading-relaxed">
-            Öğretmenler formu doldurduğunda yanıtları <strong>doğrudan bu panele ve kalıcı bulut veritabanına</strong> otomatik kaydedilir (Gmail kontrol etmenize gerek yoktur). Tabloda istediğiniz öğretmenin durumunu veya <strong>300 ₺</strong> ödeme kutucuklarını tıkladığınızda da anında buluta kaydedilir.
-          </p>
+      <!-- Kullanım Rehberi / Çok Katmanlı Koruma Kutusu -->
+      <div class="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-4 text-xs text-emerald-950 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-start gap-3 flex-1 min-w-[260px]">
+          <span class="text-2xl">🛡️</span>
+          <div class="space-y-1">
+            <div class="font-extrabold text-emerald-900 text-sm flex flex-wrap items-center gap-2">
+              <span>4 Katmanlı Veri Koruma Kasası Aktif (Banka / Elden Ayrımı Korumalı)</span>
+              <span id="vaultSyncStatusBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-[11px] border border-emerald-300">✅ Çift Bulut + Cihaz Kasası Aktif</span>
+            </div>
+            <p class="leading-relaxed text-slate-700">
+              Banka EFT kayıtları (<strong>🏦 Banka: 14.700 ₺</strong>) ile sizin işaretlediğiniz nakit ödemeler (<strong>💵 Elden</strong>) ayrı takip edilir; <strong>kesinlikle çift kayıt oluşmaz</strong>. İşaretlediğiniz her kutucuk otomatik olarak <strong>2 ayrı bulut sunucusuna + cihaz kasasına</strong> kilitlenir.
+            </p>
+          </div>
         </div>
+        <button type="button" onclick="forceFullVaultSync()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-1.5 active:scale-95 cursor-pointer whitespace-nowrap">
+          <span>🔒</span>
+          <span>Şimdi Buluta Kilitle & Doğrula</span>
+        </button>
       </div>
 
       <!-- Canlı Takip ve Hızlı İşlem Çubuğu -->
@@ -482,7 +491,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_10"></script>
+  <script src="app.js?v=20261103_11"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
@@ -594,24 +603,39 @@
             name: customInput.value.trim().toUpperCase('tr'),
             branch: 'Yeni Öğretmen',
             status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
-            t1: false, t2: false, t3: false, t4: false,
+            t1: false, t2: false, t3: false, t4: false, t5: false,
             note: noteInput && noteInput.value.trim() ? noteInput.value.trim() : 'Formdan eklendi'
           });
+          saveState();
+          if (typeof pushTeachersToPermanentCloud === 'function') {
+            await pushTeachersToPermanentCloud(nextId, { fromPublicForm: true });
+          }
+          if (typeof pushExtraToPermanentCloud === 'function') {
+            await pushExtraToPermanentCloud();
+          }
         } else {
           for (let t of state.teachers) {
             if (selectedRadio.value.includes(t.name)) {
-              t.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
+              // Ödemesi olan öğretmenin durumunu halka açık formdan yanlışlıkla katılmıyor yapma!
+              if (typeof getTeacherTotalPaid === 'function' && getTeacherTotalPaid(t) > 0) {
+                t.status = 'katiliyor';
+              } else {
+                t.status = isKatiliyor ? 'katiliyor' : 'katilmiyor';
+              }
               if (noteInput && noteInput.value.trim()) {
                 t.note = noteInput.value.trim();
               }
+              saveState();
               if (typeof pushTeachersToPermanentCloud === 'function') {
-                await pushTeachersToPermanentCloud(t.id);
+                await pushTeachersToPermanentCloud(t.id, { fromPublicForm: true });
+              }
+              if (noteInput && noteInput.value.trim() && typeof pushExtraToPermanentCloud === 'function') {
+                await pushExtraToPermanentCloud();
               }
               break;
             }
           }
         }
-        saveState();
 
         // 1. CANLI BULUT VERİTABANINA ANINDA İLET (ntfy.sh - Sıfır Kota, Anında Canlı İletim)
         try {
