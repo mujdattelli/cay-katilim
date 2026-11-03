@@ -1,65 +1,65 @@
 // Öğretmen ve Personel Başlangıç Listesi (60 Kişi)
 const DEFAULT_TEACHERS = [
-  { id: 1, name: "ABDURRAHİM BÜYÜKDAĞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 2, name: "ASLI GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 3, name: "AYÇA ÇIKAR", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 4, name: "BESTİ GÜZELSOY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 5, name: "BEYZA YETİK", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 6, name: "BİRGÜL COŞKUN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 7, name: "BİROL ATEŞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 8, name: "CELAL ATIŞ", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 10, name: "DEMET KESEN", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 11, name: "DEMET SAVRUK", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
-  { id: 13, name: "DEVRİM YILDIZ", branch: "Felsefe", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
-  { id: 14, name: "DİĞDEM ACAR", branch: "Biyoloji", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 15, name: "DURMUŞ KIZILKAYA", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 16, name: "EBRU ELMAS", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 17, name: "EBRU KÜÇÜKALİ TURGUT", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 18, name: "EDİP TAŞDEMİR", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
-  { id: 20, name: "FATMA NUR SIVAR", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
-  { id: 23, name: "GÖKHAN GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 24, name: "HALDUN YILDIZ", branch: "Tarih", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "Dışarı tüp alıyor" },
-  { id: 25, name: "HANDAN YASA", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 26, name: "HATİCE AĞAN", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 27, name: "ZEYNEP AYNAS", branch: "TARİH", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 28, name: "İBRAHİM CALAYIR", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 29, name: "İLKNUR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 30, name: "MAHMUT YAVUZ", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, note: "1.200 TL (Yıllık Tam Ödeme) ödendi" },
-  { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Çay Ocağı Sorumlusu" },
-  { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
-  { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 45, name: "SERDAR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 50, name: "SİNAN CAN YÜCEL", branch: "İngilizce", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, note: "1.200 TL (Yıllık Tam Ödeme) ödendi" },
-  { id: 51, name: "SONER TAŞ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan katıldı" },
-  { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, note: "Formdan bildirildi: Katılmıyor" },
-  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem / 1. ve 2. Taksit) ödendi" },
-  { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, note: "" },
-  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, note: "300 TL (1. Taksit) ödendi" },
-  { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" },
-  { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) Zeynep Bozdemir tarafından ödendi" },
-  { id: 60, name: "ELİF CANSU KESKİN", branch: "Öğretmen", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, note: "600 TL (1. Dönem Peşin) ödendi" }
+  { id: 1, name: "ABDURRAHİM BÜYÜKDAĞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 2, name: "ASLI GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 3, name: "AYÇA ÇIKAR", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 4, name: "BESTİ GÜZELSOY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 5, name: "BEYZA YETİK", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 6, name: "BİRGÜL COŞKUN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 7, name: "BİROL ATEŞ", branch: "Din Kültürü ve Ahlâk Bilgisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 8, name: "CELAL ATIŞ", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 9, name: "CEM KURTOĞLU", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
+  { id: 10, name: "DEMET KESEN", branch: "Matematik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 11, name: "DEMET SAVRUK", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 12, name: "DERYA YILDIZ", branch: "Fizik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
+  { id: 13, name: "DEVRİM YILDIZ", branch: "Felsefe", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
+  { id: 14, name: "DİĞDEM ACAR", branch: "Biyoloji", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 15, name: "DURMUŞ KIZILKAYA", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 16, name: "EBRU ELMAS", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 17, name: "EBRU KÜÇÜKALİ TURGUT", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 18, name: "EDİP TAŞDEMİR", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 19, name: "ERDİNÇ SİTRAVA", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
+  { id: 20, name: "FATMA NUR SIVAR", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 21, name: "FEYZULLAH KÖKER", branch: "Grafik ve Fotoğraf / Grafik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
+  { id: 22, name: "GÖKÇE ŞEN", branch: "Özel Eğitim", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
+  { id: 23, name: "GÖKHAN GÜREL", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 24, name: "HALDUN YILDIZ", branch: "Tarih", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Dışarı tüp alıyor" },
+  { id: 25, name: "HANDAN YASA", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 26, name: "HATİCE AĞAN", branch: "Kimya / Kimya Teknolojisi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 27, name: "ZEYNEP AYNAS", branch: "TARİH", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 28, name: "İBRAHİM CALAYIR", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 29, name: "İLKNUR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 30, name: "MAHMUT YAVUZ", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 31, name: "MERAL HIZAL", branch: "Görsel Sanatlar", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 32, name: "MERİÇ AKKAYA", branch: "Elektrik-Elektronik Teknolojisi / Elektrik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 33, name: "MERYEM DEMİRTAŞ", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 34, name: "MİRAY TEKAY", branch: "Türk Dili ve Edebiyatı", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 35, name: "MUHAMMET ŞEKER", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, t5: false, note: "1.200 TL ödendi (1. Dönem 900 TL tam + 2. Dönem 300 TL)" },
+  { id: 36, name: "MUHAMMET SERDAR BALIKLI", branch: "Beden Eğitimi", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 37, name: "MURAT KAÇAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Çay Ocağı Sorumlusu" },
+  { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan katıldı" },
+  { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
+  { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 45, name: "SERDAR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan katıldı" },
+  { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 50, name: "SİNAN CAN YÜCEL", branch: "İngilizce", status: "katiliyor", t1: true, t2: true, t3: true, t4: true, t5: false, note: "1.200 TL ödendi (1. Dönem 900 TL tam + 2. Dönem 300 TL)" },
+  { id: 51, name: "SONER TAŞ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 52, name: "ŞAHİN KARAKAŞ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan katıldı" },
+  { id: 53, name: "ŞAHİN ORHAN", branch: "Bilişim Teknolojileri", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 54, name: "UĞUR YUSUF SEZER", branch: "Matematik", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor" },
+  { id: 55, name: "ZEHRA GENÇ", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 56, name: "ZEYNEP ÇIBIK", branch: "İngilizce", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 57, name: "SEMA KANDEMİR", branch: "Grafik ve Fotoğraf", status: "katiliyor", t1: true, t2: false, t3: false, t4: false, t5: false, note: "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)" },
+  { id: 58, name: "ZEYNEP BOZDEMİR", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
+  { id: 59, name: "DEMET TÜRKMEN", branch: "Okul Aile Birliği", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL Zeynep Bozdemir tarafından ödendi (1. Dönem için +300 TL kalan)" },
+  { id: 60, name: "ELİF CANSU KESKİN", branch: "Öğretmen", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" }
 ];
 
 const DEFAULT_EXPENSES = [
@@ -135,7 +135,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.09.17_v2";
+const CANONICAL_DATA_VERSION = "2026.11.03_v1";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
@@ -147,6 +147,31 @@ let state = {
 };
 
 const TAKSIT_BEDELI = 300;
+const TAKSIT_TUTARLARI = {
+  t1: 300, // 1. Dönem 1. Taksit (300 TL)
+  t2: 300, // 1. Dönem 2. Taksit (300 TL)
+  t3: 300, // 1. Dönem Tamamlama (300 TL) -> 1. Dönem Toplam: 900 TL
+  t4: 300, // 2. Dönem 1. Parça (300 TL)
+  t5: 500  // 2. Dönem 2. Parça (500 TL) -> 2. Dönem Toplam: 800 TL
+};
+const DONEM1_UCRET = 900;
+const DONEM2_UCRET = 800;
+const YILLIK_UCRET = DONEM1_UCRET + DONEM2_UCRET; // 1.700 TL
+
+function getTeacherDonem1Paid(t) {
+  return (t.t1 ? TAKSIT_TUTARLARI.t1 : 0) +
+         (t.t2 ? TAKSIT_TUTARLARI.t2 : 0) +
+         (t.t3 ? TAKSIT_TUTARLARI.t3 : 0);
+}
+
+function getTeacherDonem2Paid(t) {
+  return (t.t4 ? TAKSIT_TUTARLARI.t4 : 0) +
+         (t.t5 ? TAKSIT_TUTARLARI.t5 : 0);
+}
+
+function getTeacherTotalPaid(t) {
+  return getTeacherDonem1Paid(t) + getTeacherDonem2Paid(t);
+}
 
 // Veriyi LocalStorage'dan Yükle ve Akıllıca Birleştir (SIFIR VERİ KAYBI GARANTİSİ)
 function loadState() {
@@ -202,6 +227,7 @@ function loadState() {
         base.t2 = Boolean(base.t2 || lt.t2);
         base.t3 = Boolean(base.t3 || lt.t3);
         base.t4 = Boolean(base.t4 || lt.t4);
+        base.t5 = Boolean(base.t5 || lt.t5);
 
         // Katılım durumu: Kullanıcı 'katiliyor' veya 'katilmiyor' dediyse koru:
         if (lt.status && lt.status !== 'bekliyor') {
@@ -212,15 +238,18 @@ function loadState() {
           base.status = lt.status || base.status || 'bekliyor';
         }
 
-        // Not: Kullanıcı veya form notunu koru:
+        // Not: Kullanıcı veya form notunu koru (eski otomatik ödeme notlarını tekrarlama):
         if (lt.note && lt.note.trim()) {
-          if (!base.note || !base.note.includes(lt.note.trim())) {
+          const isOldAutoPaymentNote = lt.note.includes('ödendi');
+          if (!isOldAutoPaymentNote && (!base.note || !base.note.includes(lt.note.trim()))) {
             base.note = base.note ? (base.note + ' | ' + lt.note.trim()) : lt.note.trim();
           }
         }
       } else {
         // Formdan veya elle sonradan eklenmiş yeni öğretmen (asla silinmez):
-        teacherMap.set(lt.id, JSON.parse(JSON.stringify(lt)));
+        const copyLt = JSON.parse(JSON.stringify(lt));
+        if (copyLt.t5 === undefined) copyLt.t5 = false;
+        teacherMap.set(lt.id, copyLt);
       }
     });
   }
@@ -314,16 +343,13 @@ function updateDashboard() {
   const katilmayanlar = state.teachers.filter(t => t.status === 'katilmiyor');
   const bekleyenler = state.teachers.filter(t => t.status === 'bekliyor');
 
-  let t1Toplam = 0, t2Toplam = 0, t3Toplam = 0, t4Toplam = 0;
+  let donem1Toplanan = 0;
+  let donem2Toplanan = 0;
   katilanlar.forEach(t => {
-    if (t.t1) t1Toplam += TAKSIT_BEDELI;
-    if (t.t2) t2Toplam += TAKSIT_BEDELI;
-    if (t.t3) t3Toplam += TAKSIT_BEDELI;
-    if (t.t4) t4Toplam += TAKSIT_BEDELI;
+    donem1Toplanan += getTeacherDonem1Paid(t);
+    donem2Toplanan += getTeacherDonem2Paid(t);
   });
 
-  const donem1Toplanan = t1Toplam + t2Toplam;
-  const donem2Toplanan = t3Toplam + t4Toplam;
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
   const toplamGider = (state.expenses || []).reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const netKasa = toplamToplanan - toplamGider;
@@ -339,9 +365,9 @@ function updateDashboard() {
   setTxt('statKatilmayanSayisi', katilmayanlar.length);
   setTxt('statBekleyenSayisi', bekleyenler.length);
   setTxt('statDonem1Toplanan', donem1Toplanan.toLocaleString('tr-TR') + ' ₺');
-  setTxt('statDonem1Hedef', (katilanlar.length * 600).toLocaleString('tr-TR') + ' ₺');
+  setTxt('statDonem1Hedef', (katilanlar.length * DONEM1_UCRET).toLocaleString('tr-TR') + ' ₺');
   setTxt('statDonem2Toplanan', donem2Toplanan.toLocaleString('tr-TR') + ' ₺');
-  setTxt('statDonem2Hedef', (katilanlar.length * 600).toLocaleString('tr-TR') + ' ₺');
+  setTxt('statDonem2Hedef', (katilanlar.length * DONEM2_UCRET).toLocaleString('tr-TR') + ' ₺');
   setTxt('statToplamToplanan', toplamToplanan.toLocaleString('tr-TR') + ' ₺');
   setTxt('statToplamGider', toplamGider.toLocaleString('tr-TR') + ' ₺');
   setTxt('statDevreden', (state.devredenBakiye || 0).toLocaleString('tr-TR') + ' ₺');
@@ -372,7 +398,7 @@ function renderTable() {
     if (state.filterStatus === 'bekliyor' && t.status !== 'bekliyor') return false;
     if (state.filterStatus === 'borclu') {
       if (t.status !== 'katiliyor') return false;
-      if (t.t1 && t.t2 && t.t3 && t.t4) return false;
+      if (t.t1 && t.t2 && t.t3 && t.t4 && t.t5) return false;
     }
 
     // Arama filtresi
@@ -387,9 +413,11 @@ function renderTable() {
   });
 
   list.forEach((t, index) => {
-    const odenenTaksitSayisi = (t.t1 ? 1 : 0) + (t.t2 ? 1 : 0) + (t.t3 ? 1 : 0) + (t.t4 ? 1 : 0);
-    const odenenTutar = odenenTaksitSayisi * TAKSIT_BEDELI;
-    const kalanBorc = t.status === 'katiliyor' ? (1200 - odenenTutar) : 0;
+    const donem1Odenen = getTeacherDonem1Paid(t);
+    const donem2Odenen = getTeacherDonem2Paid(t);
+    const odenenTutar = donem1Odenen + donem2Odenen;
+    const donem1Kalan = t.status === 'katiliyor' ? Math.max(0, DONEM1_UCRET - donem1Odenen) : 0;
+    const kalanBorc = t.status === 'katiliyor' ? Math.max(0, YILLIK_UCRET - odenenTutar) : 0;
 
     // Durum Rozeti (Dokunarak Katılıyor / Katılmıyor / Bekliyor Yapılabilir)
     let statusBadge = '';
@@ -414,10 +442,10 @@ function renderTable() {
       const checkIcon = isPaid ? '✓ ' : '';
       return `
         <button 
-          class="taksit-btn px-2.5 py-1 text-xs rounded border transition duration-150 ${bgClass}" 
+          class="taksit-btn px-2 py-1 text-xs rounded border transition duration-150 ${bgClass}" 
           ${disabled ? 'disabled' : ''} 
           onclick="toggleTaksit(${t.id}, '${field}')"
-          title="${donem} - ${label} (300 ₺): Tıklayarak Ödendi/Bekliyor yapın">
+          title="${donem} - ${label}: Tıklayarak Ödendi/Bekliyor yapın">
           ${checkIcon}${label}
         </button>
       `;
@@ -434,27 +462,29 @@ function renderTable() {
       <td class="py-3 px-3 text-xs text-gray-600">${t.branch || '-'}</td>
       <td class="py-3 px-3 text-center">${statusBadge}</td>
       
-      <!-- 1. DÖNEM -->
+      <!-- 1. DÖNEM (900 TL) -->
       <td class="py-3 px-2 text-center bg-blue-50/30">
-        <div class="flex items-center justify-center space-x-1">
-          ${taksitBtn('t1', '1. Taksit (300₺)', '1. Dönem')}
-          ${taksitBtn('t2', '2. Taksit (300₺)', '1. Dönem')}
+        <div class="flex flex-wrap items-center justify-center gap-1">
+          ${taksitBtn('t1', '300₺', '1. Dönem 1. Taksit (300 ₺)')}
+          ${taksitBtn('t2', '300₺', '1. Dönem 2. Taksit (300 ₺)')}
+          ${taksitBtn('t3', '+300₺ (900₺ Tamamlama)', '1. Dönem 900 ₺ Tamamlama (300 ₺)')}
         </div>
       </td>
 
-      <!-- 2. DÖNEM -->
+      <!-- 2. DÖNEM (800 TL) -->
       <td class="py-3 px-2 text-center bg-amber-50/30">
-        <div class="flex items-center justify-center space-x-1">
-          ${taksitBtn('t3', '3. Taksit (300₺)', '2. Dönem')}
-          ${taksitBtn('t4', '4. Taksit (300₺)', '2. Dönem')}
+        <div class="flex flex-wrap items-center justify-center gap-1">
+          ${taksitBtn('t4', '300₺', '2. Dönem 1. Ödeme (300 ₺)')}
+          ${taksitBtn('t5', '500₺', '2. Dönem Tamamlama (500 ₺ - Toplam 800 ₺)')}
         </div>
       </td>
 
       <td class="py-3 px-3 text-right font-medium text-xs">
-        <span class="${odenenTutar === 1200 ? 'text-emerald-600 font-bold' : 'text-gray-800'}">
+        <span class="${odenenTutar >= YILLIK_UCRET ? 'text-emerald-600 font-bold' : 'text-gray-800'}">
           ${odenenTutar} ₺
         </span>
-        ${t.status === 'katiliyor' && kalanBorc > 0 ? `<div class="text-xs text-red-500 font-normal">Kalan: ${kalanBorc}₺</div>` : ''}
+        ${t.status === 'katiliyor' && donem1Kalan > 0 ? `<div class="text-[11px] text-amber-700 font-semibold">1.Dönem Kalan: ${donem1Kalan}₺</div>` : ''}
+        ${t.status === 'katiliyor' && kalanBorc > 0 ? `<div class="text-[11px] text-red-500 font-normal">Toplam Kalan: ${kalanBorc}₺</div>` : ''}
       </td>
 
       <td class="py-3 px-2 text-center no-print">
@@ -474,15 +504,14 @@ function renderTable() {
         <td>${t.branch || ''}</td>
         <td style="text-align:center;">
           <span class="print-box ${t.t1 ? 'checked' : ''}"></span>
-        </td>
-        <td style="text-align:center;">
           <span class="print-box ${t.t2 ? 'checked' : ''}"></span>
-        </td>
-        <td style="text-align:center;">
           <span class="print-box ${t.t3 ? 'checked' : ''}"></span>
+          <span style="font-size:10px;">(${donem1Odenen}/900₺)</span>
         </td>
         <td style="text-align:center;">
           <span class="print-box ${t.t4 ? 'checked' : ''}"></span>
+          <span class="print-box ${t.t5 ? 'checked' : ''}"></span>
+          <span style="font-size:10px;">(${donem2Odenen}/800₺)</span>
         </td>
         <td style="text-align:right;">${odenenTutar} ₺</td>
       `;
@@ -915,6 +944,7 @@ function addTeacher() {
     t2: false,
     t3: false,
     t4: false,
+    t5: false,
     note: ""
   });
 
@@ -993,6 +1023,7 @@ function importGoogleFormResponses() {
           t2: false,
           t3: false,
           t4: false,
+          t5: false,
           note: "Form yanıtından eklendi"
         });
         newAddedCount++;
@@ -1069,7 +1100,7 @@ async function fetchFromCloudSync(silent = true) {
                   name: data.name.toUpperCase('tr'),
                   branch: data.branch || 'Yeni Öğretmen',
                   status: data.status,
-                  t1: false, t2: false, t3: false, t4: false,
+                  t1: false, t2: false, t3: false, t4: false, t5: false,
                   note: data.note || 'Formdan eklendi'
                 });
                 updatedCount++;
@@ -1122,7 +1153,7 @@ async function fetchFromCloudSync(silent = true) {
                 name: (customName || key).toUpperCase('tr'),
                 branch: customBranch,
                 status: status,
-                t1: false, t2: false, t3: false, t4: false,
+                t1: false, t2: false, t3: false, t4: false, t5: false,
                 note: note || 'Formdan eklendi'
               });
               updatedCount++;
@@ -1194,7 +1225,7 @@ async function syncFromFormSubmit(apiKey, silent = false) {
               name: uName,
               branch: 'Yeni Öğretmen',
               status: isKatiliyor ? 'katiliyor' : 'katilmiyor',
-              t1: false, t2: false, t3: false, t4: false,
+              t1: false, t2: false, t3: false, t4: false, t5: false,
               note: not || 'Formdan eklendi'
             });
           }
@@ -1227,14 +1258,15 @@ async function syncFromFormSubmit(apiKey, silent = false) {
 
 // Excel / CSV Olarak İndir
 function exportToCSV() {
-  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem T1 (300 TL);1.Dönem T2 (300 TL);2.Dönem T3 (300 TL);2.Dönem T4 (300 TL);Toplam Ödenen;Kalan Borç;Not\n";
+  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem T1 (300 TL);1.Dönem T2 (300 TL);1.Dönem Tamamlama T3 (300 TL);2.Dönem T4 (300 TL);2.Dönem T5 (500 TL);1.Dönem Ödenen;Toplam Ödenen;Kalan Borç;Not\n";
   
   state.teachers.forEach(t => {
-    const odenen = ((t.t1?1:0) + (t.t2?1:0) + (t.t3?1:0) + (t.t4?1:0)) * TAKSIT_BEDELI;
-    const kalan = t.status === 'katiliyor' ? (1200 - odenen) : 0;
+    const donem1Odenen = getTeacherDonem1Paid(t);
+    const odenen = getTeacherTotalPaid(t);
+    const kalan = t.status === 'katiliyor' ? Math.max(0, YILLIK_UCRET - odenen) : 0;
     const durumText = t.status === 'katiliyor' ? 'Katılıyor' : (t.status === 'katilmiyor' ? 'Katılmıyor' : 'Bekliyor');
     
-    csv += `${t.id};"${t.name}";"${t.branch || ''}";"${durumText}";"${t.t1?'ÖDENDİ':'-'}";"${t.t2?'ÖDENDİ':'-'}";"${t.t3?'ÖDENDİ':'-'}";"${t.t4?'ÖDENDİ':'-'}";${odenen};${kalan};"${t.note || ''}"\n`;
+    csv += `${t.id};"${t.name}";"${t.branch || ''}";"${durumText}";"${t.t1?'ÖDENDİ':'-'}";"${t.t2?'ÖDENDİ':'-'}";"${t.t3?'ÖDENDİ':'-'}";"${t.t4?'ÖDENDİ':'-'}";"${t.t5?'ÖDENDİ':'-'}";${donem1Odenen};${odenen};${kalan};"${t.note || ''}"\n`;
   });
 
   const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1306,6 +1338,7 @@ function importFullBackupJSON(event) {
             cur.t2 = Boolean(cur.t2 || it.t2);
             cur.t3 = Boolean(cur.t3 || it.t3);
             cur.t4 = Boolean(cur.t4 || it.t4);
+            cur.t5 = Boolean(cur.t5 || it.t5);
             if (it.status && it.status !== 'bekliyor') cur.status = it.status;
             if (it.note && it.note.trim() && (!cur.note || !cur.note.includes(it.note.trim()))) {
               cur.note = cur.note ? (cur.note + ' | ' + it.note.trim()) : it.note.trim();
@@ -1375,51 +1408,56 @@ function copyAccountName() {
   });
 }
 
-// WhatsApp Duyuru Metnini Kopyala
+// WhatsApp Duyuru Metnini Kopyala (Güncel Çay Tüketimi ve Fiyat Güncellemesi)
 function copyWhatsAppAnnouncement() {
   const msg = 
-`☕ *OKUL ÇAY OCAĞI ACİL KATILIM & ÖDEME DUYURUSU*
+`☕ *OKUL ÇAY OCAĞI ÖNEMLİ ÜCRET GÜNCELLEMESİ & HATIRLATMA DUYURUSU*
 
-⚠️ *ÖNEMLİ NOT: Şu anda ocağımızda HİÇ ÇAYIMIZ KALMAMIŞTIR!*
-Yeni çay, şeker ve ikram malzemesi alınabilmesi için lütfen katılım durumunuzu acilen belirtiniz.
+Değerli Öğretmen Arkadaşlarımız,
+Okulumuz çay ocağında *ayda neredeyse 10 paket (10 kilo) çay* tüketilmektedir. Mevcut çay, şeker ve bardak giderleri karşısında eski belirlenen tutar yetmeyeceği için dönemlik katılım ücretlerinde güncelleme yapılması zorunlu olmuştur:
 
-Değerli Öğretmenlerimiz,
-*2026-2027* eğitim-öğretim yılı çay ocağı katılım bedeli toplam *1.200 TL* olarak belirlenmiştir.
+📌 *Yeni Dönemlik Katılım Ücretleri:*
+• *1. Dönem:* *900 TL*
+• *2. Dönem:* *800 TL*
 
-Ödemeler 4 eşit taksit (4 x 300 TL) halinde toplanacaktır:
-• *1. Dönem:* 1. Taksit (300 TL) & 2. Taksit (300 TL)
-• *2. Dönem:* 3. Taksit (300 TL) & 4. Taksit (300 TL)
+🔹 *1. Dönem İçin Ödeme Yapan Arkadaşlarımız:*
+Daha önce 1. dönem için 600 TL (veya 300 TL) gönderen öğretmen arkadaşlarımızın, 1. dönem ödemelerini *900 TL'ye tamamlamalarını* rica ederiz. (2. dönem için 800 TL alınacaktır).
 
-🔴 *ÇOK ÖNEMLİ: ÖDEME BİLGİLERİ (IBAN)*
-Ödemelerinizi elden verebileceğiniz gibi doğrudan aşağıdaki hesaba Havale/EFT/FAST ile de gönderebilirsiniz:
+⚠️ *ÖNEMLİ HATIRLATMA:*
+Hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da en kısa sürede aşağıdaki linkten katılım durumlarını (*Katılıyorum / Katılmıyorum*) işaretlemeleri ve ödemelerini göndermeleri önemle rica olunur.
 
+💳 *ÖDEME BİLGİLERİ (IBAN)*
 👤 *Alıcı:* MÜJDAT TELLİ
-🏦 *IBAN:* TR830001200986200001021145
+🏦 *IBAN:* TR83 0001 2009 8620 0001 0211 45
 📝 *Açıklama:* Adınız Soyadınız - Çay Parası
 
-👇 Çay içecek öğretmenlerimiz lütfen aşağıdaki linkten ismini işaretlesin (Listede adı olmayan hocalarımız en alttaki "Diğer" kısmına adını yazabilir):
+👇 *Katılım Formu ve Güncel Takip Linki:*
 👉 https://mujdattelli.github.io/cay-katilim/`;
 
   navigator.clipboard.writeText(msg).then(() => {
-    showToast("✅ WhatsApp Duyuru Metni panoya kopyalandı!\nDoğrudan okul grubuna yapıştırabilirsiniz.");
+    showToast("✅ Güncel WhatsApp Duyuru Metni panoya kopyalandı!\nDoğrudan okul grubuna yapıştırabilirsiniz.");
   });
 }
 
-// Maaş Günü Özel Hatırlatma Metnini Kopyala (Kısa & Net)
+// Maaş Günü / Kısa Hatırlatma Metnini Kopyala
 function copyMaasGunuAnnouncement() {
   const msg = 
-`☕ *Değerli Öğretmenlerimiz, Hayırlı Maaşlar!* 💸
+`☕ *Değerli Öğretmen Arkadaşlarımız, Önemli Çay Ocağı Duyurusu!*
 
-⚠️ Çay ocağı malzeme planlaması için *HENÜZ TERCİHİNİ BİLDİRMEYEN* tüm hocalarımızın aşağıdaki linkten *"Katılıyorum"* ya da *"Katılmıyorum"* şeklinde seçim yapması rica olunur:
-👉 https://mujdattelli.github.io/cay-katilim/
+Çay ocağımızda *aylık neredeyse 10 kilo (10 paket) çay* tüketildiği için mevcut bütçe yetmemektedir. Bu nedenle ücretlerimiz *1. Dönem 900 TL*, *2. Dönem 800 TL* olarak güncellenmiştir.
 
-💳 *Katılacak hocalarımız 1. Taksit (300 TL) veya 1. Dönem (600 TL) ödemesini gönderebilir:*
+✅ *1. dönem için ödeme göndermiş olan arkadaşlarımızın ödemelerini 900 TL'ye tamamlamaları,*
+⚠️ *Hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da aşağıdaki linkten seçim yapıp 1. dönem (900 TL) ödemesini göndermeleri rica olunur.*
+
 👤 *Alıcı:* MÜJDAT TELLİ
 🏦 *IBAN:* TR83 0001 2009 8620 0001 0211 45
-📝 *Açıklama:* Adınız Soyadınız - Çay Parası`;
+📝 *Açıklama:* Adınız Soyadınız - Çay Parası
+
+👇 *Katılım Formu Linki:*
+👉 https://mujdattelli.github.io/cay-katilim/`;
 
   navigator.clipboard.writeText(msg).then(() => {
-    showToast("✅ Kısa Maaş Günü Mesajı panoya kopyalandı!");
+    showToast("✅ Kısa WhatsApp Duyuru Mesajı panoya kopyalandı!");
   });
 }
 
