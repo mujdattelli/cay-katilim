@@ -135,7 +135,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_v1";
+const CANONICAL_DATA_VERSION = "2026.11.03_v2";
 
 let state = {
   version: CANONICAL_DATA_VERSION,
@@ -152,11 +152,11 @@ const TAKSIT_TUTARLARI = {
   t2: 300, // 1. Dönem 2. Taksit (300 TL)
   t3: 300, // 1. Dönem Tamamlama (300 TL) -> 1. Dönem Toplam: 900 TL
   t4: 300, // 2. Dönem 1. Parça (300 TL)
-  t5: 500  // 2. Dönem 2. Parça (500 TL) -> 2. Dönem Toplam: 800 TL
+  t5: 600  // 2. Dönem 2. Parça (600 TL) -> 2. Dönem Toplam: 900 TL
 };
 const DONEM1_UCRET = 900;
-const DONEM2_UCRET = 800;
-const YILLIK_UCRET = DONEM1_UCRET + DONEM2_UCRET; // 1.700 TL
+const DONEM2_UCRET = 900;
+const YILLIK_UCRET = DONEM1_UCRET + DONEM2_UCRET; // 1.800 TL
 
 function getTeacherDonem1Paid(t) {
   return (t.t1 ? TAKSIT_TUTARLARI.t1 : 0) +
@@ -471,11 +471,11 @@ function renderTable() {
         </div>
       </td>
 
-      <!-- 2. DÖNEM (800 TL) -->
+      <!-- 2. DÖNEM (900 TL) -->
       <td class="py-3 px-2 text-center bg-amber-50/30">
         <div class="flex flex-wrap items-center justify-center gap-1">
           ${taksitBtn('t4', '300₺', '2. Dönem 1. Ödeme (300 ₺)')}
-          ${taksitBtn('t5', '500₺', '2. Dönem Tamamlama (500 ₺ - Toplam 800 ₺)')}
+          ${taksitBtn('t5', '600₺', '2. Dönem Tamamlama (600 ₺ - Toplam 900 ₺)')}
         </div>
       </td>
 
@@ -511,7 +511,7 @@ function renderTable() {
         <td style="text-align:center;">
           <span class="print-box ${t.t4 ? 'checked' : ''}"></span>
           <span class="print-box ${t.t5 ? 'checked' : ''}"></span>
-          <span style="font-size:10px;">(${donem2Odenen}/800₺)</span>
+          <span style="font-size:10px;">(${donem2Odenen}/900₺)</span>
         </td>
         <td style="text-align:right;">${odenenTutar} ₺</td>
       `;
@@ -1258,7 +1258,7 @@ async function syncFromFormSubmit(apiKey, silent = false) {
 
 // Excel / CSV Olarak İndir
 function exportToCSV() {
-  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem T1 (300 TL);1.Dönem T2 (300 TL);1.Dönem Tamamlama T3 (300 TL);2.Dönem T4 (300 TL);2.Dönem T5 (500 TL);1.Dönem Ödenen;Toplam Ödenen;Kalan Borç;Not\n";
+  let csv = "S.N;Ad Soyad;Branş;Durum;1.Dönem T1 (300 TL);1.Dönem T2 (300 TL);1.Dönem Tamamlama T3 (300 TL);2.Dönem T4 (300 TL);2.Dönem T5 (600 TL);1.Dönem Ödenen;Toplam Ödenen;Kalan Borç;Not\n";
   
   state.teachers.forEach(t => {
     const donem1Odenen = getTeacherDonem1Paid(t);
@@ -1416,12 +1416,12 @@ function copyWhatsAppAnnouncement() {
 Değerli Öğretmen Arkadaşlarımız,
 Okulumuz çay ocağında *ayda neredeyse 10 paket (10 kilo) çay* tüketilmektedir. Mevcut çay, şeker ve bardak giderleri karşısında eski belirlenen tutar yetmeyeceği için dönemlik katılım ücretlerinde güncelleme yapılması zorunlu olmuştur:
 
-📌 *Yeni Dönemlik Katılım Ücretleri:*
+📌 *Yeni Dönemlik Katılım Ücretleri (Yıllık Toplam: 1.800 TL):*
 • *1. Dönem:* *900 TL*
-• *2. Dönem:* *800 TL*
+• *2. Dönem:* *900 TL*
 
 🔹 *1. Dönem İçin Ödeme Yapan Arkadaşlarımız:*
-1. dönem için eksik ödeme yatıran öğretmen arkadaşlarımızın, 1. dönem ödemelerini *900 TL'ye tamamlamalarını* rica ederiz. (2. dönem için 800 TL alınacaktır).
+1. dönem için eksik ödeme yatıran öğretmen arkadaşlarımızın, 1. dönem ödemelerini *900 TL'ye tamamlamalarını* rica ederiz. (2. dönem için de 900 TL alınacaktır).
 
 ⚠️ *ÖNEMLİ HATIRLATMA:*
 Hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da en kısa sürede aşağıdaki linkten katılım durumlarını (*Katılıyorum / Katılmıyorum*) işaretlemeleri ve ödemelerini göndermeleri önemle rica olunur.
@@ -1444,7 +1444,7 @@ function copyMaasGunuAnnouncement() {
   const msg = 
 `☕ *Değerli Öğretmen Arkadaşlarımız, Önemli Çay Ocağı Duyurusu!*
 
-Çay ocağımızda *aylık neredeyse 10 kilo (10 paket) çay* tüketildiği için mevcut bütçe yetmemektedir. Bu nedenle ücretlerimiz *1. Dönem 900 TL*, *2. Dönem 800 TL* olarak güncellenmiştir.
+Çay ocağımızda *aylık neredeyse 10 kilo (10 paket) çay* tüketildiği için mevcut bütçe yetmemektedir. Bu nedenle kişi başı toplam ücret *1.800 TL* (*1. Dönem 900 TL*, *2. Dönem 900 TL*) olarak güncellenmiştir.
 
 ✅ *1. dönem için ödeme göndermiş olan arkadaşlarımızın ödemelerini 900 TL'ye tamamlamaları,*
 ⚠️ *Hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da aşağıdaki linkten seçim yapıp 1. dönem (900 TL) ödemesini göndermeleri rica olunur.*

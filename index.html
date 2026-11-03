@@ -78,7 +78,7 @@
         Aylık Neredeyse 10 Paket (10 Kilo) Çay Tüketilmektedir!
       </h3>
       <p class="text-xs text-red-800 leading-relaxed">
-        Mevcut çay, şeker ve bardak giderleri karşısında eski tutar yetmeyeceği için katılım ücretleri <strong>1. Dönem 900 TL</strong>, <strong>2. Dönem 800 TL</strong> olarak güncellenmiştir. 1. dönem için ödeme göndermiş olan arkadaşlarımızın ödemelerini <strong>900 TL'ye tamamlamaları</strong>, hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da en kısa sürede tercihlerini bildirip ödeme yapmaları rica olunur.
+        Mevcut çay, şeker ve bardak giderleri karşısında eski tutar yetmeyeceği için katılım ücretleri <strong>kişi başı toplamda 1.800 TL (1. Dönem 900 TL, 2. Dönem 900 TL)</strong> olarak güncellenmiştir. 1. dönem için eksik ödeme yatıran arkadaşlarımızın ödemelerini <strong>900 TL'ye tamamlamaları</strong>, hâlâ formu doldurmayıp ödeme göndermeyen arkadaşlarımızın da en kısa sürede tercihlerini bildirip ödeme yapmaları rica olunur.
       </p>
     </div>
 
@@ -86,7 +86,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 text-xs text-slate-700">
       <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
         <span>💰</span>
-        <span>Güncel Katılım Ücreti & Dönem Planı</span>
+        <span>Güncel Katılım Ücreti & Dönem Planı (Yıllık Toplam: 1.800 TL)</span>
       </h4>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
         <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl">
@@ -96,12 +96,12 @@
           <div class="text-[10px] text-blue-600 mt-0.5">(1. dönem eksik yatıranlar 900 TL'ye tamamlar)</div>
         </div>
         <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
-          <div class="font-bold text-amber-900">2. DÖNEM (800 TL)</div>
-          <div class="text-amber-700 mt-1">• 2. Dönem Katılım Bedeli: 800 TL</div>
-          <div class="text-amber-700">• (300 TL + 500 TL veya tek seferde 800 TL)</div>
+          <div class="font-bold text-amber-900">2. DÖNEM (900 TL)</div>
+          <div class="text-amber-700 mt-1">• 2. Dönem Katılım Bedeli: 900 TL</div>
+          <div class="text-amber-700">• (2. dönem başında toplanacaktır)</div>
         </div>
       </div>
-      <div class="text-slate-500 text-[11px]">1. Dönem <strong>900 TL</strong> + 2. Dönem <strong>800 TL</strong> olarak uygulanmaktadır.</div>
+      <div class="text-slate-500 text-[11px]">Kişi başı toplam <strong>1.800 TL</strong> (1. Dönem <strong>900 TL</strong> + 2. Dönem <strong>900 TL</strong>) olarak uygulanmaktadır.</div>
     </div>
 
     <!-- IBAN & ALICI ADI ÖDEME BİLGİSİ (İKİSİ DE KOPYALANABİLİR) -->
@@ -189,8 +189,8 @@
         </label>
         <div class="space-y-2">
           <label class="flex items-center p-3 rounded-xl border border-emerald-300 bg-emerald-50/50 hover:bg-emerald-50 cursor-pointer transition">
-            <input type="radio" name="Katilim_Durumu" value="EVET - Katılıyorum (1. Dönem 900 TL / 2. Dönem 800 TL)" checked class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
-            <span class="ml-3 text-xs font-semibold text-slate-800">☕ EVET, katılmak istiyorum (1. Dönem: 900 TL / 2. Dönem: 800 TL ödemeyi kabul ediyorum)</span>
+            <input type="radio" name="Katilim_Durumu" value="EVET - Katılıyorum (Toplam 1.800 TL: 1. Dönem 900 TL / 2. Dönem 900 TL)" checked class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+            <span class="ml-3 text-xs font-semibold text-slate-800">☕ EVET, katılmak istiyorum (Toplam 1.800 TL: 1. Dönem 900 TL / 2. Dönem 900 TL ödemeyi kabul ediyorum)</span>
           </label>
           <label class="flex items-center p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
             <input type="radio" name="Katilim_Durumu" value="HAYIR - Katılmıyorum" class="w-4 h-4 text-red-600 focus:ring-red-500">
@@ -262,7 +262,7 @@
           <div class="text-[10px] text-slate-500 mt-1">Hedef: <span id="statDonem1Hedef" class="font-medium">0 ₺</span></div>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-xs">
-          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">2. Dönem (800 ₺)</div>
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">2. Dönem (900 ₺)</div>
           <div id="statDonem2Toplanan" class="text-xl font-extrabold text-amber-700 mt-1">0 ₺</div>
           <div class="text-[10px] text-slate-500 mt-1">Hedef: <span id="statDonem2Hedef" class="font-medium">0 ₺</span></div>
         </div>
@@ -361,7 +361,7 @@
               <th class="p-3">Branş</th>
               <th class="p-3 text-center">Katılım Durumu</th>
               <th class="p-3 text-center bg-blue-50/60">1. Dönem (900 ₺)</th>
-              <th class="p-3 text-center bg-amber-50/60">2. Dönem (800 ₺)</th>
+              <th class="p-3 text-center bg-amber-50/60">2. Dönem (900 ₺)</th>
               <th class="p-3 text-right">Ödenen</th>
               <th class="p-3 text-center no-print">İşlem</th>
             </tr>
@@ -464,7 +464,7 @@
       <div class="hidden print-only">
         <div class="text-center mb-4">
           <h2 class="text-xl font-bold">2026-2027 EĞİTİM-ÖĞRETİM YILI ÇAY OCAĞI KATILIM VE ÖDEME TAKİP ÇİZELGESİ</h2>
-          <p class="text-xs text-gray-600">Sorumlu: Müjdat TELLİ | 1. Dönem: 900 TL | 2. Dönem: 800 TL</p>
+          <p class="text-xs text-gray-600">Sorumlu: Müjdat TELLİ | Yıllık Toplam: 1.800 TL (1. Dönem: 900 TL | 2. Dönem: 900 TL)</p>
         </div>
         <table class="w-full text-xs">
           <thead>
@@ -473,7 +473,7 @@
               <th>Ad Soyad</th>
               <th>Branş</th>
               <th style="width:140px;text-align:center;">1. Dönem (900 TL)</th>
-              <th style="width:140px;text-align:center;">2. Dönem (800 TL)</th>
+              <th style="width:140px;text-align:center;">2. Dönem (900 TL)</th>
               <th style="width:80px;text-align:right;">Toplam</th>
             </tr>
           </thead>
@@ -483,7 +483,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_1"></script>
+  <script src="app.js?v=20261103_2"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
