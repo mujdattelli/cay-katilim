@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.03_LOCKED_v17",
-  "exportDate": "2026-11-03T17:50:16.184Z",
+  "version": "2026.11.05_LOCKED_v18",
+  "exportDate": "2026-11-05T08:10:38.542Z",
   "state": {
-    "version": "2026.11.03_LOCKED_v17",
+    "version": "2026.11.05_LOCKED_v18",
     "teachers": [
       {
         "id": 1,
@@ -454,13 +454,14 @@
         "id": 41,
         "name": "NAGİHAN KOÇ ÇAVUR",
         "branch": "Coğrafya",
-        "status": "bekliyor",
+        "status": "katiliyor",
         "t1": false,
         "t2": false,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": ""
+        "ek1": 200,
+        "note": "200 TL ödendi (Elden | 1. Dönem 900 TL için +700 TL kalan)"
       },
       {
         "id": 42,

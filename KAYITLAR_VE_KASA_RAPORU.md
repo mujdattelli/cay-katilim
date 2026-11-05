@@ -1,7 +1,7 @@
 # ☕ 2026-2027 Eğitim-Öğretim Yılı Çay Ocağı Tam Kayıt ve Kasa Raporu
 
 > [!IMPORTANT]
-> **Son Güncelleme ve Kilitleme Tarihi:** `03.11.2026` (`2026.11.03_LOCKED_v17`)  
+> **Son Güncelleme ve Kilitleme Tarihi:** `05.11.2026` (`2026.11.05_LOCKED_v18`)  
 > **Sorumlu:** Müjdat TELLİ (`TR830001200986200001021145` — Halkbank *Okul Çay P*)  
 > **Ücret Tarifesi:** Yıllık **1.800 ₺** (*1. Dönem: 900 ₺* + *2. Dönem: 900 ₺*)
 
@@ -12,13 +12,13 @@
 | Kalem | Kişi / Adet | Tutar / Detay |
 |---|---|---|
 | **🏦 Bankadan Gelen (EFT / Havale)** | 22 Kişi *(25 banka işlemi)* | **14.700 ₺** |
-| **💵 Elden Alınan (Nakit)** | 3 Kişi *(Müjdat Telli 900 ₺ + Miray Tekay 800 ₺ + Zehra Genç 300 ₺)* | **2.000 ₺** |
-| **📊 Toplam Toplanan Gelir** | **24 Ödeme Yapan Kişi** | **16.700 ₺** |
+| **💵 Elden Alınan (Nakit)** | 4 Kişi *(Müjdat Telli 900 ₺ + Miray Tekay 800 ₺ + Zehra Genç 300 ₺ + Nagihan Koç Çavur 200 ₺)* | **2.200 ₺** |
+| **📊 Toplam Toplanan Gelir** | **25 Ödeme Yapan Kişi** | **16.900 ₺** |
 | **🧾 Toplam Harcama / Fatura Gideri** | **5 Kayıt** *(19 Çay, 5 Şeker, 12 Bardak)* | **6.082 ₺** |
-| **✅ NET KASA BAKİYESİ** | *Gelir (16.700 ₺) − Gider (6.082 ₺)* | **10.618 ₺** |
-| **☕ Katılıyor** | **26 Kişi** | 24 ödeme yapan + 2 henüz ödeme görünmeyen |
+| **✅ NET KASA BAKİYESİ** | *Gelir (16.900 ₺) − Gider (6.082 ₺)* | **10.818 ₺** |
+| **☕ Katılıyor** | **27 Kişi** | 25 ödeme yapan + 2 henüz ödeme görünmeyen |
 | **❌ Katılmıyor** | **14 Kişi** | Tamamı form/mesaj ile doğrulandı |
-| **⏳ Yanıt Bekliyor** | **18 Kişi** | Form doldurmayan ve ödeme yapmayanlar |
+| **⏳ Yanıt Bekliyor** | **17 Kişi** | Form doldurmayan ve ödeme yapmayanlar |
 | **👥 Toplam Aktif Öğretmen / Personel** | **58 Kişi** | *Handan Yasa (emekli), Birgül Coşkun ve Birol Ateş listeden çıkarıldı* |
 
 ---
@@ -85,14 +85,15 @@
 
 ---
 
-## 3. 💵 Elden (Nakit) Alınan Ödemeler (2.000 ₺)
+## 3. 💵 Elden (Nakit) Alınan Ödemeler (2.200 ₺)
 
 | # | Öğretmen | Branş | Elden Alınan | Banka EFT | Kişi Toplamı | Açıklama |
 |---|---|---|---|---|---|---|
 | 1 | **MÜJDAT TELLİ** | Bilişim Teknolojileri | **900 ₺** | 0 ₺ | **900 ₺** | Çay Ocağı Sorumlusu — 1. Dönem Tam (Elden) |
 | 2 | **MİRAY TEKAY** | Türk Dili ve Edebiyatı | **800 ₺** | 0 ₺ | **800 ₺** | `600 ₺` + `200 ₺` elden (1. Dönem için 100 ₺ kalan) |
 | 3 | **ZEHRA GENÇ** | Matematik | **300 ₺** | 600 ₺ | **900 ₺** | `600 ₺` Banka EFT + `300 ₺` elden tamamlama (1. Dönem Tam) |
-| **TOPLAM** | **3 Kişi** | — | **2.000 ₺** | — | — | — |
+| 4 | **NAGİHAN KOÇ ÇAVUR** | Coğrafya | **200 ₺** | 0 ₺ | **200 ₺** | 200 ₺ elden (1. Dönem için 700 ₺ kalan) |
+| **TOPLAM** | **4 Kişi** | — | **2.200 ₺** | — | — | — |
 
 ---
 
@@ -150,7 +151,7 @@
 | 35 | **MURAT KANTARCI** | Bilişim Teknolojileri | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
 | 36 | **MÜJDAT TELLİ** | Bilişim Teknolojileri | ☕ Katılıyor | — | 900 ₺ | **900 ₺** | 0 ₺ | 900 ₺ | Çay Ocağı Sorumlusu | 900 TL ödendi (1. Dönem Tam - Elden) |
 | 37 | **MÜNEVVER ÜNAL ÖTÜKEN** | Coğrafya | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
-| 38 | **NAGİHAN KOÇ ÇAVUR** | Coğrafya | ⏳ Bekliyor | — | — | 0 ₺ | — | — |  |
+| 38 | **NAGİHAN KOÇ ÇAVUR** | Coğrafya | ☕ Katılıyor | — | 200 ₺ | **200 ₺** | 700 ₺ | 1.600 ₺ | 200 TL ödendi (Elden | 1. Dönem 900 TL için +700 TL kalan) |
 | 39 | **NURHAN CAN** | Türk Dili ve Edebiyatı | ❌ Katılmıyor | — | — | 0 ₺ | — | — | Formdan bildirildi: Katılmıyor (08.09.2026) |
 | 40 | **RABİA SULTAN ÇELİK** | Matematik | ☕ Katılıyor | 900 ₺ | — | **900 ₺** | 0 ₺ | 900 ₺ | 900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11) |
 | 41 | **SERAP KAR ATASEVEN** | Türk Dili ve Edebiyatı | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
@@ -171,7 +172,7 @@
 | 56 | **DEMET TÜRKMEN** | Okul Aile Birliği | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL Zeynep Bozdemir tarafından ödendi (1. Dönem için +300 TL kalan) |
 | 57 | **ELİF CANSU KESKİN** | Kimya / Kimya Teknolojisi | ☕ Katılıyor | 600 ₺ | — | **600 ₺** | 300 ₺ | 1.200 ₺ | 600 TL ödendi (1. Dönem 900 TL için +300 TL kalan) |
 | 58 | **ŞULE ERGUVAN** | Öğretmen | ☕ Katılıyor | 1.200 ₺ | — | **1.200 ₺** | 0 ₺ | 600 ₺ | 1.200 TL ödendi (Banka: 17-09-2026 - 1. Dönem 900 TL + 2. Dönem 300 TL) |
-| — | **GENEL TOPLAM (58 KİŞİ)** | — | **26 ☕ / 14 ❌ / 18 ⏳** | **14.700 ₺** | **2.000 ₺** | **16.700 ₺** | — | — | — |
+| — | **GENEL TOPLAM (58 KİŞİ)** | — | **27 ☕ / 14 ❌ / 17 ⏳** | **14.700 ₺** | **2.200 ₺** | **16.900 ₺** | — | — | — |
 
 ---
 
@@ -180,4 +181,4 @@
 * **Canlı Web Adresi:** https://mujdattelli.github.io/cay-katilim/ *(Yönetim Şifresi: `2026`)*
 * **GitHub Deposu:** https://github.com/mujdattelli/cay-katilim
 * **Tam JSON Yedeği:** `canonical_backup_2026_11_03.json`
-* **Kilitli Veri Sürümü:** `2026.11.03_LOCKED_v17`
+* **Kilitli Veri Sürümü:** `2026.11.05_LOCKED_v18`

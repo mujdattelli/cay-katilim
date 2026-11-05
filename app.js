@@ -37,7 +37,7 @@ const DEFAULT_TEACHERS = [
   { id: 38, name: "MURAT KANTARCI", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
   { id: 39, name: "MÜJDAT TELLİ", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: false, t5: false, note: "Çay Ocağı Sorumlusu | 900 TL ödendi (1. Dönem Tam - Elden)" },
   { id: 40, name: "MÜNEVVER ÜNAL ÖTÜKEN", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
-  { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
+  { id: 41, name: "NAGİHAN KOÇ ÇAVUR", branch: "Coğrafya", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, ek1: 200, note: "200 TL ödendi (Elden | 1. Dönem 900 TL için +700 TL kalan)" },
   { id: 42, name: "NURHAN CAN", branch: "Türk Dili ve Edebiyatı", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan bildirildi: Katılmıyor (08.09.2026)" },
   { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: true, t4: false, t5: false, note: "900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11)" },
   { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
@@ -133,7 +133,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.03_LOCKED_v17";
+const CANONICAL_DATA_VERSION = "2026.11.05_LOCKED_v18";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
 const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";

@@ -252,8 +252,8 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
           <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Katılım Durumu</div>
-          <div class="text-xl font-extrabold text-emerald-600 mt-1"><span id="statKatilanSayisi">26</span> <span class="text-xs text-slate-400 font-normal">/ <span id="statToplamKisi">58</span></span></div>
-          <div class="text-[10px] text-slate-500 mt-1"><span id="statKatilmayanSayisi" class="text-red-500 font-bold">14</span> Red, <span id="statBekleyenSayisi" class="text-amber-500 font-bold">18</span> Bekliyor</div>
+          <div class="text-xl font-extrabold text-emerald-600 mt-1"><span id="statKatilanSayisi">27</span> <span class="text-xs text-slate-400 font-normal">/ <span id="statToplamKisi">58</span></span></div>
+          <div class="text-[10px] text-slate-500 mt-1"><span id="statKatilmayanSayisi" class="text-red-500 font-bold">14</span> Red, <span id="statBekleyenSayisi" class="text-amber-500 font-bold">17</span> Bekliyor</div>
         </div>
         <div class="bg-white p-3.5 rounded-xl border border-slate-200 border-l-4 border-l-blue-500 shadow-xs">
           <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">1. Dönem (900 ₺)</div>
@@ -278,12 +278,12 @@
           <input type="text" id="searchInput" placeholder="Öğretmen ara..." class="px-3 py-2 text-xs border border-slate-300 rounded-lg flex-1 min-w-[140px] focus:outline-none focus:ring-2 focus:ring-amber-500">
           <select id="filterStatusSelect" class="px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
             <option value="all">Tüm Öğretmenler / Personel (58 Kişi)</option>
-            <option value="katiliyor">☕ Sadece Katılanlar (26)</option>
-            <option value="odeme_yapan">💳 Ödeme Yapanlar (24)</option>
+            <option value="katiliyor">☕ Sadece Katılanlar (27)</option>
+            <option value="odeme_yapan">💳 Ödeme Yapanlar (25)</option>
             <option value="borclu_d1">⚠️ 1. Dönem Eksiği Olanlar</option>
             <option value="borclu">📌 Yıllık &lt; 1.800 ₺ Olanlar</option>
             <option value="katilmiyor">❌ Katılmayanlar (14)</option>
-            <option value="bekliyor">⏳ Yanıt Bekleyenler (18)</option>
+            <option value="bekliyor">⏳ Yanıt Bekleyenler (17)</option>
           </select>
           <!-- Kutucuk Ödeme Modu Seçici (Banka EFT vs Elden Nakit) -->
           <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200" title="Tabloda kutucuklara tıkladığınızda ödemenin Banka mı Elden mi yazılacağını seçin">
@@ -483,7 +483,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=20261103_17"></script>
+  <script src="app.js?v=20261105_18"></script>
   <script>
     // Başarılı parametresi varsa göster
     if (window.location.search.includes('durum=basarili')) {
