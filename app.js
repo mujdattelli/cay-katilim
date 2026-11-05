@@ -42,7 +42,7 @@ const DEFAULT_TEACHERS = [
   { id: 43, name: "RABİA SULTAN ÇELİK", branch: "Matematik", status: "katiliyor", t1: true, t2: true, t3: true, t4: false, t5: false, note: "900 TL ödendi (1. Dönem Tam - 300 TL 08-09 + 600 TL 03-11)" },
   { id: 44, name: "SERAP KAR ATASEVEN", branch: "Türk Dili ve Edebiyatı", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
   { id: 45, name: "SERDAR ÇIRPAN", branch: "Bilişim Teknolojileri", status: "katilmiyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Odada çay yapıyorum hocam, sizleri de beklerim :)" },
-  { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "Formdan katıldı" },
+  { id: 46, name: "SERHAT ARSLAN", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: true, t4: false, t5: false, ek2: 100, note: "1.000 TL ödendi (Elden | 1. Dönem 900 TL tam + 2. Dönem 100 TL)" },
   { id: 47, name: "SEVİLAY ARSLAN", branch: "Rehberlik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 48, name: "SEVİLAY DEVECİ", branch: "Elektrik-Elektronik Teknolojisi / Elektronik", status: "bekliyor", t1: false, t2: false, t3: false, t4: false, t5: false, note: "" },
   { id: 49, name: "SİNAN RENÇBEROĞLU", branch: "Bilişim Teknolojileri", status: "katiliyor", t1: true, t2: true, t3: false, t4: false, t5: false, note: "600 TL ödendi (1. Dönem 900 TL için +300 TL kalan)" },
@@ -133,7 +133,7 @@ const DEFAULT_EXPENSES = [
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.05_LOCKED_v18";
+const CANONICAL_DATA_VERSION = "2026.11.05_LOCKED_v19";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
 const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";

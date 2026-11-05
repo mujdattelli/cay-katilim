@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.05_LOCKED_v18",
-  "exportDate": "2026-11-05T08:10:38.542Z",
+  "version": "2026.11.05_LOCKED_v19",
+  "exportDate": "2026-11-05T08:49:24.748Z",
   "state": {
-    "version": "2026.11.05_LOCKED_v18",
+    "version": "2026.11.05_LOCKED_v19",
     "teachers": [
       {
         "id": 1,
@@ -516,12 +516,13 @@
         "name": "SERHAT ARSLAN",
         "branch": "Bilişim Teknolojileri",
         "status": "katiliyor",
-        "t1": false,
-        "t2": false,
-        "t3": false,
+        "t1": true,
+        "t2": true,
+        "t3": true,
         "t4": false,
         "t5": false,
-        "note": "Formdan katıldı"
+        "ek2": 100,
+        "note": "1.000 TL ödendi (Elden | 1. Dönem 900 TL tam + 2. Dönem 100 TL)"
       },
       {
         "id": 47,
