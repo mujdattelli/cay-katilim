@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.15_LOCKED_v20",
-  "exportDate": "2026-11-15T07:53:00.748Z",
+  "version": "2026.11.15_LOCKED_v21",
+  "exportDate": "2026-11-15T08:12:09.385Z",
   "state": {
-    "version": "2026.11.15_LOCKED_v20",
+    "version": "2026.11.15_LOCKED_v21",
     "teachers": [
       {
         "id": 1,
@@ -775,6 +775,34 @@
           "deterjan": "",
           "bardak": "",
           "diger": ""
+        },
+        "receiptImg": null
+      },
+      {
+        "id": 6,
+        "date": "2026-11-06",
+        "desc": "Trendyol Çay Alımı (1 Adet 3'lü Paket)",
+        "amount": 978.79,
+        "items": {
+          "cay": "3 Çay",
+          "seker": "",
+          "deterjan": "",
+          "bardak": "",
+          "diger": "Trendyol Siparişi (3 Çay)"
+        },
+        "receiptImg": null
+      },
+      {
+        "id": 7,
+        "date": "2026-11-06",
+        "desc": "Trendyol Çay Alımı (2 Adet 3'lü Paket)",
+        "amount": 1962.58,
+        "items": {
+          "cay": "6 Çay",
+          "seker": "",
+          "deterjan": "",
+          "bardak": "",
+          "diger": "Trendyol Siparişi (6 Çay)"
         },
         "receiptImg": null
       }

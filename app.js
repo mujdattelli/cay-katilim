@@ -130,10 +130,38 @@ const DEFAULT_EXPENSES = [
       diger: ""
     },
     receiptImg: null
+  },
+  {
+    id: 6,
+    date: "2026-11-06",
+    desc: "Trendyol Çay Alımı (1 Adet 3'lü Paket)",
+    amount: 978.79,
+    items: {
+      cay: "3 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: "Trendyol Siparişi (3 Çay)"
+    },
+    receiptImg: null
+  },
+  {
+    id: 7,
+    date: "2026-11-06",
+    desc: "Trendyol Çay Alımı (2 Adet 3'lü Paket)",
+    amount: 1962.58,
+    items: {
+      cay: "6 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: "Trendyol Siparişi (6 Çay)"
+    },
+    receiptImg: null
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.15_LOCKED_v20";
+const CANONICAL_DATA_VERSION = "2026.11.15_LOCKED_v21";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
 const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";
@@ -1021,8 +1049,9 @@ function updateDashboard() {
   });
 
   const toplamToplanan = donem1Toplanan + donem2Toplanan;
-  const toplamGider = (state.expenses || []).reduce((sum, item) => sum + Number(item.amount || 0), 0);
-  const netKasa = toplamToplanan - toplamGider;
+  const toplamGider = Math.round((state.expenses || []).reduce((sum, item) => sum + Number(item.amount || 0), 0) * 100) / 100;
+  const netKasa = Math.round((toplamToplanan - toplamGider) * 100) / 100;
+  const fmtMoney = n => (Number(n) || 0).toLocaleString('tr-TR', { minimumFractionDigits: (Number(n) || 0) % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 });
 
   // DOM güvenli güncellemeler (Hata vermez)
   const setTxt = (id, val) => {
@@ -1039,11 +1068,11 @@ function updateDashboard() {
   setTxt('statDonem2Toplanan', donem2Toplanan.toLocaleString('tr-TR') + ' ₺');
   setTxt('statDonem2Hedef', (katilanlar.length * DONEM2_UCRET).toLocaleString('tr-TR') + ' ₺');
   setTxt('statToplamToplanan', `${toplamToplanan.toLocaleString('tr-TR')} ₺ (Banka: ${bankaToplanan.toLocaleString('tr-TR')} ₺ + Elden: ${eldenToplanan.toLocaleString('tr-TR')} ₺)`);
-  setTxt('statToplamGider', toplamGider.toLocaleString('tr-TR') + ' ₺');
+  setTxt('statToplamGider', fmtMoney(toplamGider) + ' ₺');
   setTxt('statDevreden', (state.devredenBakiye || 0).toLocaleString('tr-TR') + ' ₺');
   setTxt(
     'vaultBreakdownSummary',
-    `🏦 Banka EFT: ${bankaToplanan.toLocaleString('tr-TR')} ₺  +  💵 Elden Nakit: ${eldenToplanan.toLocaleString('tr-TR')} ₺  =  Toplam Gelir: ${toplamToplanan.toLocaleString('tr-TR')} ₺  |  🧾 Gider: ${toplamGider.toLocaleString('tr-TR')} ₺  |  ✅ Net Kasa: ${netKasa.toLocaleString('tr-TR')} ₺`
+    `🏦 Banka EFT: ${bankaToplanan.toLocaleString('tr-TR')} ₺  +  💵 Elden Nakit: ${eldenToplanan.toLocaleString('tr-TR')} ₺  =  Toplam Gelir: ${toplamToplanan.toLocaleString('tr-TR')} ₺  |  🧾 Gider: ${fmtMoney(toplamGider)} ₺  |  ✅ Net Kasa: ${fmtMoney(netKasa)} ₺`
   );
 
   const filterSel = document.getElementById('filterStatusSelect');
@@ -1064,7 +1093,7 @@ function updateDashboard() {
 
   const netKasaEl = document.getElementById('statNetKasa');
   if (netKasaEl) {
-    netKasaEl.innerText = netKasa.toLocaleString('tr-TR') + ' ₺';
+    netKasaEl.innerText = fmtMoney(netKasa) + ' ₺';
     netKasaEl.className = netKasa >= 0 ? 'text-xl font-extrabold text-emerald-600 mt-1' : 'text-xl font-extrabold text-red-600 mt-1';
   }
 
@@ -1516,7 +1545,7 @@ function renderExpenses() {
         </div>
       </td>
       <td class="p-2.5 text-right font-extrabold text-red-600 text-sm whitespace-nowrap">
-        -${amountNum.toLocaleString('tr-TR')} ₺
+        -${amountNum.toLocaleString('tr-TR', { minimumFractionDigits: amountNum % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 })} ₺
       </td>
       <td class="p-2.5 text-center whitespace-nowrap">
         ${exp.receiptImg ? `
@@ -1541,8 +1570,10 @@ function renderExpenses() {
   });
 
   // Alt Toplam ve Rozetler
-  if (footerTotal) footerTotal.innerText = '-' + totalGider.toLocaleString('tr-TR') + ' ₺';
-  if (badgeTotal) badgeTotal.innerText = totalGider.toLocaleString('tr-TR') + ' ₺';
+  totalGider = Math.round(totalGider * 100) / 100;
+  const fmtGider = totalGider.toLocaleString('tr-TR', { minimumFractionDigits: totalGider % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 });
+  if (footerTotal) footerTotal.innerText = '-' + fmtGider + ' ₺';
+  if (badgeTotal) badgeTotal.innerText = fmtGider + ' ₺';
 
   const formatSummary = (items, count, unitName) => {
     if (count === 0) return '0';
