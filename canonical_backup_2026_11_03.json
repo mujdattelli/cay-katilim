@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.05_LOCKED_v19",
-  "exportDate": "2026-11-05T08:49:24.748Z",
+  "version": "2026.11.15_LOCKED_v20",
+  "exportDate": "2026-11-15T07:53:00.748Z",
   "state": {
-    "version": "2026.11.05_LOCKED_v19",
+    "version": "2026.11.15_LOCKED_v20",
     "teachers": [
       {
         "id": 1,
@@ -119,11 +119,12 @@
         "branch": "Fizik",
         "status": "katiliyor",
         "t1": true,
-        "t2": false,
+        "t2": true,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)"
+        "ek1": 200,
+        "note": "800 TL ödendi (300 TL Banka + 500 TL Elden | 1. Dönem 900 TL için +100 TL kalan)"
       },
       {
         "id": 13,
@@ -131,11 +132,12 @@
         "branch": "Felsefe",
         "status": "katiliyor",
         "t1": true,
-        "t2": false,
+        "t2": true,
         "t3": false,
         "t4": false,
         "t5": false,
-        "note": "300 TL ödendi (1. Dönem 900 TL için +600 TL kalan)"
+        "ek1": 200,
+        "note": "800 TL ödendi (300 TL Banka + 500 TL Elden | 1. Dönem 900 TL için +100 TL kalan)"
       },
       {
         "id": 14,
