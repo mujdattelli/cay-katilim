@@ -158,10 +158,38 @@ const DEFAULT_EXPENSES = [
       diger: "Trendyol Siparişi (6 Çay)"
     },
     receiptImg: null
+  },
+  {
+    id: 8,
+    date: "2026-11-20",
+    desc: "A101 Market Alımı (3 Çay)",
+    amount: 1047,
+    items: {
+      cay: "3 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: "A101 (3 Çay)"
+    },
+    receiptImg: null
+  },
+  {
+    id: 9,
+    date: "2026-11-20",
+    desc: "A101 Market Alımı (6 Çay)",
+    amount: 2100,
+    items: {
+      cay: "6 Çay",
+      seker: "",
+      deterjan: "",
+      bardak: "",
+      diger: "A101 (6 Çay)"
+    },
+    receiptImg: null
   }
 ];
 
-const CANONICAL_DATA_VERSION = "2026.11.15_LOCKED_v21";
+const CANONICAL_DATA_VERSION = "2026.11.20_LOCKED_v22";
 const CLOUD_TEACHERS_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a788f720ac";
 const CLOUD_TEACHERS_MIRROR_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1ccd956216c";
 const CLOUD_EXPENSES_DB_URL = "https://api.restful-api.dev/objects/ff808181a09d98f701a1a1a92f2d20d0";

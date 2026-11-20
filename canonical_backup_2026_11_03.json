@@ -1,9 +1,9 @@
 {
   "app": "cay_katilim_takip",
-  "version": "2026.11.15_LOCKED_v21",
-  "exportDate": "2026-11-15T08:12:09.385Z",
+  "version": "2026.11.20_LOCKED_v22",
+  "exportDate": "2026-11-20T09:17:24.819Z",
   "state": {
-    "version": "2026.11.15_LOCKED_v21",
+    "version": "2026.11.20_LOCKED_v22",
     "teachers": [
       {
         "id": 1,
@@ -803,6 +803,34 @@
           "deterjan": "",
           "bardak": "",
           "diger": "Trendyol Siparişi (6 Çay)"
+        },
+        "receiptImg": null
+      },
+      {
+        "id": 8,
+        "date": "2026-11-20",
+        "desc": "A101 Market Alımı (3 Çay)",
+        "amount": 1047,
+        "items": {
+          "cay": "3 Çay",
+          "seker": "",
+          "deterjan": "",
+          "bardak": "",
+          "diger": "A101 (3 Çay)"
+        },
+        "receiptImg": null
+      },
+      {
+        "id": 9,
+        "date": "2026-11-20",
+        "desc": "A101 Market Alımı (6 Çay)",
+        "amount": 2100,
+        "items": {
+          "cay": "6 Çay",
+          "seker": "",
+          "deterjan": "",
+          "bardak": "",
+          "diger": "A101 (6 Çay)"
         },
         "receiptImg": null
       }

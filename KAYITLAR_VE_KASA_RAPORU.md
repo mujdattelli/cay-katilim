@@ -1,7 +1,7 @@
 # ☕ 2026-2027 Eğitim-Öğretim Yılı Çay Ocağı Tam Kayıt ve Kasa Raporu
 
 > [!IMPORTANT]
-> **Son Güncelleme ve Kilitleme Tarihi:** `15.11.2026` (`2026.11.15_LOCKED_v21`)  
+> **Son Güncelleme ve Kilitleme Tarihi:** `20.11.2026` (`2026.11.20_LOCKED_v22`)  
 > **Sorumlu:** Müjdat TELLİ (`TR830001200986200001021145` — Halkbank *Okul Çay P*)  
 > **Ücret Tarifesi:** Yıllık **1.800 ₺** (*1. Dönem: 900 ₺* + *2. Dönem: 900 ₺*)
 
@@ -14,8 +14,8 @@
 | **🏦 Bankadan Gelen (EFT / Havale)** | 22 Kişi *(25 banka işlemi)* | **14.700 ₺** |
 | **💵 Elden Alınan (Nakit)** | 7 Kişi *(Serhat Arslan 1.000 ₺ + Müjdat Telli 900 ₺ + Miray Tekay 800 ₺ + Derya Yıldız 500 ₺ + Devrim Yıldız 500 ₺ + Zehra Genç 300 ₺ + Nagihan Koç Çavur 200 ₺)* | **4.200 ₺** |
 | **📊 Toplam Toplanan Gelir** | **26 Ödeme Yapan Kişi** | **18.900 ₺** |
-| **🧾 Toplam Harcama / Fatura Gideri** | **7 Kayıt** *(28 Çay, 5 Şeker, 12 Bardak)* | **9.023,37 ₺** |
-| **✅ NET KASA BAKİYESİ** | *Gelir (18.900 ₺) − Gider (9.023,37 ₺)* | **9.876,63 ₺** |
+| **🧾 Toplam Harcama / Fatura Gideri** | **9 Kayıt** *(37 Çay, 5 Şeker, 12 Bardak)* | **12.170,37 ₺** |
+| **✅ NET KASA BAKİYESİ** | *Gelir (18.900 ₺) − Gider (12.170,37 ₺)* | **6.729,63 ₺** |
 | **☕ Katılıyor** | **27 Kişi** | 26 ödeme yapan + 1 henüz ödeme görünmeyen *(Şahin Karakaş)* |
 | **❌ Katılmıyor** | **14 Kişi** | Tamamı form/mesaj ile doğrulandı |
 | **⏳ Yanıt Bekliyor** | **17 Kişi** | Form doldurmayan ve ödeme yapmayanlar |
@@ -100,7 +100,7 @@
 
 ---
 
-## 4. 🧾 Harcama ve Fatura Kayıtları (Toplam Gider: 9.023,37 ₺)
+## 4. 🧾 Harcama ve Fatura Kayıtları (Toplam Gider: 12.170,37 ₺)
 
 | # | Tarih | Açıklama | Çay | Şeker | Bardak | Tutar |
 |---|---|---|---|---|---|---|
@@ -111,7 +111,9 @@
 | 5 | `14.09.2026` | ŞOK Market Alımı (Müjdat Telli) | 6 Çay | — | — | **2.330 ₺** |
 | 6 | `06.11.2026` | Trendyol Alımı (1 Adet 3'lü Paket - Müjdat Telli) | 3 Çay | — | — | **978,79 ₺** |
 | 7 | `06.11.2026` | Trendyol Alımı (2 Adet 3'lü Paket - Müjdat Telli) | 6 Çay | — | — | **1.962,58 ₺** |
-| **TOPLAM** | — | **7 Fatura / Alım Kaydı** | **28 Paket** | **5 Paket** | **12 Adet** | **9.023,37 ₺** |
+| 8 | `20.11.2026` | A101 Market Alımı (Müjdat Telli) | 3 Çay | — | — | **1.047 ₺** |
+| 9 | `20.11.2026` | A101 Market Alımı (Müjdat Telli) | 6 Çay | — | — | **2.100 ₺** |
+| **TOPLAM** | — | **9 Fatura / Alım Kaydı** | **37 Paket** | **5 Paket** | **12 Adet** | **12.170,37 ₺** |
 
 ---
 
@@ -186,4 +188,4 @@
 * **Canlı Web Adresi:** https://mujdattelli.github.io/cay-katilim/ *(Yönetim Şifresi: `2026`)*
 * **GitHub Deposu:** https://github.com/mujdattelli/cay-katilim
 * **Tam JSON Yedeği:** `canonical_backup_2026_11_03.json`
-* **Kilitli Veri Sürümü:** `2026.11.15_LOCKED_v21`
+* **Kilitli Veri Sürümü:** `2026.11.20_LOCKED_v22`
